@@ -5,10 +5,19 @@ export {
   messageByString,
   messageByStringSpread,
   random,
+  randomOpts,
   randomStyleFn,
   randomStyleString,
   styles,
   stylesMap,
-} from './Color.ts';
-export { styleEnum, EnumColor, EnumBgColor, EnumEmphasis, EnumSuffix } from './enum.ts';
-export type { StyleTypes, Styles, StyleFn, StylesMap, StyleMap, StyleOptions, RandomStyleOptions } from './Color.d.ts';
+} from 'trailmix/color/Color.ts';
+export { styleEnum, EnumColor, EnumBgColor, EnumEmphasis, EnumSuffix } from 'trailmix/color/enum.ts';
+export type {
+  StyleTypes,
+  Styles,
+  StyleFn,
+  StylesMap,
+  StyleMap,
+  StyleOptions,
+  RandomStyleOptions,
+} from 'trailmix/color/Color.d.ts';

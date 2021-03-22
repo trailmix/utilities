@@ -1,4 +1,4 @@
-export type { Styles } from 'trailmix/color';
+export type { Styles } from 'trailmix/color/mod.ts';
 export {
   Color,
   messageByFn,
@@ -6,9 +6,10 @@ export {
   messageByString,
   messageByStringSpread,
   random,
+  randomOpts,
   randomStyleFn,
   randomStyleString,
   styleEnum,
   styles,
   stylesMap,
-} from 'trailmix/color';
+} from 'trailmix/color/mod.ts';

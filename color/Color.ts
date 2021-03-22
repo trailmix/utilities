@@ -1,6 +1,6 @@
 import * as colors from 'fmt/colors.ts';
-import type { StylesMap, StyleMap, StyleFn, Styles, StyleTypes, RandomStyleOptions } from './Color.d.ts';
-import { EnumColor, EnumBgColor, EnumEmphasis } from './enum.ts';
+import type { StylesMap, StyleMap, StyleFn, Styles, StyleTypes, RandomStyleOptions } from 'trailmix/color/Color.d.ts';
+import { EnumColor, EnumBgColor, EnumEmphasis } from 'trailmix/color/enum.ts';
 
 export default class Color {
   public static stylesMap: StylesMap = {
@@ -63,12 +63,20 @@ export default class Color {
     return msg;
   }
 
-  public static random(str: string, { color, bgColor, emphasis }: RandomStyleOptions): string {
+  public static random(str: string, { color, bgColor, emphasis }: RandomStyleOptions = Color.randomOpts()): string {
     const c = [undefined, false].includes(color) ? undefined : Color.randomStyleFn();
     const bgC = [undefined, false].includes(bgColor) ? undefined : Color.randomStyleFn('bgColor');
     const e = [undefined, false].includes(emphasis) ? undefined : Color.randomStyleFn('emphasis');
     const r: Array<StyleFn | undefined> = new Array(c ?? undefined, bgC ?? undefined, e ?? undefined);
     return Color.messageByFn(str, r);
+  }
+  public static randomOpts({ color, bgColor, emphasis }: RandomStyleOptions = {}): RandomStyleOptions {
+    const ret: RandomStyleOptions = {
+      color: color ?? Math.random() >= 0.5 ? true : false,
+      bgColor: bgColor ?? Math.random() >= 0.5 ? true : false,
+      emphasis: emphasis ?? Math.random() >= 0.5 ? true : false,
+    };
+    return ret;
   }
   /**
    *
@@ -109,6 +117,7 @@ export const messageByFnSpread = Color.messageByFnSpread;
 export const messageByString = Color.messageByString;
 export const messageByStringSpread = Color.messageByStringSpread;
 export const random = Color.random;
+export const randomOpts = Color.randomOpts;
 export const randomStyleFn = Color.randomStyleFn;
 export const randomStyleString = Color.randomStyleString;
 export const stylesMap: StylesMap = Color.stylesMap;

@@ -1,4 +1,4 @@
-import type { styleEnum, EnumColor, EnumBgColor, EnumEmphasis } from './enum.ts';
+import type { styleEnum, EnumColor, EnumBgColor, EnumEmphasis } from 'trailmix/color/enum.ts';
 
 export type StyleTypes = Exclude<keyof typeof styleEnum, 'suffix'>;
 // list of all style strings

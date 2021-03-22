@@ -5,12 +5,13 @@ import {
   messageByString,
   messageByStringSpread,
   random,
+  randomOpts,
   randomStyleFn,
   randomStyleString,
   stylesMap,
-} from './Color.ts';
-import { styleEnum } from './enum.ts';
-import type { Styles, StyleFn } from './Color.d.ts';
+} from 'trailmix/color/Color.ts';
+import { styleEnum } from 'trailmix/color/enum.ts';
+import type { Styles, StyleFn } from 'trailmix/color/Color.d.ts';
 import { assertStrictEquals, assertNotEquals } from 'testing/asserts.ts';
 import { Table, Row, Cell } from 'cliffy/table';
 
@@ -38,22 +39,25 @@ function consoleMock(...data: string[]) {
       expected,
       `console.log() messages failure: (actual !== expected)\n "${actual}" !== "${expected}"`,
     );
-    assertStrictEquals(
-      JSON.parse(actual),
-      JSON.parse(expected),
-      `console.log() JSON.parse() messages failure: (actual !== expected)\n "${actual}" !== "${expected}"`,
-    );
+    if (typeof JSON.parse(actual) !== 'object')
+      assertStrictEquals(
+        JSON.parse(actual),
+        JSON.parse(expected),
+        `console.log() JSON.parse() messages failure: (actual !== expected)\n "${actual}" !== "${expected}"`,
+      );
     table.push(
       Row.from([
         Cell.from('🧪🧪🧪🧪\t\x1b[1m\x1b[92m\x1b[4m' + testName.trim() + '\x1b[24m\x1b[39m\x1b[22m\n').colSpan(3),
       ]).border(false),
       [actual, '===', expected],
-      [JSON.parse(actual), '===', JSON.parse(expected)],
     );
+    if (typeof JSON.parse(actual) !== 'object') table.push([JSON.parse(actual), '===', JSON.parse(expected)]);
   } catch (e) {
     table.push(
       Row.from([
-        Cell.from('🚨🚨🚨🚨\t\x1b[1m\x1b[91m\x1b[4m' + testName.trim() + '\x1b[24m\x1b[39m\x1b[22m\n').colSpan(3),
+        Cell.from('🚨🚨🚨🚨\t\x1b[1m\x1b[91m\x1b[4m' + testName.trim() + '\x1b[24m\x1b[39m\x1b[22m' + e + '\n').colSpan(
+          3,
+        ),
       ]).border(false),
       [actual, '!==', expected],
       [JSON.parse(actual ?? []), '!==', JSON.parse(expected ?? [])],
@@ -74,6 +78,7 @@ const tests = {
         emphasis: false,
       },
     },
+    randomOpts: { ...Object.keys(styleEnum).filter((key) => key !== 'suffix') },
     randomStyleFn: { ...Object.keys(styleEnum).filter((key) => key !== 'suffix') },
     randomStyleString: { ...Object.keys(styleEnum).filter((key) => key !== 'suffix') },
   },
@@ -87,6 +92,9 @@ const tests = {
     messageByString: {
       fixed: [],
     },
+  },
+  undefined: {
+    random: undefined,
   },
   stringUndefined: {
     random: {
@@ -257,18 +265,20 @@ for (const test of Object.keys(tests)) {
   for (const fn of Object.keys(tests[test])) {
     for (const obj of [true, false]) {
       // @ts-ignore
-      for (const stylefn of Object.keys(tests[test][fn])) {
+      for (const stylefn of Object.keys(tests[test][fn] ?? { undefined: undefined })) {
         for (const spread of [true, false]) {
           Deno.test({
             name: `Color.ts`,
             fn: () => {
               testName = `${test}, fn:${fn}, styleFn:${stylefn}, spread:${spread}, fromObj:${obj}\n`;
+              ogConsole(testName);
               // @ts-ignore
-              const args = tests[test][fn][stylefn];
+              const args = stylefn === 'undefined' ? tests[test][fn] : tests[test][fn][stylefn];
               let TmessageByStringSpread = messageByStringSpread;
               let TmessageByString = messageByString;
               let TmessageByFnSpread = messageByFnSpread;
               let TmessageByFn = messageByFn;
+              let TrandomOpts = randomOpts;
               let TrandomStyleFn = randomStyleFn;
               let TrandomStyleString = randomStyleString;
               let Trandom = random;
@@ -277,6 +287,7 @@ for (const test of Object.keys(tests)) {
                 TmessageByString = Color.messageByString;
                 TmessageByFnSpread = Color.messageByFnSpread;
                 TmessageByFn = Color.messageByFn;
+                TrandomOpts = Color.randomOpts;
                 TrandomStyleFn = Color.randomStyleFn;
                 TrandomStyleString = Color.randomStyleString;
                 Trandom = Color.random;
@@ -290,6 +301,7 @@ for (const test of Object.keys(tests)) {
                 if (spread) msg = JSON.stringify(TmessageByFnSpread(test, ...(args as StyleFn[])));
                 else msg = JSON.stringify(TmessageByFn(test, args as StyleFn[]));
               }
+              if (fn === 'randomOpts') msg = JSON.stringify(TrandomOpts(args));
               if (fn === 'randomStyleFn') msg = JSON.stringify(TrandomStyleFn(args)(test));
               if (fn === 'randomStyleString') msg = JSON.stringify(TrandomStyleString(args));
               if (fn === 'random') msg = JSON.stringify(Trandom(test, args));

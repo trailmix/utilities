@@ -17,10 +17,12 @@ import {
   messageByString,
   messageByStringSpread,
   messageByFn,
+  randomOpts,
   randomStyleFn,
   randomStyleString,
+  random,
   styles as s,
-} from 'https://deno.land/x/trailmix@1.0.1/mod.ts';
+} from 'https://deno.land/x/trailmix@1.0.2/mod.ts';
 
 // random StyleFn Message Functions
 console.log(messageByFn('hello', [s.cyan, s.bgRed])); // cyan text, red BG
@@ -31,7 +33,10 @@ console.log(randomStyleString('color')); // get a random color string typeof Sty
 // random StyleString Message Functions
 console.log(messageByString('hello', [randomStyleString('color')])); // random text color
 console.log(messageByStringSpread('hello', randomStyleString('bgColor'))); // random background color
-console.log(messageByFnSpread('hello', s[randomStyleString('emphasis')]));
+console.log(messageByFnSpread('hello', s[randomStyleString('emphasis')])); // call style list with random style fn
+console.log(random('hello')); // get random style on this string (50% chance of color/bg/emphasis)
+console.log(random('hello', { color: true })); // get random color on this string
+console.log(random('hello', randomOpts({ color: true }))); // get random color 100%, (50% chance for others)
 ```
 
 ### Complex

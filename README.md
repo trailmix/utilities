@@ -20,7 +20,7 @@ import {
   randomStyleFn,
   randomStyleString,
   styles as s,
-} from 'https://github.com/trailmix/utilities/raw/master/mod.ts';
+} from 'https://deno.land/x/trailmix@1.0.1/mod.ts';
 
 // random StyleFn Message Functions
 console.log(messageByFn('hello', [s.cyan, s.bgRed])); // cyan text, red BG
@@ -38,8 +38,8 @@ console.log(messageByFnSpread('hello', s[randomStyleString('emphasis')]));
 
 ```typescript
 // import the class and style helpers
-import { Color as C, styles as s } from 'https://github.com/trailmix/utilities/raw/master/mod.ts';
-import type { Styles } from 'https://github.com/trailmix/utilities/raw/master/mod.ts';
+import { Color as C, styles as s } from 'https://deno.land/x/trailmix@1.0.1/mod.ts';
+import type { Styles } from 'https://deno.land/x/trailmix@1.0.1/mod.ts';
 
 // you can use defined or anon functions
 function test(str: string) {

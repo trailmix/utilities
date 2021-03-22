@@ -1,6 +1,8 @@
 # utilities
 
-Repository of common utilities in TS.
+Repository of common utilities in TS.  
+[![goofus_colors goofus colors trailmix deno typescript](https://trailmix-images.s3.amazonaws.com/gooface/goofus_colorsB.png)](http://djkittyplayz.art/)  
+[![art djkittyplayz][art]](<(http://djkittyplayz.art/)>)
 
 ## Usage
 

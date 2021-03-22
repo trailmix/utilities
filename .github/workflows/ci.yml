@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        # os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
         with:
@@ -28,11 +27,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: yarn test-coverage
 
-      - name: Run tests (macos)
-        if: matrix.os == 'macos-latest'
-        run: yarn test
-      - name: Run tests (windows)
-        run: deno test --unstable  --allow-net --import-map=import_map.json **/*_test.ts
+      - name: Run tests (win/mac)
+        if: matrix.os != 'ubuntu-latest'
+        run: deno test --unstable  --allow-net --import-map=import_map.json
       - name: Generate codecov report
         if: matrix.os == 'ubuntu-latest'
         run: yarn coverage

@@ -1,8 +1,8 @@
 # utilities
 
 Repository of common utilities in TS.  
-[![art djkittyplayz][art]](<(http://djkittyplayz.art/)>)
-[![codecov][codecov]](<(https://app.codecov.io/gh/trailmix/utilities)>)
+[![art djkittyplayz][art]](http://djkittyplayz.art/)
+[![codecov][codecov]](https://app.codecov.io/gh/trailmix/utilities)
 ![downloads][downloads]
 [![goofus_colors goofus colors trailmix deno typescript](https://trailmix-images.s3.amazonaws.com/gooface/gooface_colorsB.jpg)](http://djkittyplayz.art/)
 

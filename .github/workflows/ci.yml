@@ -26,15 +26,11 @@ jobs:
 
       - name: Run tests
         if: matrix.os == 'ubuntu-latest'
+        run: yarn test-coverage
+
+      - name: Run tests (without coverage)
+        if: matrix.os != 'ubuntu-latest'
         run: yarn test
-
-      - name: Run tests (without coverage)
-        if: matrix.os == 'macos-latest'
-        run: yarn test-one **/*_test.ts
-
-      - name: Run tests (without coverage)
-        if: matrix.os == 'windows-latest'
-        run: yarn test-one **\*_test.ts
 
       - name: Generate codecov report
         if: matrix.os == 'ubuntu-latest'

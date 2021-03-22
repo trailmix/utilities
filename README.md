@@ -1,8 +1,10 @@
 # utilities
 
 Repository of common utilities in TS.  
-[![goofus_colors goofus colors trailmix deno typescript](https://trailmix-images.s3.amazonaws.com/gooface/goofus_colorsB.png)](http://djkittyplayz.art/)  
 [![art djkittyplayz][art]](<(http://djkittyplayz.art/)>)
+[![codecov][codecov]](<(https://app.codecov.io/gh/trailmix/utilities)>)
+![downloads][downloads]
+[![goofus_colors goofus colors trailmix deno typescript](https://trailmix-images.s3.amazonaws.com/gooface/gooface_colorsB.jpg)](http://djkittyplayz.art/)
 
 ## Usage
 
@@ -80,3 +82,7 @@ console.log(C.random('test some string', rConf)); // random function
 ```
 
 ## [CONTRIBUTE](CONTRIBUTE.md)
+
+[art]: https://img.shields.io/badge/art-djkittyplayz-yellow
+[codecov]: https://img.shields.io/codecov/c/github/trailmix/utilities
+[downloads]: https://img.shields.io/github/downloads/trailmix/utilities/total

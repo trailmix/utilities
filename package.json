@@ -6,7 +6,7 @@
   "scripts": {
     "test": "yarn test-one --coverage=./coverage/output **/*_test.ts",
     "test-inspect": "yarn test-one --inspect **/*_test.ts",
-    "test-one": "deno test --unstable --allow-net --import-map=./import_map.json",
+    "test-one": "deno test --unstable --allow-net --import-map=import_map.json",
     "coverage": "deno coverage --unstable ./coverage --lcov > ./coverage/lcov.info",
     "coverage-html": "genhtml -o coverage/html ./coverage/lcov.info"
   },

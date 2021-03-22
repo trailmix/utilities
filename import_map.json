@@ -1,0 +1,9 @@
+{
+  "imports": {
+    "trailmix/": "./",
+    "trailmix/color": "./color/mod.ts",
+    "testing/": "https://deno.land/std@0.84.0/testing/",
+    "fmt/": "https://deno.land/std@0.84.0/fmt/",
+    "cliffy/table": "https://deno.land/x/cliffy@v0.16.0/table/mod.ts"
+  }
+}

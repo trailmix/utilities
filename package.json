@@ -1,0 +1,26 @@
+{
+  "name": "utilities",
+  "version": "1.0.0",
+  "description": "A lib of utilities for trailmix.",
+  "main": "mod.ts",
+  "scripts": {
+    "test": "yarn test-one --coverage=./coverage/output **/*_test.ts",
+    "test-inspect": "yarn test-one --inspect **/*_test.ts",
+    "test-one": "deno test --unstable --allow-net --import-map=./import_map.json",
+    "coverage": "deno coverage --unstable ./coverage --lcov > ./coverage/lcov.info",
+    "coverage-html": "genhtml -o coverage/html ./coverage/lcov.info"
+  },
+  "author": "trilom <bryan@trailmix.me>",
+  "license": "MIT",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.11.0",
+    "@typescript-eslint/parser": "^4.11.0",
+    "codecov": "^3.8.1",
+    "eslint": "^7.16.0",
+    "eslint-config-alloy": "^3.9.0",
+    "eslint-plugin-react": "^7.21.5",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.2.1",
+    "typescript": "^4.1.3"
+  }
+}

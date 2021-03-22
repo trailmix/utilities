@@ -1,0 +1,40 @@
+# codecov:
+#   notify:
+#     require_ci_to_pass: yes
+
+coverage:
+  status:
+    project:
+      default:
+        target: 90%
+      color:
+        target: auto
+        threshold: 7%
+        base: auto
+        if_ci_failed: success
+        flags:
+          - color
+  precision: 2
+  round: down
+  range: '70...100'
+
+flags:
+  color:
+    paths:
+      - color/src/**
+      - '!color/src/**_test.ts'
+parsers:
+  gcov:
+    branch_detection:
+      conditional: yes
+      loop: yes
+      method: no
+      macro: no
+
+comment:
+  layout: 'reach,diff,flags,tree'
+  behavior: default
+  require_changes: no
+  require_base: yes
+  require_head: yes
+  # branches: null

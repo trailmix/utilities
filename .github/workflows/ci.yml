@@ -31,8 +31,8 @@ jobs:
       - name: Run tests (without coverage)
         if: matrix.os == 'macos-latest'
         run: yarn test-one **/*_test.ts
-      
-        - name: Run tests (without coverage)
+
+      - name: Run tests (without coverage)
         if: matrix.os == 'windows-latest'
         run: yarn test-one **\*_test.ts
 

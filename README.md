@@ -1,10 +1,12 @@
 # utilities
 
-Repository of common utilities in TS.  
+Repository of utilities for deno written in typescript for trailmix🌤🦕🍣😼  
 [![art djkittyplayz][art]](http://djkittyplayz.art/)
 [![codecov][codecov]](https://app.codecov.io/gh/trailmix/utilities)
-![downloads][downloads]
-[![goofus_colors goofus colors trailmix deno typescript](https://trailmix-images.s3.amazonaws.com/gooface/gooface_colorsB.jpg)](http://djkittyplayz.art/)
+[![downloads][downloads]](https://deno.land/x/trailmix)
+[![goofus_colors goofus colors trailmix deno typescript][goofus]](https://deno.land/x/trailmix)
+
+[![svg][svg]](https://app.codecov.io/gh/trailmix/utilities)
 
 ## Usage
 
@@ -22,7 +24,7 @@ import {
   randomStyleString,
   random,
   styles as s,
-} from 'https://deno.land/x/trailmix@1.0.2/mod.ts';
+} from 'https://deno.land/x/trailmix@1.0.3/mod.ts';
 
 // random StyleFn Message Functions
 console.log(messageByFn('hello', [s.cyan, s.bgRed])); // cyan text, red BG
@@ -88,6 +90,8 @@ console.log(C.random('test some string', rConf)); // random function
 
 ## [CONTRIBUTE](CONTRIBUTE.md)
 
+[goofus]: https://trailmix-images.s3.amazonaws.com/gooface/gooface-color.png
 [art]: https://img.shields.io/badge/art-djkittyplayz-yellow
-[codecov]: https://img.shields.io/codecov/c/github/trailmix/utilities
+[codecov]: https://codecov.io/gh/trailmix/utilities/branch/master/graph/badge.svg?token=96CJ5IPAAN
 [downloads]: https://img.shields.io/github/downloads/trailmix/utilities/total
+[svg]: https://codecov.io/gh/trailmix/utilities/branch/master/graphs/tree.svg

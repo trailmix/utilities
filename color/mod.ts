@@ -12,6 +12,7 @@ export {
   stylesMap,
 } from 'trailmix/color/Color.ts';
 export { styleEnum, EnumColor, EnumBgColor, EnumEmphasis, EnumSuffix } from 'trailmix/color/enum.ts';
+// @deno-types="./Color.d.ts"
 export type {
   StyleTypes,
   Styles,

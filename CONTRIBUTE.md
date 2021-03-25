@@ -1,11 +1,8 @@
 # Contribute
 ```bash
-# ensure you have extensions installed
+# docker should be installed
+docker build -t trailmix -f .docker/Dockerfile .
 
-# setup env
-yarn
-# test all projects
-yarn test
-# test one project
-yarn test-one color/*_test.ts
+# now run tests
+docker run trailmix deno test --unstable --allow-read --allow-env --import-map=import_map.json
 ```

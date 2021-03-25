@@ -119,7 +119,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
     },
   });
   const definitionPathRegexp = new RegExp(
-    /\S*\/(trilom.config.(ts|tsx){1}){1}/,
+    /\S*(\/|\\)+(trilom.config.(ts|tsx){1}){1}/,
   );
   Deno.test({
     name: `Config.ts - ${obj} configuration path`,

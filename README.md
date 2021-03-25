@@ -14,9 +14,6 @@
   <a href="https://deno.land/x/trailmix">
     <img src="https://img.shields.io/github/downloads/trailmix/utilities/total" alt="downloads" />
   </a>
-  <a href="https://github.com/trailmix/utilities/actions">
-    <img src="https://github.com/trailmix/utilities/workflows/ci/badge.svg?branch=next" alt="ci" />
-  </a>
 </p>
 <a href="https://deno.land/x/trailmix">
   <img
@@ -25,6 +22,9 @@
   />
 </a>
 <p align="center">
+  <a href="https://github.com/trailmix/utilities/actions">
+    <img src="https://github.com/trailmix/utilities/workflows/ci/badge.svg" alt="ci" />
+  </a>
   <a href="https://app.codecov.io/gh/trailmix/utilities" align="left">
     <img
       src="https://codecov.io/gh/trailmix/utilities/branch/master/graph/badge.svg?token=96CJ5IPAAN"
@@ -36,6 +36,9 @@
       src="https://codecov.io/gh/trailmix/utilities/branch/next/graph/badge.svg?token=96CJ5IPAAN"
       alt="codecov next"
     />
+  </a>
+  <a href="https://github.com/trailmix/utilities/actions">
+    <img src="https://github.com/trailmix/utilities/workflows/ci/badge.svg?branch=next" alt="ci" />
   </a>
 </p>
 <p align="center">
@@ -49,7 +52,8 @@
 
 ## Usage
 
-### Simple
+### Colors
+**Simple**
 
 ```typescript
 // import fns and style helpers
@@ -80,7 +84,7 @@ console.log(random('hello', { color: true })); // get random color on this strin
 console.log(random('hello', randomOpts({ color: true }))); // get random color 100%, (50% chance for others)
 ```
 
-### Complex
+**Complex**
 
 ```typescript
 // import the class and style helpers
@@ -126,5 +130,7 @@ console.log(C.messageByStringSpread('a spring spread', 'green', 'bgBlack', 'stri
 console.log(C.messageByStringSpread('a spring spread again with a var', ..._sList));
 console.log(C.random('test some string', rConf)); // random function
 ```
-
+### Log
+### Watch
+### Config
 ## [CONTRIBUTE](CONTRIBUTE.md)

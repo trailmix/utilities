@@ -1,23 +1,30 @@
-import { Watch } from 'trailmix/watch/mod.ts';
-import type { Config } from 'trailmix/config/mod.ts';
-import { unique } from 'trailmix/common/mod.ts';
+import { Watch } from "trailmix/watch/mod.ts";
+import type { Config } from "trailmix/config/mod.ts";
+import { unique } from "trailmix/common/mod.ts";
 export const REGEXP_UPDIR = /^(\.\.\/){1}([a-zA-Z0-9_\\\/-])*(\/){1}/;
 // checks if the directory is a hidden updir
 // hidden = '/.github/'
 // hidden updir = '../.github/'
 export const REGEXP_HIDDEN_UPDIR = /^(\.\.\/){1}([a-zA-Z0-9_\\\/-])*(\/\.){1}/;
 
-import { fs, path, colors, v4 } from 'trailmix/deps.ts';
+import {
+  // colors,
+  existsSync,
+  // extname,
+  relative,
+  resolve,
+  v4,
+} from "trailmix/deps.ts";
 export default class WatchFactory {
   // #region properties
   public watchers: Array<Watch> = [];
   private config: Partial<Config> = {};
-  private pagicConfigPath = '';
+  private pagicConfigPath = "";
   private timeoutHandler: number | undefined;
   private changedPaths: string[] = [];
-  private srcDir = '';
-  private theme = '';
-  private id = '';
+  private srcDir = "";
+  private theme = "";
+  private id = "";
   // #endregion
   public constructor(config: Partial<Config> = {}, pagicConfigPath: string) {
     this.id = v4.generate().substring(28, 36);
@@ -35,7 +42,11 @@ export default class WatchFactory {
   // if providing a dir, you must end with '/.' for example './Pagic/.' or 'Pagic/.'
   // will check if watcher exists, but doesn't know if another watcher might share the file/dir
   public addWatcher(dirs: string | string[]) {
-    if (this.watchers.filter((watcher) => watcher.watchDirs === (Array.isArray(dirs) ? dirs : [dirs])).length !== 1) {
+    if (
+      this.watchers.filter((watcher) =>
+        watcher.watchDirs === (Array.isArray(dirs) ? dirs : [dirs])
+      ).length !== 1
+    ) {
       // logger.info('watcher', `factory:${colors.red(this.id)}`, 'addWatcher', `${underline(dirs)}`);
       this.watchers.push(new Watch(dirs));
     }
@@ -64,30 +75,36 @@ export default class WatchFactory {
     // get original paths length
     const pathLength = this.changedPaths.length;
     // set changedPaths to new paths if they don't exist
-    this.parseEventPaths(event.paths.map((eventPath: string) => path.relative(this.srcDir, eventPath))).forEach(
+    this.parseEventPaths(
+      event.paths.map((eventPath: string) => relative(this.srcDir, eventPath)),
+    ).forEach(
       (path) => {
-        if (this.changedPaths.indexOf(path) === -1) this.changedPaths.push(path);
+        if (this.changedPaths.indexOf(path) === -1) {
+          this.changedPaths.push(path);
+        }
       },
     );
     switch (event.kind) {
-      case 'any': // not sure what 'any' case applies to
+      case "any": // not sure what 'any' case applies to
         // logger.error('watcher', `${colors.red(this.id)}${colors.red(watcher.id)}`, event.kind, underline(event.paths));
         break;
-      case 'create': // if a watched file is created, rebuild?
+      case "create": // if a watched file is created, rebuild?
         // logger.info(watcher.id, event.kind, underline(event.paths));
         break;
-      case 'access': // access shouldn't be tracked afaik
+      case "access": // access shouldn't be tracked afaik
         break;
-      case 'modify': // if a watched file is modified, reload
+      case "modify": // if a watched file is modified, reload
         break;
-      case 'remove': // if a watched file is removed, reload
+      case "remove": // if a watched file is removed, reload
         break;
       default:
         // logger.error(watcher.id, 'unknown event', event.kind, underline(event.paths));
         break;
     }
     // if length changed, handle change
-    if (unique(this.changedPaths).length !== pathLength) this.handleFileChange();
+    if (unique(this.changedPaths).length !== pathLength) {
+      this.handleFileChange();
+    }
   }
   // use current changedPaths to call the pagicCallback to trigger a rebuild or reload
   private handleFileChange() {
@@ -97,19 +114,19 @@ export default class WatchFactory {
       // loop through changed files
       for await (const changedPath of this.changedPaths) {
         // resolve changed path/dir
-        const fullChangedPath = path.resolve(this.srcDir, changedPath);
-        if (!fs.existsSync(fullChangedPath)) {
+        const fullChangedPath = resolve(this.srcDir, changedPath);
+        if (!existsSync(fullChangedPath)) {
           // changed path/dir
           // logger.warn(`${changedPath} removed, start rebuild`);
-          this.pagicCallback('rebuild');
+          this.pagicCallback("rebuild");
           break;
         } else if (fullChangedPath.includes(this.pagicConfigPath)) {
           // changed config file
-          this.pagicCallback('rebuild');
+          this.pagicCallback("rebuild");
         } else if (Deno.statSync(fullChangedPath).isDirectory) {
           // changed file is a directory
           // logger.warn(`Directory ${colors.underline(changedPath)} changed, start rebuild`);
-          this.pagicCallback('rebuild');
+          this.pagicCallback("rebuild");
           break;
         }
       }

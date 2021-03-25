@@ -1,11 +1,11 @@
-import { path, v4 } from 'trailmix/deps.ts';
+import { resolve, v4 } from "trailmix/deps.ts";
 // import { logger, underline } from 'test/utils/mod.ts';
 export default class Watch {
   // #region properties
   // @ts-ignore
   public watcher: AsyncIterableIterator<Deno.FsEvent> = {};
-  public watchDirs: string | string[] = '';
-  public id = '';
+  public watchDirs: string | string[] = "";
+  public id = "";
   // #endregion
 
   public constructor(watchDirs: string | string[]) {
@@ -17,7 +17,7 @@ export default class Watch {
       this.watcher = this.watch();
       // logger.success('watcher', 'client', this.id.substring(28, 36), underline(this.watchDirs));
     } catch (e) {
-      if (e.name === 'NotFound') {
+      if (e.name === "NotFound") {
         // logger.error(
         //   'watcher',
         //   'client',
@@ -36,7 +36,9 @@ export default class Watch {
     // logger.success('watcher', 'client', this.id.substring(28, 36), 'watching', underline(this.watchDirs));
     let ret: AsyncIterableIterator<Deno.FsEvent>;
     ret = Deno.watchFs(
-      Array.isArray(this.watchDirs) ? this.watchDirs.map((dir) => path.resolve(dir)) : path.resolve(this.watchDirs),
+      Array.isArray(this.watchDirs)
+        ? this.watchDirs.map((dir) => resolve(dir))
+        : resolve(this.watchDirs),
     );
     return ret;
   }

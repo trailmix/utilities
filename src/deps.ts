@@ -1,7 +1,7 @@
 // watcher deps
 export { v4 } from "uuid/mod.ts";
-export { extname, resolve } from "path/mod.ts";
-export { exists } from "fs/mod.ts";
+export { extname, relative, resolve } from "path/mod.ts";
+export { exists, existsSync } from "fs/mod.ts";
 
 // color deps
 export * as colors from "fmt/colors.ts";

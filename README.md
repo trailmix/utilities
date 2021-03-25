@@ -1,12 +1,51 @@
-# utilities
+<h1 align="center">trailmix/utilities</h1>
 
-Repository of utilities for deno written in typescript for trailmix🌤🦕🍣😼  
-[![art djkittyplayz][art]](http://djkittyplayz.art/)
-[![codecov][codecov]](https://app.codecov.io/gh/trailmix/utilities)
-[![downloads][downloads]](https://deno.land/x/trailmix)
-[![goofus_colors goofus colors trailmix deno typescript][goofus]](https://deno.land/x/trailmix)
-
-[![svg][svg]](https://app.codecov.io/gh/trailmix/utilities)
+<h3 align="center">Repository of utilities for deno written in typescript for trailmix🌤🦕🍣😼</h3>
+<p align="center">
+  <a href="https://deno.land">
+    <img src="https://img.shields.io/badge/Deno-1.8.1-brightgreen.svg?logo=deno" alt="deno" />
+  </a>
+  <a href="https://github.com/trailmix/utilities">
+    <img src="https://img.shields.io/badge/utilities-vNEXT-green.svg" alt="trailmix utilities" />
+  </a>
+  <a href="http://djkittyplayz.art/">
+    <img src="https://img.shields.io/badge/art-djkittyplayz-yellow" alt="art djkittyplayz" />
+  </a>
+  <a href="https://deno.land/x/trailmix">
+    <img src="https://img.shields.io/github/downloads/trailmix/utilities/total" alt="downloads" />
+  </a>
+  <a href="https://github.com/trailmix/utilities/actions">
+    <img src="https://github.com/trailmix/utilities/workflows/ci/badge.svg?branch=next" alt="ci" />
+  </a>
+</p>
+<a href="https://deno.land/x/trailmix">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-color.png"
+    alt="goofus_colors goofus colors trailmix deno typescript"
+  />
+</a>
+<p align="center">
+  <a href="https://app.codecov.io/gh/trailmix/utilities" align="left">
+    <img
+      src="https://codecov.io/gh/trailmix/utilities/branch/master/graph/badge.svg?token=96CJ5IPAAN"
+      alt="codecov master"
+    />
+  </a>
+  <a href="https://app.codecov.io/gh/trailmix/utilities/branch/next" align="right">
+    <img
+      src="https://codecov.io/gh/trailmix/utilities/branch/next/graph/badge.svg?token=96CJ5IPAAN"
+      alt="codecov next"
+    />
+  </a>
+</p>
+<p align="center">
+  <a href="https://app.codecov.io/gh/trailmix/utilities" align="left">
+    <img src="https://codecov.io/gh/trailmix/utilities/branch/master/graphs/tree.svg" alt="codecov master" />
+  </a>
+  <a href="https://app.codecov.io/gh/trailmix/utilities/branch/next" align="right">
+    <img src="https://codecov.io/gh/trailmix/utilities/branch/next/graphs/tree.svg" alt="codecov next" />
+  </a>
+</p>
 
 ## Usage
 
@@ -89,9 +128,3 @@ console.log(C.random('test some string', rConf)); // random function
 ```
 
 ## [CONTRIBUTE](CONTRIBUTE.md)
-
-[goofus]: https://trailmix-images.s3.amazonaws.com/gooface/gooface-color.png
-[art]: https://img.shields.io/badge/art-djkittyplayz-yellow
-[codecov]: https://codecov.io/gh/trailmix/utilities/branch/master/graph/badge.svg?token=96CJ5IPAAN
-[downloads]: https://img.shields.io/github/downloads/trailmix/utilities/total
-[svg]: https://codecov.io/gh/trailmix/utilities/branch/master/graphs/tree.svg

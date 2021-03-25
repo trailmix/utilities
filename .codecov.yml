@@ -6,14 +6,22 @@ coverage:
   status:
     project:
       default:
-        target: 90%
-      color:
         target: auto
         threshold: 7%
         base: auto
         if_ci_failed: success
+      color:
         flags:
           - color
+      common:
+        flags:
+          - common
+      test:
+        target: 60%
+        threshold: 10%
+        if_ci_failed: error
+        flags:
+          - test
   precision: 2
   round: down
   range: '70...100'
@@ -21,8 +29,16 @@ coverage:
 flags:
   color:
     paths:
-      - color/src/**
-      - '!color/src/**_test.ts'
+      - src/color/**
+      - '!src/color/**_test.ts'
+  common:
+    paths:
+      - src/common/**
+      - '!src/common/**_test.ts'
+  test:
+    paths:
+      - test/**
+      - '!src/**'
 parsers:
   gcov:
     branch_detection:

@@ -1,25 +1,35 @@
-import * as colors from 'fmt/colors.ts';
-import type { StylesMap, StyleMap, StyleFn, Styles, StyleTypes, RandomStyleOptions } from 'trailmix/color/Color.d.ts';
-import { EnumColor, EnumBgColor, EnumEmphasis } from 'trailmix/color/enum.ts';
+import { colors } from 'trailmix/deps.ts';
+import { EnumColor, EnumBgColor, EnumEmphasis, EnumSuffix } from 'trailmix/color/enum.ts';
+import type { StyleTypeMap, StyleMap, StyleFn, Style, StyleType, RandomStyleOptions } from 'trailmix/color/Color.d.ts';
+export const styleEnum = {
+  color: EnumColor,
+  bgColor: EnumBgColor,
+  emphasis: EnumEmphasis,
+  suffix: EnumSuffix,
+};
 
 export default class Color {
-  public static stylesMap: StylesMap = {
+  public static styleTypeMap: StyleTypeMap = {
     color: Color._get_style_map(EnumColor),
     bgColor: Color._get_style_map(EnumBgColor),
     emphasis: Color._get_style_map(EnumEmphasis),
   };
-  public static styles: StyleMap = {
-    ...Color.stylesMap.color,
-    ...Color.stylesMap.bgColor,
-    ...Color.stylesMap.emphasis,
+  public static styleMap: StyleMap = {
+    ...Color.styleTypeMap.color,
+    ...Color.styleTypeMap.bgColor,
+    ...Color.styleTypeMap.emphasis,
   };
   // list of style strings
-  private static _styleList: Record<StyleTypes, Styles[]> = {
-    color: Object.keys(Color.stylesMap.color) as Styles[],
-    bgColor: Object.keys(Color.stylesMap.bgColor) as Styles[],
-    emphasis: Object.keys(Color.stylesMap.emphasis) as Styles[],
+  private static _styleList: Record<StyleType, Style[]> = {
+    color: Object.keys(Color.styleTypeMap.color) as Style[],
+    bgColor: Object.keys(Color.styleTypeMap.bgColor) as Style[],
+    emphasis: Object.keys(Color.styleTypeMap.emphasis) as Style[],
   };
-
+  private static _styleNames: Style[] = [
+    ...Color._styleList.color,
+    ...Color._styleList.bgColor,
+    ...Color._styleList.emphasis,
+  ];
   /**
    * pass in string and formatting fns to format string with color and style
   //  * @public
@@ -46,52 +56,54 @@ export default class Color {
       });
     return msg;
   }
-  public static messageByString(str: string, styles: (Styles | undefined)[]): string {
+  public static messageByString(str: string, styles: (Style | undefined)[]): string {
     let msg = str;
     if (styles !== undefined)
       styles.forEach((style) => {
-        if (style !== undefined) msg = Color.styles[style](msg);
+        if (style !== undefined) msg = Color.styleMap[style](msg);
       });
     return msg;
   }
-  public static messageByStringSpread(str: string, ...styles: (Styles | undefined)[]): string {
+  public static messageByStringSpread(str: string, ...styles: (Style | undefined)[]): string {
     let msg = str;
     if (styles !== undefined)
       styles.forEach((style) => {
-        if (style !== undefined) msg = Color.styles[style](msg);
+        if (style !== undefined) msg = Color.styleMap[style](msg);
       });
     return msg;
   }
 
   public static random(str: string, { color, bgColor, emphasis }: RandomStyleOptions = Color.randomOpts()): string {
-    const c = [undefined, false].includes(color) ? undefined : Color.randomStyleFn();
-    const bgC = [undefined, false].includes(bgColor) ? undefined : Color.randomStyleFn('bgColor');
-    const e = [undefined, false].includes(emphasis) ? undefined : Color.randomStyleFn('emphasis');
-    const r: Array<StyleFn | undefined> = new Array(c ?? undefined, bgC ?? undefined, e ?? undefined);
-    return Color.messageByFn(str, r);
+    const c = Color._styleNames.includes(color as Style) ? Color.styleMap[color as Style] : Color.randomStyleFn();
+    const bgC = Color._styleNames.includes(bgColor as Style)
+      ? Color.styleMap[bgColor as Style]
+      : Color.randomStyleFn('bgColor');
+    const e = Color._styleNames.includes(emphasis as Style)
+      ? Color.styleMap[emphasis as Style]
+      : Color.randomStyleFn('emphasis');
+    return Color.messageByFn(str, [c, bgC, e]);
   }
   public static randomOpts({ color, bgColor, emphasis }: RandomStyleOptions = {}): RandomStyleOptions {
-    const ret: RandomStyleOptions = {
-      color: color ?? Math.random() >= 0.5 ? true : false,
-      bgColor: bgColor ?? Math.random() >= 0.5 ? true : false,
-      emphasis: emphasis ?? Math.random() >= 0.5 ? true : false,
+    return {
+      color: color ?? (Math.random() >= 0.5 ? true : false),
+      bgColor: bgColor ?? (Math.random() >= 0.5 ? true : false),
+      emphasis: emphasis ?? (Math.random() >= 0.5 ? true : false),
     };
-    return ret;
   }
   /**
    *
    * @param type pass in a string type of style
    * @returns {StyleFn} random function of type EnumColor|EnumBgColor|EnumEmphasis
    */
-  public static randomStyleFn(type: StyleTypes = 'color'): StyleFn {
-    return Color.styles[Color.randomStyleString(type)];
+  public static randomStyleFn(type: StyleType = 'color'): StyleFn {
+    return Color.styleMap[Color.randomStyleString(type)];
   }
-  public static randomStyleString(type: StyleTypes = 'color'): Styles {
+  public static randomStyleString(type: StyleType = 'color'): Style {
     const styleNum = Color._randomNumber(Color._styleList[type].length);
     return Color._styleList[type][styleNum];
   }
   // get map of name, style function
-  private static _get_style_map(s: Object): StyleMap {
+  private static _get_style_map(s: Record<string, string | number>): StyleMap {
     return Object.fromEntries(
       Object.entries(colors)
         .concat([['clear', (str: string) => str]])
@@ -120,5 +132,5 @@ export const random = Color.random;
 export const randomOpts = Color.randomOpts;
 export const randomStyleFn = Color.randomStyleFn;
 export const randomStyleString = Color.randomStyleString;
-export const stylesMap: StylesMap = Color.stylesMap;
-export const styles: StyleMap = Color.styles;
+export const stylesMap: StyleTypeMap = Color.styleTypeMap;
+export const styles: StyleMap = Color.styleMap;

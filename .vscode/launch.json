@@ -8,7 +8,7 @@
       "name": "test: test",
       "request": "launch",
       "runtimeExecutable": "yarn",
-      "runtimeArgs": ["test-inspect"],
+      "runtimeArgs": ["test-one-inspect"],
       "attachSimplePort": 9229,
       "type": "pwa-node",
       "outputCapture": "std"

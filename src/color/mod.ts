@@ -14,10 +14,10 @@ export {
 export { styleEnum, EnumColor, EnumBgColor, EnumEmphasis, EnumSuffix } from 'trailmix/color/enum.ts';
 // @deno-types="./Color.d.ts"
 export type {
-  StyleTypes,
-  Styles,
+  StyleType,
+  Style,
   StyleFn,
-  StylesMap,
+  StyleTypeMap,
   StyleMap,
   StyleOptions,
   RandomStyleOptions,

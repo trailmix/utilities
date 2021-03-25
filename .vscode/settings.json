@@ -1,6 +1,7 @@
 {
   "files.eol": "\n",
   "deno.enable": true,
+  "deno.lint": true,
   "deno.codeLens.implementations": true,
   "deno.codeLens.references": true,
   "deno.codeLens.referencesAllFunctions": true,
@@ -16,9 +17,9 @@
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.organizeImports.eslint": true
-  },
+  // "editor.codeActionsOnSave": {
+  //   "source.fixAll.eslint": true,
+  //   "source.organizeImports.eslint": true
+  // },
   "typescript.tsdk": "node_modules/typescript/lib"
 }

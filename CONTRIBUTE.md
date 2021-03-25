@@ -1,4 +1,5 @@
 # Contribute
+
 ```bash
 # docker should be installed
 docker build -t trailmix -f .docker/Dockerfile .

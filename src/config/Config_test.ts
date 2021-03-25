@@ -1,7 +1,12 @@
-import { Config, defConfig, envConfig, cmdConfig } from 'trailmix/config/mod.ts';
-import { testFunction, resetTable } from 'test/common/mod.ts';
-import type { LogConfigMap } from 'trailmix/log/Log.d.ts';
-import { assertEquals } from 'test/deps.ts';
+import {
+  cmdConfig,
+  Config,
+  defConfig,
+  envConfig,
+} from "trailmix/config/mod.ts";
+import { resetTable, testFunction } from "test/common/mod.ts";
+import type { LogConfigMap } from "trailmix/log/Log.d.ts";
+import { assertEquals } from "test/deps.ts";
 
 let table = resetTable();
 
@@ -9,24 +14,24 @@ Deno.test({
   name: `Config.ts`,
   fn: async () => {
     let log: LogConfigMap = new Config({
-      consoleLevel: 'WARNING',
+      consoleLevel: "WARNING",
     }).log;
     assertEquals(
       log,
-      { console: { level: 'WARNING', format: undefined, color: undefined } },
+      { console: { level: "WARNING", format: undefined, color: undefined } },
       "Config constructor doesn't init default configuration.",
     );
     assertEquals(
       defConfig,
       {
         console: {
-          level: 'ERROR',
-          format: 'string',
+          level: "ERROR",
+          format: "string",
           color: true,
         },
         file: {
-          level: 'ERROR',
-          format: 'string',
+          level: "ERROR",
+          format: "string",
         },
       },
       "defConfig doesn't init default configuration.",
@@ -47,32 +52,32 @@ Deno.test({
       },
       "envConfig doesn't init default configuration.",
     );
-    Deno.env.set('PAGIC_CONSOLE_LEVEL', 'ERROR');
-    Deno.env.set('PAGIC_CONSOLE_FORMAT', 'string');
-    Deno.env.set('PAGIC_CONSOLE_COLOR', 'true');
-    Deno.env.set('PAGIC_LOG_LEVEL', 'ERROR');
-    Deno.env.set('PAGIC_LOG_FORMAT', 'json');
-    Deno.env.set('PAGIC_LOG_PATH', '.');
+    Deno.env.set("PAGIC_CONSOLE_LEVEL", "ERROR");
+    Deno.env.set("PAGIC_CONSOLE_FORMAT", "string");
+    Deno.env.set("PAGIC_CONSOLE_COLOR", "true");
+    Deno.env.set("PAGIC_LOG_LEVEL", "ERROR");
+    Deno.env.set("PAGIC_LOG_FORMAT", "json");
+    Deno.env.set("PAGIC_LOG_PATH", ".");
     assertEquals(envConfig(), {
       console: {
-        level: 'ERROR',
-        format: 'string',
+        level: "ERROR",
+        format: "string",
         color: true,
       },
       file: {
-        level: 'ERROR',
-        format: 'json',
-        path: '.',
+        level: "ERROR",
+        format: "json",
+        path: ".",
       },
     });
     assertEquals(
       cmdConfig({
-        consoleLevel: 'ERROR',
+        consoleLevel: "ERROR",
       }),
       {
         console: {
           format: undefined,
-          level: 'ERROR',
+          level: "ERROR",
           color: undefined,
         },
         file: {

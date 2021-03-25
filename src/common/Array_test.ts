@@ -1,15 +1,25 @@
-import { unique } from 'trailmix/common/Array.ts';
-import { testFunction, resetTable } from 'test/common/table.ts';
+import { unique } from "trailmix/common/Array.ts";
+import { resetTable, testFunction } from "test/common/table.ts";
 
 let table = resetTable();
 // let testCases: string[] = [];
 const tests: Record<
   string,
-  Record<'i' | 'o', (string | number | boolean | undefined | Record<string, string> | (string | number | boolean)[])[]>
+  Record<
+    "i" | "o",
+    (
+      | string
+      | number
+      | boolean
+      | undefined
+      | Record<string, string>
+      | (string | number | boolean)[]
+    )[]
+  >
 > = {
   string: {
-    i: ['1', '1', '2'],
-    o: ['1', '2'],
+    i: ["1", "1", "2"],
+    o: ["1", "2"],
   },
   number: {
     i: [1, 1, 2],
@@ -21,18 +31,18 @@ const tests: Record<
   },
   array: {
     i: [
-      ['1', 1, true],
-      ['1', 1, true],
-      ['2', 2, false],
+      ["1", 1, true],
+      ["1", 1, true],
+      ["2", 2, false],
     ],
     o: [
-      ['1', 1, true],
-      ['2', 2, false],
+      ["1", 1, true],
+      ["2", 2, false],
     ],
   },
   object: {
-    i: [{ test: 'test1' }, { test: 'test1' }, { test: 'test2' }],
-    o: [{ test: 'test1' }, { test: 'test2' }],
+    i: [{ test: "test1" }, { test: "test1" }, { test: "test2" }],
+    o: [{ test: "test1" }, { test: "test2" }],
   },
   undefined: {
     i: [undefined, undefined, 1],
@@ -41,7 +51,7 @@ const tests: Record<
 };
 for (const test of Object.keys(tests)) {
   Deno.test({
-    name: 'Array.ts',
+    name: "Array.ts",
     fn: () => {
       let fn = unique;
       try {
@@ -50,10 +60,13 @@ for (const test of Object.keys(tests)) {
           table,
           (i = tests[test].i) => fn(i),
           tests[test].o,
-          ['string', 'number', 'boolean', 'object', 'undefined', 'array'].includes(test),
+          ["string", "number", "boolean", "object", "undefined", "array"]
+            .includes(test),
         );
       } finally {
-        if (Object.keys(tests).length - 1 === Object.keys(tests).indexOf(test)) {
+        if (
+          Object.keys(tests).length - 1 === Object.keys(tests).indexOf(test)
+        ) {
           table.render();
           table = resetTable();
         }

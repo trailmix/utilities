@@ -3,7 +3,7 @@ export function unique(arr: any[]) {
   const set = new Set();
   arr.filter((item) => {
     let dup = set.has(item);
-    if (typeof item === 'object') {
+    if (typeof item === "object") {
       if (set.size === 0) set.add(item);
       else {
         set.forEach((set_item) => {

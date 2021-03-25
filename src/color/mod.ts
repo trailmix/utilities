@@ -10,15 +10,21 @@ export {
   randomStyleString,
   styles,
   stylesMap,
-} from 'trailmix/color/Color.ts';
-export { styleEnum, EnumColor, EnumBgColor, EnumEmphasis, EnumSuffix } from 'trailmix/color/enum.ts';
+} from "trailmix/color/Color.ts";
+export {
+  EnumBgColor,
+  EnumColor,
+  EnumEmphasis,
+  EnumSuffix,
+  styleEnum,
+} from "trailmix/color/enum.ts";
 // @deno-types="./Color.d.ts"
 export type {
-  StyleType,
+  RandomStyleOptions,
   Style,
   StyleFn,
-  StyleTypeMap,
   StyleMap,
   StyleOptions,
-  RandomStyleOptions,
-} from 'trailmix/color/Color.d.ts';
+  StyleType,
+  StyleTypeMap,
+} from "trailmix/color/Color.d.ts";

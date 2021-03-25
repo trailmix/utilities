@@ -1,43 +1,52 @@
 import type {
-  LogLevel,
-  LogFormat,
-  LogHandler,
-  LogColor,
-  LogStyle,
   Handler,
+  LogColor,
   LogConfig,
   LogConfigMap,
-} from 'trailmix/log/Log.d.ts';
-import { loggerNames, logColors, logStyles } from 'trailmix/log/enum.ts';
+  LogFormat,
+  LogHandler,
+  LogLevel,
+  LogStyle,
+} from "trailmix/log/Log.d.ts";
+import { logColors, loggerNames, logStyles } from "trailmix/log/enum.ts";
 // import type { } from 'trailmix/config/mod.ts';
-import { Config } from 'trailmix/config/mod.ts';
-import { Color as m, messageByStringSpread as sS } from 'trailmix/color/mod.ts';
-import type { stdLogConfig, stdLogger, stdLoggerConfig } from 'trailmix/deps.ts';
-import { setupLogger, getLogger, stdHandlers, LogRecord } from 'trailmix/deps.ts';
+import { Config } from "trailmix/config/mod.ts";
+import { Color as m, messageByStringSpread as sS } from "trailmix/color/mod.ts";
+import type {
+  stdLogConfig,
+  stdLogger,
+  stdLoggerConfig,
+} from "trailmix/deps.ts";
+import {
+  getLogger,
+  LogRecord,
+  setupLogger,
+  stdHandlers,
+} from "trailmix/deps.ts";
 // #region logging
 
 // #endregion
 export function stringifyBigInt(key: string, value: any): string {
-  return typeof value === 'bigint' ? String(value) : value;
+  return typeof value === "bigint" ? String(value) : value;
 }
 export function parseMessage(value: unknown): string {
   // console.log(typeof value);
-  if (typeof value === 'string') return value;
+  if (typeof value === "string") return value;
   else if (
     value === null ||
-    typeof value === 'number' ||
-    typeof value === 'bigint' ||
-    typeof value === 'boolean' ||
-    typeof value === 'undefined' ||
-    typeof value === 'symbol'
+    typeof value === "number" ||
+    typeof value === "bigint" ||
+    typeof value === "boolean" ||
+    typeof value === "undefined" ||
+    typeof value === "symbol"
   ) {
     return String(value);
   } else if (value instanceof Error) {
     return value.stack!;
-  } else if (typeof value === 'object') {
+  } else if (typeof value === "object") {
     return JSON.stringify(value, stringifyBigInt);
   }
-  return 'undefined';
+  return "undefined";
 }
 /** Construct a Pagic Logger.
  * @example
@@ -53,7 +62,7 @@ export function parseMessage(value: unknown): string {
  */
 export default class Log {
   private static _loggerNames: string[] = loggerNames; // init static logger list
-  public name = 'default';
+  public name = "default";
   public logger: stdLogger = getLogger(); // set logger to default logger
   // public config: PagicLogConfigMap = Log._config;
   // public set config(config: LogConfig) {
@@ -70,7 +79,11 @@ export default class Log {
    * @public
    * @constructor
    */
-  public constructor(name = 'default', config?: LogConfigMap, loggerNames = Log._loggerNames) {
+  public constructor(
+    name = "default",
+    config?: LogConfigMap,
+    loggerNames = Log._loggerNames,
+  ) {
     if (config !== undefined) {
       this.pConfig = config;
     }
@@ -78,7 +91,7 @@ export default class Log {
     this._loggerNames = loggerNames;
     this.set(name);
   }
-  public set(name = 'default') {
+  public set(name = "default") {
     this.name = name;
     this.logger = getLogger(name);
   }
@@ -102,7 +115,7 @@ export default class Log {
   public debug(first: unknown, ...args: unknown[]): string | string[] {
     let ret = this._log(10, first, ...args);
     // console.log(ret);
-    if (this.name === 'test') {
+    if (this.name === "test") {
       const dedebug = this._log(0, first, ...args);
       // console.log(dedebug);
       if (Array.isArray(ret)) {
@@ -156,36 +169,52 @@ export default class Log {
    * const l = await new Log('test').init('Pagic')
    * l.debug('main','_message')
    */
-  private _log(level: number, msg: unknown, ...args: unknown[]): string | string[] {
+  private _log(
+    level: number,
+    msg: unknown,
+    ...args: unknown[]
+  ): string | string[] {
     let messages: string[] = [];
     let record = new LogRecord({
       level,
-      msg: level === 0 && this.name === 'test' ? 'deDEBUG:' + parseMessage(msg) : parseMessage(msg),
+      msg: level === 0 && this.name === "test"
+        ? "deDEBUG:" + parseMessage(msg)
+        : parseMessage(msg),
       args: args,
       loggerName: this.name,
     });
-    Object.entries(this._config.handlers ?? {}).forEach((logger: [string, Handler]) => {
-      if (level >= logger[1].level || (this.name === 'test' && level === 0)) {
-        const _msg = logger[1].format(record);
-        // messages.push(_msg);
-        if (logger[0] === 'console') {
-          messages.push(_msg);
-          console.log(_msg);
-        } else {
-          logger[1].handle(record);
+    Object.entries(this._config.handlers ?? {}).forEach(
+      (logger: [string, Handler]) => {
+        if (level >= logger[1].level || (this.name === "test" && level === 0)) {
+          const _msg = logger[1].format(record);
+          // messages.push(_msg);
+          if (logger[0] === "console") {
+            messages.push(_msg);
+            console.log(_msg);
+          } else {
+            logger[1].handle(record);
+          }
         }
-      }
-      //   logger[1].handle(record);
-      //   // (logger[1] as FileHandler).flush();
-      // }
-    }, {});
+        //   logger[1].handle(record);
+        //   // (logger[1] as FileHandler).flush();
+        // }
+      },
+      {},
+    );
     // console.log(messages);
     return messages.length === 1 ? messages[0] : messages;
   }
   private get _loggers(): { [name: string]: stdLoggerConfig } {
     const loggers = Object.fromEntries(
       this._loggerNames.map((logger) => {
-        return [logger, this._getLogger(logger, Object.keys(this.pConfig) as LogHandler[], this.pConfig.console.level)];
+        return [
+          logger,
+          this._getLogger(
+            logger,
+            Object.keys(this.pConfig) as LogHandler[],
+            this.pConfig.console.level,
+          ),
+        ];
       }),
     );
     return loggers;
@@ -203,34 +232,40 @@ export default class Log {
 
   private _getLogger(
     name = this.name,
-    handlers: LogHandler[] = ['console'],
-    level: LogLevel = 'ERROR',
+    handlers: LogHandler[] = ["console"],
+    level: LogLevel = "ERROR",
   ): stdLoggerConfig {
     return {
       level: level,
       handlers: handlers,
     };
   }
-  private _getHandler(type: LogHandler = 'console', config: LogConfig): Handler {
-    if (type === 'file')
+  private _getHandler(
+    type: LogHandler = "console",
+    config: LogConfig,
+  ): Handler {
+    if (type === "file") {
       return new stdHandlers.FileHandler(config.level, {
-        mode: 'w',
-        filename: config.path + `/Pagic.${config.format === 'json' ? 'json' : 'log'}`,
-        formatter: (logRecord: LogRecord, handler: LogConfig = config) => this._formatter(logRecord, handler),
+        mode: "w",
+        filename: config.path +
+          `/Pagic.${config.format === "json" ? "json" : "log"}`,
+        formatter: (logRecord: LogRecord, handler: LogConfig = config) =>
+          this._formatter(logRecord, handler),
       });
-    else
+    } else {
       return new stdHandlers.BaseHandler(config.level, {
         formatter: (logRecord: LogRecord, handler: LogConfig = config) => {
           let args = this._parseArgs(handler.format, logRecord.args);
           let msg = this._message(logRecord, handler);
-          return msg + (args !== undefined ? args : '');
+          return msg + (args !== undefined ? args : "");
         },
       });
+    }
   }
   private _formatter(logRecord: LogRecord, handler: LogConfig): string {
     let msg = this._message(logRecord, handler);
     let args = this._parseArgs(handler.format, logRecord.args);
-    if (handler.format === 'json')
+    if (handler.format === "json") {
       return JSON.stringify(
         {
           logger: this.name,
@@ -242,10 +277,11 @@ export default class Log {
         null,
         2,
       );
-    else if (handler.format === 'function') {
-      return logRecord.level + ' ' + msg + (args !== undefined ? args : '');
+    } else if (handler.format === "function") {
+      return logRecord.level + " " + msg + (args !== undefined ? args : "");
     } else {
-      return (handler.date ? logRecord.datetime + ' ' : '') + msg + (args !== undefined ? args : '');
+      return (handler.date ? logRecord.datetime + " " : "") + msg +
+        (args !== undefined ? args : "");
     }
   }
   private _message(logRecord: LogRecord, handler: LogConfig): string {
@@ -254,15 +290,18 @@ export default class Log {
     // console.log('logrecord.Args: ' + logRecord.args);
     // console.log('after' + args);
     // console.log(consoleMsg);
-    if (handler.format !== 'function' && handler.color && logRecord.levelName !== 'DEBUG') {
+    if (
+      handler.format !== "function" && handler.color &&
+      logRecord.levelName !== "DEBUG"
+    ) {
       const style = logStyles[logRecord.levelName as LogLevel];
       const color = logColors[logRecord.levelName as LogLevel];
       const colored = sS(logRecord.msg, style, color);
       const name = sS(this.name, style, color);
       // const colored = logFunctions[logColors[logRecord.levelName as LogLevel]](logRecord.msg);
       // const name = logFunctions[logColors[logRecord.levelName as LogLevel]](this.name);
-      if (logRecord.levelName === 'CRITICAL') {
-        msg = `[${sS(name, 'bold')}] ${sS(colored, 'bold')}`;
+      if (logRecord.levelName === "CRITICAL") {
+        msg = `[${sS(name, "bold")}] ${sS(colored, "bold")}`;
       } else {
         msg = `[${name}] ${colored}`;
       }
@@ -271,14 +310,19 @@ export default class Log {
   }
   private _parseArgs(format: LogFormat, ...args: unknown[]) {
     let msg: string | undefined;
-    if (args !== null && args.toString() !== '') {
-      if (format === 'function') {
+    if (args !== null && args.toString() !== "") {
+      if (format === "function") {
         args.forEach((arg, index) => {
           msg += `, arg${index}: ${arg}`;
         });
-      } else if (format === 'string') {
-        msg = ' \nArguments:' + JSON.stringify(JSON.parse(JSON.stringify(args[0], stringifyBigInt))[0], null, 2);
-      } else if (format === 'json') {
+      } else if (format === "string") {
+        msg = " \nArguments:" +
+          JSON.stringify(
+            JSON.parse(JSON.stringify(args[0], stringifyBigInt))[0],
+            null,
+            2,
+          );
+      } else if (format === "json") {
         msg = JSON.parse(JSON.stringify(args[0], stringifyBigInt))[0];
       }
     }

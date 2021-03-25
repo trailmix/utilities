@@ -25,7 +25,9 @@ import {
 const testVars = {
   namespace: "DEFAULT",
   _definitionPrefix: "trailmix.config",
-  _definitionPathRegexp: new RegExp(/\S*\/(trailmix.config.(ts|tsx){1}){1}/),
+  _definitionPathRegexp: new RegExp(
+    /\S*(\/|\\)+(trailmix.config.(ts|tsx){1}){1}/,
+  ),
 };
 
 const testObjs = {

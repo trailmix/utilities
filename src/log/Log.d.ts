@@ -8,7 +8,7 @@ export type LogLevel = keyof typeof LogLevels;
 export type LogFormat = 'json' | 'function' | 'string';
 export type LogHandler = 'console' | 'file';
 // export type { LogConfigMap, LogConfig } from '/config/mod.ts';
-export type { Styles } from 'trailmix/color/mod.ts';
+export type { Style } from 'trailmix/color/mod.ts';
 export type { stdLogger, BaseHandler, FileHandler, stdLogConfig, stdLoggerConfig } from 'trailmix/deps.ts';
 export interface LogConfig {
   level: LogLevel;

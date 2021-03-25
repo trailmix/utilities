@@ -16,6 +16,9 @@ coverage:
       common:
         flags:
           - common
+      config:
+        flags:
+          - config
       test:
         target: 60%
         threshold: 10%
@@ -35,9 +38,14 @@ flags:
     paths:
       - src/common/**
       - '!src/common/**_test.ts'
+  config:
+    paths:
+      - src/config/**
+      - '!src/config/**_test.ts'
   test:
     paths:
       - test/**
+      - '!test/**/*_test.ts'
       - '!src/**'
 parsers:
   gcov:

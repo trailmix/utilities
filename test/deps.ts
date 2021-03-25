@@ -1,11 +1,13 @@
 // test deps
 export {
-  unimplemented,
   assertEquals,
-  assertStrictEquals,
-  assertNotEquals,
   AssertionError,
-  assertThrows,
   assertMatch,
-} from 'testing/asserts.ts';
-export { Table, Row, Cell } from 'cliffy/table';
+  assertNotEquals,
+  assertObjectMatch,
+  assertStrictEquals,
+  assertThrows,
+  assertThrowsAsync,
+  unimplemented,
+} from "testing/asserts.ts";
+export { Cell, Row, Table } from "cliffy/table";

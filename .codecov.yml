@@ -9,6 +9,9 @@ coverage:
         threshold: 7%
         base: auto
         if_ci_failed: success
+        paths:
+          - src/
+          - '!test/'
         flags:
           - color
           - common
@@ -19,6 +22,9 @@ coverage:
         target: 60%
         threshold: 10%
         if_ci_failed: error
+        paths:
+          - test/
+          - '!src/'
         flags:
           - test
   precision: 2
@@ -48,22 +54,22 @@ ignore:
 flags:
   color:
     paths:
-      - src/color/**
+      - src/color/
   common:
     paths:
-      - src/common/**
+      - src/common/
   config:
     paths:
-      - src/config/**
+      - src/config/
   log:
     paths:
-      - src/log/**
+      - src/log/
   watch:
     paths:
-      - src/watch/**
+      - src/watch/
   test:
     paths:
-      - test/**
+      - test/
 
 parsers:
   gcov:

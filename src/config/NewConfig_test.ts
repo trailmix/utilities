@@ -23,20 +23,31 @@ import {
 // let table = resetTable();
 
 const testVars = {
-  env: {
-    "TEST1": "val1",
-    "TEST2": "true",
-    "TEST3": JSON.stringify(["val1", "val2"]),
-    "TEST4": {
-      A: {
-        B: "hello",
-      },
-    },
-    "TEST5": {
+  strParse: {
+    TEST: {
       testWord: {
         TestPhrase: {
           A: {
             B: "hello",
+          },
+        },
+      },
+    },
+  },
+  env: {
+    test1: "val1",
+    test2: "true",
+    test3: JSON.stringify(["val1", "val2"]),
+    test4: {
+      a: {
+        b: "Hello",
+      },
+    },
+    test5: {
+      testword: {
+        testphrase: {
+          a: {
+            b: "hello",
           },
         },
       },
@@ -252,7 +263,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
         );
         Deno.env.set(
           "DEFAULT_TEST4_A_B",
-          "hello",
+          "Hello",
         );
         Deno.env.set(
           "DEFAULT_TEST5_testWord_TestPhrase_A_B",
@@ -264,9 +275,30 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           env,
           testVars.env,
           `Config.parseEnv(): ${
-            JSON.stringify(env)
+            JSON.stringify(env, null, 2)
           } is not the correct default of ` +
-            JSON.stringify(testVars.env),
+            JSON.stringify(testVars.env, null, 2),
+        );
+      },
+    });
+    Deno.test({
+      name: `Config.ts - ${obj}.strParse doesn't change key case`,
+      fn: () => {
+        const env: Record<string, unknown> = EnvConfig.strParse(
+          "DEFAULT_TEST_testWord_TestPhrase_A_B",
+          "hello",
+          "DEFAULT",
+          "_",
+          false,
+        );
+        console.log(env);
+        assertEquals(
+          env,
+          testVars.strParse,
+          `Config.parseEnv(): ${
+            JSON.stringify(env, null, 2)
+          } is not the correct default of ` +
+            JSON.stringify(testVars.strParse, null, 2),
         );
       },
     });

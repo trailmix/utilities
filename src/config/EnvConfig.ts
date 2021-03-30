@@ -27,6 +27,7 @@ export default class EnvConfig extends NewConfig {
     value: string,
     ex: string,
     delim = "_",
+    lower = true,
   ): Record<string, string | Record<string, unknown | string>> {
     const strReplace = str.replace(ex + delim, "");
     const nextI = strReplace.indexOf(delim, 0);
@@ -34,11 +35,16 @@ export default class EnvConfig extends NewConfig {
       strReplace,
       value,
       strReplace.slice(0, nextI).toString(),
+      delim,
+      lower,
     );
     const nextK = nextI === -1
       ? strReplace
       : strReplace.slice(0, nextI).toString();
-    return Object.fromEntries([[nextK, nextV]]);
+    return Object.fromEntries([[
+      lower ? nextK.toLowerCase() : nextK,
+      nextV,
+    ]]);
   }
   /**
    * pass in env, return vars within object namespace

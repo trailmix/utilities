@@ -226,8 +226,10 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
       assertEquals(
         log,
         testVars.log,
-        "Config.parseLog() is not the correct default of " +
-          testVars.log,
+        `Config.parseLog(): ${
+          JSON.stringify(log, null, 2)
+        } is not the correct default of ` +
+          JSON.stringify(testVars.log, null, 2),
       );
     },
   });
@@ -270,7 +272,6 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           "hello",
         );
         const env: Record<string, unknown> = EnvConfig.parseEnv();
-        console.log(env);
         assertEquals(
           env,
           testVars.env,
@@ -291,7 +292,6 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           "_",
           false,
         );
-        console.log(env);
         assertEquals(
           env,
           testVars.strParse,
@@ -299,6 +299,25 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
             JSON.stringify(env, null, 2)
           } is not the correct default of ` +
             JSON.stringify(testVars.strParse, null, 2),
+        );
+      },
+    });
+    Deno.test({
+      name: `Config.ts - ${obj}.parseLog merges env log config`,
+      fn: () => {
+        Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG");
+        const ex = {
+          ...testVars.log,
+          ...{ console: { ...testVars.log.console, ...{ level: "DEBUG" } } },
+        };
+        const log: LogConfigMap = EnvConfig.parseLog();
+        assertEquals(
+          log,
+          ex,
+          `Config.parseEnv(): ${
+            JSON.stringify(log, null, 2)
+          } is not the correct default of ` +
+            JSON.stringify(ex, null, 2),
         );
       },
     });

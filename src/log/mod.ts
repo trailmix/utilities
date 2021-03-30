@@ -1,5 +1,7 @@
 // @deno-types="./Log.d.ts"
 export type {
+  ConsoleLogConfig,
+  FileLogConfig,
   LogConfig,
   LogConfigMap,
   LogFormat,

@@ -5,7 +5,12 @@
 
 import { default as NewConfig } from "trailmix/config/NewConfig.ts";
 import { ConfigOptions } from "trailmix/config/Config.d.ts";
-import type { LogConfigMap } from "trailmix/log/mod.ts";
+import type {
+  ConsoleLogConfig,
+  FileLogConfig,
+  LogConfigMap,
+} from "trailmix/log/mod.ts";
+
 // }
 export default class EnvConfig extends NewConfig {
   public static log: LogConfigMap = EnvConfig.parseLog();
@@ -65,7 +70,15 @@ export default class EnvConfig extends NewConfig {
     );
   }
   public static parseLog(): LogConfigMap {
-    console.log("i am in EnvConfig");
-    return NewConfig.parseLog();
+    return {
+      console: {
+        ...NewConfig.parseLog().console,
+        ...EnvConfig.parseEnv().console as ConsoleLogConfig,
+      },
+      file: {
+        ...NewConfig.parseLog().file,
+        ...EnvConfig.parseEnv().file as FileLogConfig,
+      },
+    } as LogConfigMap;
   }
 }

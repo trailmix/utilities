@@ -11,7 +11,6 @@ import type {
   LogConfigMap,
 } from "trailmix/log/mod.ts";
 
-// }
 export default class EnvConfig extends NewConfig {
   public static log: LogConfigMap = EnvConfig.parseLog();
   public static env: Record<string, unknown> = EnvConfig.parseEnv();
@@ -39,13 +38,11 @@ export default class EnvConfig extends NewConfig {
     const nextV = nextI === -1 ? value : EnvConfig.strParse(
       strReplace,
       value,
-      strReplace.slice(0, nextI).toString(),
+      strReplace.slice(0, nextI),
       delim,
       lower,
     );
-    const nextK = nextI === -1
-      ? strReplace
-      : strReplace.slice(0, nextI).toString();
+    const nextK = nextI === -1 ? strReplace : strReplace.slice(0, nextI);
     return Object.fromEntries([[
       lower ? nextK.toLowerCase() : nextK,
       nextV,

@@ -34,6 +34,17 @@ const testVars = {
       },
     },
   },
+  stringConfig: {
+    env1: {
+      test1: "hello",
+    },
+    env2: {
+      test2: {
+        testword: { testphrase: { testname: { test: "hello" } } },
+      },
+    },
+    env3: { test3: { testword: { testphrase: { a: { b: "hello" } } } } },
+  },
   env: {
     test1: "val1",
     test2: "true",
@@ -306,6 +317,98 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
       name: `Config.ts - ${obj}.parseLog merges env log config`,
       fn: () => {
         Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG");
+        const ex = {
+          ...testVars.log,
+          ...{ console: { ...testVars.log.console, ...{ level: "DEBUG" } } },
+        };
+        const log: LogConfigMap = EnvConfig.parseLog();
+        assertEquals(
+          log,
+          ex,
+          `Config.parseEnv(): ${
+            JSON.stringify(log, null, 2)
+          } is not the correct default of ` +
+            JSON.stringify(ex, null, 2),
+        );
+      },
+    });
+  }
+  if (obj === "StringConfig") {
+    Deno.test({
+      name: `Config.ts - ${obj}.strParse merges env log config`,
+      fn: () => {
+        const env = StringConfig.strParse(
+          "test",
+          "hello",
+        );
+        console.log(env);
+        assertEquals(
+          env,
+          { test: "hello" },
+          `Config.strParse(): ${
+            JSON.stringify(env, null, 2)
+          } is not the correct default of ` +
+            JSON.stringify(
+              { test: "hello" },
+              null,
+              2,
+            ),
+        );
+        const env1 = StringConfig.strParse(
+          "test1",
+          "hello",
+        );
+        console.log(env1);
+        assertEquals(
+          env1,
+          testVars.stringConfig.env1,
+          `Config.strParse(): ${
+            JSON.stringify(env1, null, 2)
+          } is not the correct default of ` +
+            JSON.stringify(
+              testVars.stringConfig.env1,
+              null,
+              2,
+            ),
+        );
+        const env2 = StringConfig.strParse(
+          "test2TestwordTestphraseTestnameTest",
+          "hello",
+        );
+        console.log(env2);
+        assertEquals(
+          env2,
+          testVars.stringConfig.env2,
+          `Config.parseEnv(): ${
+            JSON.stringify(env2, null, 2)
+          } is not the correct default of ` +
+            JSON.stringify(
+              testVars.stringConfig.env2,
+              null,
+              2,
+            ),
+        );
+        const env3 = StringConfig.strParse(
+          "test3TestwordTestphraseAB",
+          "hello",
+        );
+        assertEquals(
+          env3,
+          testVars.stringConfig.env3,
+          `Config.parseEnv(): ${
+            JSON.stringify(env3, null, 2)
+          } is not the correct default of ` +
+            JSON.stringify(
+              testVars.stringConfig.env3,
+              null,
+              2,
+            ),
+        );
+      },
+    });
+    Deno.test({
+      name: `Config.ts - ${obj}.parseLog merges env log config`,
+      fn: () => {
         const ex = {
           ...testVars.log,
           ...{ console: { ...testVars.log.console, ...{ level: "DEBUG" } } },

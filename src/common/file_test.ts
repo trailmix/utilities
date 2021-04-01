@@ -1,6 +1,7 @@
 import { importDefault, validPath } from "trailmix/common/file.ts";
 import type { FileExtension, ImportOptions } from "trailmix/common/file.d.ts";
 import { resetTable, testFunction } from "trailmix/common/table.ts";
+import { resolve } from "trailmix/deps.ts";
 
 let table = resetTable();
 
@@ -19,11 +20,11 @@ const tests: Record<
       ext: "ts",
       dir: ".",
     },
-    o: Deno.cwd() + "/testConfig.ts",
+    o: resolve(Deno.cwd(), "testConfig.ts"),
   },
   file: {
     i: {
-      importPath: Deno.cwd() + "/testConfig.ts",
+      importPath: resolve(Deno.cwd(), "testConfig.ts"),
       options: {},
       cache: {},
     },
@@ -31,15 +32,20 @@ const tests: Record<
   },
   cache: {
     i: {
-      importPath: Deno.cwd() + "/testConfig.ts",
+      importPath: resolve(Deno.cwd(), "testConfig.ts"),
       options: { reload: false },
-      cache: { [Deno.cwd() + "/testConfig.ts"]: Deno.cwd() + "/testConfig.ts" },
+      cache: {
+        [resolve(Deno.cwd(), "testConfig.ts")]: resolve(
+          Deno.cwd(),
+          "testConfig.ts",
+        ),
+      },
     },
     o: { consoleFormat: "json" },
   },
   nofile: {
     i: {
-      importPath: Deno.cwd() + "/Error.ts",
+      importPath: resolve(Deno.cwd(), "Error.ts"),
       options: {},
       cache: {},
     },

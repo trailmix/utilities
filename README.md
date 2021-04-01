@@ -149,8 +149,11 @@ console.log(
 );
 console.log(C.random("test some string", rConf)); // random function
 ```
+
 ### Config
+
 **Simple**
+
 ```typescript
 import { EnvConfig, StringConfig } from "trailmix/config/mod.ts";
 
@@ -163,9 +166,11 @@ console.log(EnvConfig.parseEnv()); // should have { test1: "val1", console: { le
 // this is good for cmd line arguments (--consoleLevel DEBUG)
 console.log(StringConfig.parseEnv({ test1: "val1", consoleLevel: "DEBUG" })); // should have same as above
 ```
+
 **Complex**
+
 ```typescript
-import { Config,EnvConfig, StringConfig } from "trailmix/config/mod.ts"; 
+import { Config, EnvConfig, StringConfig } from "trailmix/config/mod.ts";
 
 // lets use our own namespace with a config file
 const c = await new Config({
@@ -181,10 +186,9 @@ console.log(new StringConfig(c).parseLog()); // will give a log config with {con
 Deno.env.set("TRAILMIX_CONSOLE_FORMAT", "console");
 console.log(new EnvConfig(c).parseLog()); // will give a log config with {console: { format: "console" } }
 ```
+
 ### Log
 
 ### Watch
-
-
 
 ## [CONTRIBUTE](CONTRIBUTE.md)

@@ -5,5 +5,5 @@
 docker build -t trailmix -f .docker/Dockerfile .
 
 # now run tests
-docker run trailmix deno test --unstable --allow-read --allow-env --import-map=import_map.json
+docker run trailmix deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json
 ```

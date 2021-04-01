@@ -1,5 +1,5 @@
-import { importDefault, validPath } from "trailmix/common/File.ts";
-import type { FileExtension, ImportOptions } from "trailmix/common/File.d.ts";
+import { importDefault, validPath } from "trailmix/common/file.ts";
+import type { FileExtension, ImportOptions } from "trailmix/common/file.d.ts";
 import { resetTable, testFunction } from "trailmix/common/table.ts";
 
 let table = resetTable();

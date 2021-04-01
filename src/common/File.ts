@@ -1,6 +1,6 @@
 import { exists, extname, resolve } from "trailmix/deps.ts";
 
-import type { FileExtension, ImportOptions } from "trailmix/common/File.d.ts";
+import type { FileExtension, ImportOptions } from "trailmix/common/file.d.ts";
 
 const files: Record<FileExtension, string[]> = {
   ts: ["ts", "tsx"],

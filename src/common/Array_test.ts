@@ -1,4 +1,4 @@
-import { unique } from "trailmix/common/Array.ts";
+import { unique } from "trailmix/common/array.ts";
 import { resetTable, testFunction } from "trailmix/common/table.ts";
 
 let table = resetTable();

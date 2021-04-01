@@ -17,7 +17,7 @@ export async function validPath(
   let found = false;
   let path = "";
   for (const _ext of files[ext]) {
-    path = resolve(`${dir}/${file}.${_ext}`);
+    path = resolve(dir, `${file}.${_ext}`);
     if ((await exists(path))) {
       found = true;
       break;

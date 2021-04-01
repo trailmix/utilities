@@ -3,7 +3,7 @@
 //   logConsoleFormat: 'string'
 // }
 
-import { default as NewConfig } from "trailmix/config/NewConfig.ts";
+import { default as Config } from "trailmix/config/Config.ts";
 import { ConfigOptions } from "trailmix/config/Config.d.ts";
 import type {
   ConsoleLogConfig,
@@ -11,7 +11,7 @@ import type {
   LogConfigMap,
 } from "trailmix/log/mod.ts";
 
-export default class StringConfig extends NewConfig {
+export default class StringConfig extends Config {
   public static log: LogConfigMap = StringConfig.parseLog();
   public static env: Record<string, unknown> = StringConfig.parseEnv();
   public constructor(opts: ConfigOptions) {
@@ -68,11 +68,11 @@ export default class StringConfig extends NewConfig {
   public static parseLog(): LogConfigMap {
     return {
       console: {
-        ...NewConfig.parseLog().console,
+        ...Config.parseLog().console,
         ...StringConfig.parseEnv().console as ConsoleLogConfig,
       },
       file: {
-        ...NewConfig.parseLog().file,
+        ...Config.parseLog().file,
         ...StringConfig.parseEnv().file as FileLogConfig,
       },
     } as LogConfigMap;

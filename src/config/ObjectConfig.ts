@@ -13,11 +13,11 @@
 //     }
 //   }
 
-import { default as NewConfig } from "trailmix/config/NewConfig.ts";
+import { default as Config } from "trailmix/config/Config.ts";
 import { ConfigOptions } from "trailmix/config/Config.d.ts";
 
 // }
-export default class ObjectConfig extends NewConfig {
+export default class ObjectConfig extends Config {
   public constructor(opts: ConfigOptions) {
     super(opts);
   }

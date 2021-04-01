@@ -8,7 +8,7 @@ export interface ConfigOptions {
   prefix?: string;
 }
 export type ConfigNames =
-  | "NewConfig"
+  | "Config"
   | "ObjectConfig"
   | "EnvConfig"
   | "StringConfig";

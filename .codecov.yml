@@ -9,8 +9,6 @@ coverage:
         threshold: 7%
         base: auto
         if_ci_failed: success
-        paths:
-          - src/
         flags:
           - color
           - common

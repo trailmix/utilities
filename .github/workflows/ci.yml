@@ -37,4 +37,4 @@ jobs:
 
       - name: Push codecov report
         if: matrix.os == 'ubuntu-latest'
-        run: bash <(curl -s https://codecov.io/bash) -F color,common,config,test -c
+        run: bash <(curl -s https://codecov.io/bash) -F color,common,config -c

@@ -20,5 +20,6 @@
   // formatter
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "denoland.vscode-deno"
+  "editor.defaultFormatter": "denoland.vscode-deno",
+  "debug.javascript.unmapMissingSources": true
 }

@@ -60,15 +60,15 @@ export default class StringConfig extends Config {
       }),
     );
   }
-  public static parseLog(): LogConfigMap {
+  public static parseLog(env: Record<string, string> = {}): LogConfigMap {
     return {
       console: {
         ...Config.parseLog().console,
-        ...StringConfig.parseEnv().console as ConsoleLogConfig,
+        ...StringConfig.parseEnv(env).console as ConsoleLogConfig,
       },
       file: {
         ...Config.parseLog().file,
-        ...StringConfig.parseEnv().file as FileLogConfig,
+        ...StringConfig.parseEnv(env).file as FileLogConfig,
       },
     } as LogConfigMap;
   }

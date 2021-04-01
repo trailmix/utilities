@@ -1,5 +1,5 @@
 import { unique } from "trailmix/common/Array.ts";
-import { resetTable, testFunction } from "test/common/table.ts";
+import { resetTable, testFunction } from "trailmix/common/table.ts";
 
 let table = resetTable();
 // let testCases: string[] = [];

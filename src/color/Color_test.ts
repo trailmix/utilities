@@ -1,5 +1,6 @@
 // import { Table, Row, Cell, assertStrictEquals, assertNotEquals } from 'testType/deps.ts';
-import { resetTable, s_p, s_s, testFunction } from "test/common/table.ts";
+import { resetTable, testFunction } from "trailmix/common/table.ts";
+import { s_p, s_s } from "trailmix/common/enum.ts";
 import {
   Color,
   messageByFn,
@@ -10,12 +11,11 @@ import {
   randomOpts,
   randomStyleFn,
   randomStyleString,
-  styleEnum,
   stylesMap,
   StyleType,
 } from "trailmix/color/mod.ts";
 import type { Style, StyleFn } from "trailmix/color/mod.ts";
-import { assertEquals, assertMatch } from "test/deps.ts";
+import { assertEquals, assertMatch } from "trailmix/deps.ts";
 
 let table = resetTable();
 
@@ -133,16 +133,19 @@ const newTests: Record<
   string,
   Record<
     string,
-    Record<"i" | "o", (string | StyleFn | undefined)[] | undefined[] | string>
+    Record<
+      "i" | "o",
+      (string | StyleFn | undefined)[] | undefined[] | string | undefined
+    >
   >
 > = {
   messageByFn: {
     stringEmpty: {
-      i: [],
+      i: "",
       o: "",
     },
     stringUndefined: {
-      i: [undefined],
+      i: undefined,
       o: "undefined",
     },
     stringUndefinedSet: {
@@ -295,6 +298,7 @@ for (const testfn of Object.keys(newTests)) {
   for (const testType of Object.keys(newTests[testfn])) {
     for (const c of [true, false]) {
       for (const s of [true, false]) {
+        if (["stringEmpty", "stringUndefined"].includes(testType) && s) break;
         Deno.test({
           // only: true,
           name: `Color.ts - ${testfn} tests...`,
@@ -306,8 +310,10 @@ for (const testfn of Object.keys(newTests)) {
               `testFn:${testfn}, testType:${testType}, spread:${s}, fromClass:${c}\n`,
               table,
               (_fn = fn, _args = args, _s = s, _testType = testType) => {
-                if (_s) return _fn(_testType, ..._args);
-                else return _fn(_testType, _args);
+                if (typeof args === "string") return _fn(_args);
+                if (_s && _args !== undefined) {
+                  return _fn(_testType, ..._args);
+                } else return _fn(_testType, _args);
               },
               e,
             );

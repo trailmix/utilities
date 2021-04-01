@@ -367,7 +367,6 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           "test",
           "hello",
         );
-        console.log(env);
         assertEquals(
           env,
           { test: "hello" },
@@ -384,7 +383,6 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           "test1",
           "hello",
         );
-        console.log(env1);
         assertEquals(
           env1,
           testVars.stringConfig.env1,
@@ -401,7 +399,6 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           "test2TestwordTestphraseTestnameTest",
           "hello",
         );
-        console.log(env2);
         assertEquals(
           env2,
           testVars.stringConfig.env2,

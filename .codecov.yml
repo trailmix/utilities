@@ -11,19 +11,15 @@ coverage:
         if_ci_failed: success
         flags:
           - color
-          - common
           - config
           - log
           - watch
-      # test:
-      #   target: 40%
-      #   threshold: 10%
-      #   if_ci_failed: error
-      #   paths:
-      #     - test/
-      #     - '!src/'
-      #   flags:
-      #     - test
+      common:
+        target: 40%
+        threshold: 10%
+        if_ci_failed: error
+        flags:
+          - common
   precision: 2
   round: down
   range: '70...100'

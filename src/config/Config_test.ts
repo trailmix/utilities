@@ -60,6 +60,9 @@ const testVars = {
         },
       },
     },
+    console: {
+      level: "DEBUG",
+    },
   },
   log: {
     console: {
@@ -279,6 +282,10 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           "DEFAULT_TEST5_testWord_TestPhrase_A_B",
           "hello",
         );
+        Deno.env.set(
+          "DEFAULT_CONSOLE_LEVEL",
+          "DEBUG",
+        );
         const env: Record<string, unknown> = EnvConfig.parseEnv();
         assertEquals(
           env,
@@ -340,6 +347,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           test3: JSON.stringify(["val1", "val2"]),
           test4AB: "Hello",
           test5TestwordTestphraseAB: "hello",
+          consoleLevel: "DEBUG",
         };
         const env: Record<string, unknown> = StringConfig.parseEnv(test);
         assertEquals(

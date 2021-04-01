@@ -11,22 +11,21 @@ coverage:
         if_ci_failed: success
         paths:
           - src/
-          - '!test/'
         flags:
           - color
           - common
           - config
           - log
           - watch
-      test:
-        target: 40%
-        threshold: 10%
-        if_ci_failed: error
-        paths:
-          - test/
-          - '!src/'
-        flags:
-          - test
+      # test:
+      #   target: 40%
+      #   threshold: 10%
+      #   if_ci_failed: error
+      #   paths:
+      #     - test/
+      #     - '!src/'
+      #   flags:
+      #     - test
   precision: 2
   round: down
   range: '70...100'
@@ -67,9 +66,9 @@ flags:
   watch:
     paths:
       - src/watch/
-  test:
-    paths:
-      - test/
+  # test:
+  #   paths:
+  #     - test/
 
 parsers:
   gcov:

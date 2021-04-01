@@ -1,64 +1,23 @@
 // import {} from '/config/mod.ts';
 import {
   assertEquals,
-  AssertionError,
-  assertNotEquals,
-  assertStrictEquals,
-  assertThrows,
   Cell,
   Row,
   Table,
   unimplemented,
-} from "test/deps.ts";
+} from "trailmix/deps.ts";
+import { s_p, s_s, t_e } from "trailmix/common/enum.ts";
+import type {
+  FailureResult,
+  Result,
+  SuccessResult,
+  TableConfig,
+  TestActualFunction,
+  TestExpectedFunction,
+  TestType,
+  UnimplementedResult,
+} from "trailmix/common/table.d.ts";
 
-export interface Result {
-  testName: string;
-  table: Table;
-  actual?: any | any[];
-  expected?: any | any[];
-  e?: string;
-}
-export type TestType = "unimplemented" | "success" | "failure";
-export type FailureResult = Required<Result>;
-export type UnimplementedResult = Required<Omit<Result, "actual" | "expected">>;
-export type SuccessResult = Required<Omit<Result, "e">>;
-
-export type TestExpectedFunction =
-  | ((...any: Result | any[] | any) => any)
-  | any[]
-  | any;
-export type TestActualFunction = ((...any: any[] | any) => any) | any[] | any;
-export enum s_p {
-  B = "\x1b[1m",
-  U = "\x1b[4m",
-  r = "\x1b[31m",
-  br = "\x1b[91m",
-  bg_r = "\x1b[41m",
-  g = "\x1b[32m",
-  bg = "\x1b[92m",
-  bg_g = "\x1b[42m",
-  y = "\x1b[33m",
-  by = "\x1b[93m",
-  bg_y = "\x1b[43m",
-}
-export enum s_s {
-  B = "\x1b[22m",
-  U = "\x1b[24m",
-  r = "\x1b[39m",
-  br = "\x1b[39m",
-  bg_r = "\x1b[49m",
-  g = "\x1b[39m",
-  bg = "\x1b[39m",
-  bg_g = "\x1b[49m",
-  y = "\x1b[39m",
-  by = "\x1b[39m",
-  bg_y = "\x1b[49m",
-}
-enum t_e {
-  br = "🚨🚨🚨🚨",
-  by = "⚠️ ⚠️ ⚠️ ⚠️",
-  bg = "🧪🧪🧪🧪",
-}
 function cell(s: string, colSpan?: number) {
   let cell = Cell.from(String(s));
   cell = colSpan !== undefined ? cell.colSpan(colSpan) : cell;
@@ -69,13 +28,13 @@ function row(c: Cell[], border?: boolean) {
   row = border !== undefined ? row.border(border) : row;
   return row;
 }
-export function resetTable(table?: []): Table {
-  return new Table()
-    .body(table ?? [])
-    .maxColWidth(300)
-    .border(true)
-    .padding(1)
-    .indent(2) as Table;
+export function resetTable(
+  config?: TableConfig,
+): Table {
+  const t: Table = Table.from(config?.table ?? []);
+  if (config?.maxColWidth !== undefined) t.maxColWidth(config?.maxColWidth);
+  if (config?.minColWidth !== undefined) t.minColWidth(config?.minColWidth);
+  return t.border(true).padding(1).indent(2);
 }
 function testTitle(type: TestType, testName: string) {
   const e: "br" | "by" | "bg" = type === "success"
@@ -112,16 +71,23 @@ function testFailure({ table, testName, actual, expected, e }: FailureResult) {
 function buildTestResult(
   type: TestType,
   { testName, actual, expected, e }: Omit<Result, "table">,
-) {
+): Table {
   const eq = type === "failure" ? "!==" : "===";
   const eqCell = cell(eq, 3);
-  const ret = [row([cell(testTitle(type, testName), 5)], false)];
+  const ret = [row([cell(testTitle(type, testName), 5)], false)] as Table;
   if (type === "unimplemented") return ret;
   if (type === "failure" && e !== undefined) ret.push(row([cell(e, 5)], false));
   ret.push(
     row([cell(JSON.stringify(actual)), eqCell, cell(JSON.stringify(expected))]),
   );
-  if (typeof actual === "string" && typeof expected === "string") {
+  // console.log(actual.split(""));
+  // console.log(actual);
+  // console.log(p(actual));
+  if (
+    typeof actual === "string" && typeof expected === "string" &&
+    ['"', actual.split(""), '"'] !== p(actual) &&
+    ['"', expected.split(""), '"'] !== p(expected)
+  ) {
     ret.push(row([cell(p(actual)), eqCell, cell(p(expected))]));
   }
   return ret;
@@ -131,52 +97,61 @@ function p(s: string) {
 }
 
 // eslint-disable-next-line max-params
-export function testFunction(
+export async function testFunction(
   testName: string,
-  table: Table = resetTable(),
+  table: Table,
   actual: TestActualFunction,
-  expected: TestExpectedFunction = defaultTestCase({} as Result),
+  expected: TestExpectedFunction,
   implemented = true,
 ) {
   let result: Result = {
     table: table,
     testName: testName,
   };
+  if (!implemented) {
+    unimplemented(`Function type ${testName} not implemented`);
+  }
   try {
-    if (!implemented) {
-      unimplemented(`Function type ${testName} not implemented`);
-    }
-    if (typeof actual === "function") result.actual = actual();
+    if (typeof actual === "function") result.actual = await actual();
     else result.actual = actual;
-    if (typeof expected === "function") {
-      result.expected = expected(result.actual);
-    } else result.expected = expected;
-    testSuccess(result as SuccessResult);
   } catch (e) {
-    // console.log(e);
     if (typeof e === "object") {
       result.e = String(e.stack);
-      // console.log(result.e);
       if (result.e.includes("not implemented")) {
         testUnimplemented(result as UnimplementedResult);
+      } else if (result.e.split(":")[0].includes("AssertionError")) {
+        testFailure(result as FailureResult);
+        resetTable({ table, maxColWidth: 300, minColWidth: 50 }).render();
+        throw e;
+      } else if (result.e.split(":")[0].includes("Error")) {
+        result.actual = result.e.split(":")[0];
       } else testFailure(result as FailureResult);
     }
-    return;
+  } finally {
+    if (typeof expected === "function") {
+      result.expected = await expected(result.actual);
+    } else {
+      result.expected = expected;
+    }
+    defaultTestCase(result);
   }
+  testSuccess(result as SuccessResult);
 }
-
+// function defaultErrorTestCase
 function defaultTestCase({ actual, expected, testName }: Result) {
   assertEquals(
     JSON.stringify(actual),
     JSON.stringify(expected),
     `${testName} failure: (actual !== expected)`,
   );
-  if (typeof actual === "string") {
+  if (
+    typeof actual === "string" && actual !== p(actual) &&
+    expected !== p(expected)
+  ) {
     assertEquals(
       p(actual),
       p(expected),
       `${testName} JSON.parse() messages failure: (actual !== expected)`,
     );
   }
-  return "" as any;
 }

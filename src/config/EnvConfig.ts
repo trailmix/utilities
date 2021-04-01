@@ -1,9 +1,5 @@
-// subclass to ingest env config format
-// export default {
-//   TRAILMIX_LOG_CONSOLE_FORMAT: 'string'
-// }
-
 import { default as Config } from "trailmix/config/Config.ts";
+import type { default as StringConfig } from "trailmix/config/StringConfig.ts";
 import { ConfigOptions } from "trailmix/config/Config.d.ts";
 import type {
   ConsoleLogConfig,
@@ -14,8 +10,9 @@ import type {
 export default class EnvConfig extends Config {
   public static log: LogConfigMap = EnvConfig.parseLog();
   public static env: Record<string, unknown> = EnvConfig.parseEnv();
-  public constructor(opts: ConfigOptions) {
-    super(opts);
+  public constructor(opts?: ConfigOptions | Config | StringConfig) {
+    let _opts = opts ?? { namespace: Config.namespace, prefix: Config.prefix };
+    super(_opts);
   }
   /**
    * turn a string{str}(TEST_ABC_A_B_C) into an object excluding a string{ex}(TEST)
@@ -51,31 +48,44 @@ export default class EnvConfig extends Config {
   /**
    * pass in env, return vars within object namespace
    * @param env environment env object
+   * @param namespace namespace of env
    * @returns 
    */
   public static parseEnv(
+    namespace = this.namespace,
     env: Record<string, string> = Deno.env.toObject(),
   ): Record<string, unknown> {
     return Object.fromEntries(
       Object.keys(env).filter((key: string) =>
-        (new RegExp(`^(${this.namespace}){1}`)).test(key)
+        (new RegExp(`^(${namespace}){1}`)).test(key)
       ).flatMap((key: string) => {
         return Object.entries(
-          EnvConfig.strParse(key, Deno.env.toObject()[key], this.namespace),
+          EnvConfig.strParse(key, Deno.env.toObject()[key], namespace),
         );
       }),
     );
   }
-  public static parseLog(): LogConfigMap {
+  public static parseLog(namespace = this.namespace): LogConfigMap {
     return {
       console: {
         ...Config.parseLog().console,
-        ...EnvConfig.parseEnv().console as ConsoleLogConfig,
+        ...EnvConfig.parseEnv(namespace).console as ConsoleLogConfig,
       },
       file: {
         ...Config.parseLog().file,
-        ...EnvConfig.parseEnv().file as FileLogConfig,
+        ...EnvConfig.parseEnv(namespace).file as FileLogConfig,
       },
     } as LogConfigMap;
+  }
+  public parseEnv(
+    namespace = this.namespace,
+    env: Record<string, string> = {},
+  ): Record<string, unknown> {
+    this.env = EnvConfig.parseEnv(namespace, env);
+    return this.env;
+  }
+  public parseLog(namespace = this.namespace): LogConfigMap {
+    this.log = EnvConfig.parseLog(namespace);
+    return this.log;
   }
 }

@@ -1,9 +1,5 @@
-// subclass to ingest string config format
-// export default {
-//   logConsoleFormat: 'string'
-// }
-
 import { default as Config } from "trailmix/config/Config.ts";
+import type { default as EnvConfig } from "trailmix/config/EnvConfig.ts";
 import { ConfigOptions } from "trailmix/config/Config.d.ts";
 import type {
   ConsoleLogConfig,
@@ -14,8 +10,9 @@ import type {
 export default class StringConfig extends Config {
   public static log: LogConfigMap = StringConfig.parseLog();
   public static env: Record<string, unknown> = StringConfig.parseEnv();
-  public constructor(opts: ConfigOptions) {
-    super(opts);
+  public constructor(opts?: ConfigOptions | Config | EnvConfig) {
+    let _opts = opts ?? { namespace: Config.namespace, prefix: Config.prefix };
+    super(_opts);
   }
   /**
    * turn a string{str}(test5TestwordTestphraseTestnameTest) into an object based on capital letters
@@ -26,7 +23,7 @@ export default class StringConfig extends Config {
    */
   public static strParse(
     str: string,
-    value: string,
+    value: unknown,
   ): Record<string, string | Record<string, unknown | string>> {
     // init is the starting value for finding strings later
     let nextI = 0;
@@ -46,11 +43,11 @@ export default class StringConfig extends Config {
     const nextK = nextI === str.length ? str : str.slice(0, nextI);
     return Object.fromEntries([[
       nextK,
-      nextV,
+      nextV as string,
     ]]);
   }
   public static parseEnv(
-    env: Record<string, string> = {},
+    env: Record<string, unknown> = {},
   ): Record<string, unknown> {
     return Object.fromEntries(
       Object.keys(env).flatMap((key: string) => {
@@ -60,7 +57,7 @@ export default class StringConfig extends Config {
       }),
     );
   }
-  public static parseLog(env: Record<string, string> = {}): LogConfigMap {
+  public static parseLog(env: Record<string, unknown> = {}): LogConfigMap {
     return {
       console: {
         ...Config.parseLog().console,
@@ -71,5 +68,15 @@ export default class StringConfig extends Config {
         ...StringConfig.parseEnv(env).file as FileLogConfig,
       },
     } as LogConfigMap;
+  }
+  public parseEnv(
+    env: Record<string, unknown> = this.env,
+  ): Record<string, unknown> {
+    this.env = StringConfig.parseEnv(env);
+    return this.env;
+  }
+  public parseLog(): LogConfigMap {
+    this.log = StringConfig.parseLog(this.env);
+    return this.log;
   }
 }

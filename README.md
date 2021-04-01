@@ -149,11 +149,42 @@ console.log(
 );
 console.log(C.random("test some string", rConf)); // random function
 ```
+### Config
+**Simple**
+```typescript
+import { EnvConfig, StringConfig } from "trailmix/config/mod.ts";
 
+Deno.env.set("DEFAULT_TEST1", "val1"); // set example env var in DEFAULT namespace
+// slurp up env vars
+console.log(EnvConfig.parseEnv()); // should have { test1: "val1" }
+// something more complex
+Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG"); // set log level in DEFAULT namespace
+console.log(EnvConfig.parseEnv()); // should have { test1: "val1", console: { level: "DEBUG" } }
+// this is good for cmd line arguments (--consoleLevel DEBUG)
+console.log(StringConfig.parseEnv({ test1: "val1", consoleLevel: "DEBUG" })); // should have same as above
+```
+**Complex**
+```typescript
+import { Config,EnvConfig, StringConfig } from "trailmix/config/mod.ts"; 
+
+// lets use our own namespace with a config file
+const c = await new Config({
+  namespace: "TRAILMIX",
+  prefix: "trailmixString.config",
+}).init();
+// inside trailmixString.config.ts/tsx
+export default {
+  consoleFormat: "json",
+};
+console.log(new StringConfig(c).parseLog()); // will give a log config with {console: { format: "json" } }
+// now lets take into account env vars
+Deno.env.set("TRAILMIX_CONSOLE_FORMAT", "console");
+console.log(new EnvConfig(c).parseLog()); // will give a log config with {console: { format: "console" } }
+```
 ### Log
 
 ### Watch
 
-### Config
+
 
 ## [CONTRIBUTE](CONTRIBUTE.md)

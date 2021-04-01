@@ -6,18 +6,10 @@ import {
   ObjectConfig,
   StringConfig,
 } from "trailmix/config/mod.ts";
-// import { testFunction, resetTable } from 'test/common/mod.ts';
+import { resetTable, testFunction } from "trailmix/common/table.ts";
 import type { LogConfigMap } from "trailmix/log/Log.d.ts";
-import {
-  assertEquals,
-  assertMatch,
-  assertObjectMatch,
-  assertStrictEquals,
-  assertThrows,
-  assertThrowsAsync,
-} from "test/deps.ts";
-
-// let table = resetTable();
+import { assertEquals } from "trailmix/deps.ts";
+let table = resetTable();
 
 const testVars = {
   strParse: {
@@ -91,7 +83,7 @@ const testVars = {
     },
   },
   namespace: "DEFAULT",
-  _definitionPrefix: "trailmix.config",
+  prefix: "trailmix.config",
   _definitionPathRegexp: new RegExp(
     /\S*(\/|\\)+(trailmix.config.(ts|tsx){1}){1}/,
   ),
@@ -157,10 +149,10 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
         cfg,
         {
           ...cfg,
-          ...{ _definition_prefix: testVars._definitionPrefix },
+          ...{ prefix: testVars.prefix },
         },
         "Config._definitionPrefix is not the default prefix of " +
-          testVars._definitionPrefix,
+          testVars.prefix,
       );
     },
   });
@@ -173,9 +165,11 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
         cfg,
         {
           ...cfg,
-          ...{ _definition_prefix: prefix },
+          ...{ prefix: prefix },
         },
-        "Config._definitionPrefix is not the named prefix of " +
+        `Config.prefix:${
+          JSON.stringify(cfg, null, 2)
+        } is not the named prefix of ` +
           prefix,
       );
     },
@@ -209,13 +203,30 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
   //     );
   //   },
   // });
+  // Deno.test({
+  //   name: `Config.ts - ${obj} throw error for missing configuration`,
+  //   fn: async () => {
+  //     const cfg = objFactory(obj, { namespace });
+  //     await assertThrows(
+  //       () => cfg.getConfigurationPath("nope.config"),
+  //       Error,
+  //     );
+  //   },
+  // });
   Deno.test({
-    name: `Config.ts - ${obj} throw error for missing configuration`,
+    name: "Config.ts",
     fn: async () => {
       const cfg = objFactory(obj, { namespace });
-      await assertThrowsAsync(async () => {
-        await cfg.getConfigurationPath("nope.config");
-      }, Error);
+      await testFunction(
+        `${obj} throw error for missing configuration`,
+        table,
+        (i = "nope.config") => {
+          return cfg.getConfigurationPath(i);
+        },
+        Error.name,
+      );
+      table.render();
+      table = resetTable();
     },
   });
   Deno.test({

@@ -6,6 +6,7 @@ export type CommandOptions = Record<
 export interface ConfigOptions {
   namespace?: string;
   prefix?: string;
+  env?: Record<string, unknown>;
 }
 export type ConfigNames =
   | "Config"

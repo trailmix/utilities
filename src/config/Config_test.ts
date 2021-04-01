@@ -6,7 +6,7 @@ import {
   ObjectConfig,
   StringConfig,
 } from "trailmix/config/mod.ts";
-import { resetTable, testFunction } from "trailmix/common/table.ts";
+import { resetTable, testFunction } from "trailmix/common/mod.ts";
 import type { LogConfigMap } from "trailmix/log/Log.d.ts";
 import { assertEquals } from "trailmix/deps.ts";
 let table = resetTable();

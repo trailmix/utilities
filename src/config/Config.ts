@@ -1,5 +1,5 @@
-import { importDefault, validPath } from "trailmix/common/File.ts";
-import type { FileExtension } from "trailmix/common/File.d.ts";
+import { importDefault, validPath } from "trailmix/common/mod.ts";
+import type { FileExtension } from "trailmix/common/mod.ts";
 
 import type { ConfigOptions } from "trailmix/config/Config.d.ts";
 import type { LogConfigMap } from "trailmix/log/mod.ts";

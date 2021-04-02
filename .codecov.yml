@@ -1,28 +1,69 @@
 # codecov:
 #   notify:
 #     require_ci_to_pass: yes
-
 coverage:
   status:
     project:
-      default:
-        target: 90%
-      color:
+      utilities:
         target: auto
         threshold: 7%
         base: auto
         if_ci_failed: success
         flags:
           - color
+          - config
+          - log
+          - watch
+      common:
+        target: 40%
+        threshold: 10%
+        if_ci_failed: error
+        flags:
+          - common
   precision: 2
   round: down
   range: '70...100'
-
+# flag_management:
+#   # this section will govern all default rules of Flags
+#   default_rules:
+#     carryforward: true
+#     ignore:
+#       - "**/*_test.ts"
+#       - "**/*_test.tsx"
+#     paths:
+#       - "src/**"
+#     statuses: 
+#       - name_prefix: default_project
+#         type: project
+#         target: auto
+#         threshold: 1%
+#       - name_prefix: default_patch
+#         type: patch
+#         target: percent
+#         threshold: 80%
+ignore:
+  - "**/*_test.ts"
+  - "**/*_test.tsx"
 flags:
   color:
     paths:
-      - color/src/**
-      - '!color/src/**_test.ts'
+      - src/color/
+  common:
+    paths:
+      - src/common/
+  config:
+    paths:
+      - src/config/
+  log:
+    paths:
+      - src/log/
+  watch:
+    paths:
+      - src/watch/
+  # test:
+  #   paths:
+  #     - test/
+
 parsers:
   gcov:
     branch_detection:

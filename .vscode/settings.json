@@ -1,6 +1,8 @@
 {
   "files.eol": "\n",
+  // deno
   "deno.enable": true,
+  "deno.lint": true,
   "deno.codeLens.implementations": true,
   "deno.codeLens.references": true,
   "deno.codeLens.referencesAllFunctions": true,
@@ -9,16 +11,15 @@
   "deno.suggest.completeFunctionCalls": true,
   "deno.suggest.paths": true,
   "deno.importMap": "./import_map.json",
+  // coverage
   "coverage-gutters.lcovname": "./coverage/lcov.info",
   "coverage-gutters.showGutterCoverage": true,
+  // ui
   "editor.snippetSuggestions": "inline",
   "typescript.suggest.completeJSDocs": true,
+  // formatter
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.organizeImports.eslint": true
-  },
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "editor.defaultFormatter": "denoland.vscode-deno",
+  "debug.javascript.unmapMissingSources": true
 }

@@ -5,12 +5,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "test: test",
+      "name": "Launch",
+      "type": "node",
       "request": "launch",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["test-inspect"],
-      "attachSimplePort": 9229,
-      "type": "pwa-node",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect=127.0.0.1:9229",
+        "--unstable",
+        "--allow-read",
+        "--allow-write",
+        "--allow-env",
+        "--import-map=import_map.json"
+      ],
+      "port": 9229,
       "outputCapture": "std"
     }
   ]

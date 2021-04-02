@@ -25,15 +25,16 @@ jobs:
 
       - name: Run tests (ubuntu)
         if: matrix.os == 'ubuntu-latest'
-        run: yarn test-coverage
+        run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json --coverage=./coverage/output
 
       - name: Run tests (win/mac)
         if: matrix.os != 'ubuntu-latest'
-        run: deno test --unstable  --allow-net --import-map=import_map.json
+        run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json
+
       - name: Generate codecov report
         if: matrix.os == 'ubuntu-latest'
-        run: yarn coverage
+        run: deno coverage --unstable ./coverage --lcov > ./coverage/lcov.info
 
       - name: Push codecov report
         if: matrix.os == 'ubuntu-latest'
-        run: bash <(curl -s https://codecov.io/bash)
+        run: bash <(curl -s https://codecov.io/bash) -F color,common,config -c

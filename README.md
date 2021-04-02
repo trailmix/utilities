@@ -15,12 +15,6 @@
     <img src="https://img.shields.io/github/downloads/trailmix/utilities/total" alt="downloads" />
   </a>
 </p>
-<a href="https://deno.land/x/trailmix">
-  <img
-    src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-color.png"
-    alt="goofus_colors goofus colors trailmix deno typescript"
-  />
-</a>
 <p align="center">
   <a href="https://github.com/trailmix/utilities/actions">
     <img src="https://github.com/trailmix/utilities/workflows/ci/badge.svg" alt="ci" />
@@ -53,6 +47,12 @@
 ## Usage
 
 ### Colors
+<a href="https://deno.land/x/trailmix/color">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-color-BGc.png"
+    alt="goofus_colors goofus colors trailmix deno typescript"
+  />
+</a>
 
 **Simple**
 
@@ -68,7 +68,7 @@ import {
   randomStyleFn,
   randomStyleString,
   styles as s,
-} from "https://deno.land/x/trailmix@1.0.3/mod.ts";
+} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 // random StyleFn Message Functions
 console.log(messageByFn("hello", [s.cyan, s.bgRed])); // cyan text, red BG
@@ -92,8 +92,8 @@ console.log(random("hello", randomOpts({ color: true }))); // get random color 1
 import {
   Color as C,
   styles as s,
-} from "https://deno.land/x/trailmix@1.0.1/mod.ts";
-import type { Styles } from "https://deno.land/x/trailmix@1.0.1/mod.ts";
+} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+import type { Styles } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 // you can use defined or anon functions
 function test(str: string) {
@@ -151,11 +151,17 @@ console.log(C.random("test some string", rConf)); // random function
 ```
 
 ### Config
+<a href="https://deno.land/x/trailmix/config">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-config.png"
+    alt="goofus_config goofus config trailmix deno typescript"
+  />
+</a>
 
 **Simple**
 
 ```typescript
-import { EnvConfig, StringConfig } from "trailmix/config/mod.ts";
+import { EnvConfig, StringConfig } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 Deno.env.set("DEFAULT_TEST1", "val1"); // set example env var in DEFAULT namespace
 // slurp up env vars
@@ -170,7 +176,7 @@ console.log(StringConfig.parseEnv({ test1: "val1", consoleLevel: "DEBUG" })); //
 **Complex**
 
 ```typescript
-import { Config, EnvConfig, StringConfig } from "trailmix/config/mod.ts";
+import { Config, EnvConfig, StringConfig } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 // lets use our own namespace with a config file
 const c = await new Config({

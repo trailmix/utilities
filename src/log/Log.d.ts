@@ -4,13 +4,20 @@ import type {
   EnumColor,
   EnumEmphasis,
 } from "trailmix/color/mod.ts";
+import type {
+  EnumLogColor,
+  EnumLogLevel,
+  EnumLogStyle,
+} from "trailmix/log/enum.ts";
 export type Handler = BaseHandler | FileHandler;
-export type LogColor = Record<
-  LogLevel,
-  keyof typeof EnumColor | keyof typeof EnumBgColor
->;
-export type LogStyle = Record<LogLevel, keyof typeof EnumEmphasis>;
-export type LogLevel = keyof typeof LogLevels;
+export type LogLevel = keyof typeof EnumLogLevel;
+export type LogColor = {
+  [key in LogLevel]?: keyof typeof EnumColor | keyof typeof EnumBgColor;
+};
+export type LogStyle = {
+  [key in LogLevel]?: keyof typeof EnumEmphasis;
+};
+
 // export type Loggers = 'default' | 'test' | string;
 export type LogFormat = "json" | "function" | "string";
 export type LogHandler = "console" | "file";

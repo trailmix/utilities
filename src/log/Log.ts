@@ -1,3 +1,12 @@
+import {
+  EnumLogColor,
+  EnumLogLevel,
+  EnumLogStyle,
+  logColors,
+  loggerNames,
+  logLevels,
+  logStyles,
+} from "trailmix/log/enum.ts";
 import type {
   Handler,
   LogColor,
@@ -8,46 +17,20 @@ import type {
   LogLevel,
   LogStyle,
 } from "trailmix/log/Log.d.ts";
-import { logColors, loggerNames, logStyles } from "trailmix/log/enum.ts";
-// import type { } from 'trailmix/config/mod.ts';
 import { Config } from "trailmix/config/mod.ts";
-import { Color as m, messageByStringSpread as sS } from "trailmix/color/mod.ts";
-import type {
-  stdLogConfig,
-  stdLogger,
-  stdLoggerConfig,
-} from "trailmix/deps.ts";
+import { messageByStringSpread as sS } from "trailmix/color/mod.ts";
 import {
   getLogger,
   LogRecord,
   setupLogger,
   stdHandlers,
 } from "trailmix/deps.ts";
-// #region logging
-
-// #endregion
-export function stringifyBigInt(key: string, value: any): string {
-  return typeof value === "bigint" ? String(value) : value;
-}
-export function parseMessage(value: unknown): string {
-  // console.log(typeof value);
-  if (typeof value === "string") return value;
-  else if (
-    value === null ||
-    typeof value === "number" ||
-    typeof value === "bigint" ||
-    typeof value === "boolean" ||
-    typeof value === "undefined" ||
-    typeof value === "symbol"
-  ) {
-    return String(value);
-  } else if (value instanceof Error) {
-    return value.stack!;
-  } else if (typeof value === "object") {
-    return JSON.stringify(value, stringifyBigInt);
-  }
-  return "undefined";
-}
+import type {
+  stdLogConfig,
+  stdLogger,
+  stdLoggerConfig,
+} from "trailmix/deps.ts";
+import { stringifyAny, stringifyBigInt } from "trailmix/common/mod.ts";
 /** Construct a Pagic Logger.
  * @example
  * // returns default logger
@@ -71,7 +54,7 @@ export default class Log {
   // public get config(): LogConfig {
   //   return this._config;
   // }
-  public pConfig: LogConfigMap = Config.log; // init static log config
+  public pConfig: LogConfigMap = { console: Config.log.console }; // init static log config
   private _config: stdLogConfig;
   private _loggerNames: string[] = Log._loggerNames;
   // private handlers: { [x: string]: BaseHandler | FileHandler };
@@ -114,15 +97,17 @@ export default class Log {
    */
   public debug(first: unknown, ...args: unknown[]): string | string[] {
     let ret = this._log(10, first, ...args);
-    // console.log(ret);
+    console.log(ret);
     if (this.name === "test") {
       const dedebug = this._log(0, first, ...args);
       // console.log(dedebug);
       if (Array.isArray(ret)) {
-        ret.concat(Array.isArray(dedebug) ? dedebug : [dedebug]);
-      } else [ret].concat(Array.isArray(dedebug) ? dedebug : [dedebug]);
+        ret = ret.concat(Array.isArray(dedebug) ? dedebug : [dedebug]);
+      } else {
+        ret = [ret].concat(Array.isArray(dedebug) ? dedebug : [dedebug]);
+      }
     }
-    // console.log('ret ' + ret);
+    console.log(ret);
     return ret.length === 1 ? ret[0] : ret;
   }
   /** INFO _message
@@ -178,29 +163,48 @@ export default class Log {
     let record = new LogRecord({
       level,
       msg: level === 0 && this.name === "test"
-        ? "deDEBUG:" + parseMessage(msg)
-        : parseMessage(msg),
+        ? "deDEBUG:" + stringifyAny(msg)
+        : stringifyAny(msg),
       args: args,
       loggerName: this.name,
     });
-    Object.entries(this._config.handlers ?? {}).forEach(
-      (logger: [string, Handler]) => {
-        if (level >= logger[1].level || (this.name === "test" && level === 0)) {
-          const _msg = logger[1].format(record);
+    for (const handler of Object.keys(this._config.handlers ?? {})) {
+      if (
+        this._config.handlers !== undefined &&
+        this._config.handlers[handler] !== undefined
+      ) {
+        const h = this._config.handlers[handler];
+        if (level >= h.level || (this.name === "test" && level === 0)) {
+          const _msg = h.format(record);
           // messages.push(_msg);
-          if (logger[0] === "console") {
+          if (handler === "console") {
             messages.push(_msg);
             console.log(_msg);
           } else {
-            logger[1].handle(record);
+            console.log(h);
+            h.handle(record);
           }
         }
-        //   logger[1].handle(record);
-        //   // (logger[1] as FileHandler).flush();
-        // }
-      },
-      {},
-    );
+      }
+    }
+    // Object.entries(this._config.handlers ?? {}).forEach(
+    //   (logger: [string, Handler]) => {
+    //     if (level >= logger[1].level || (this.name === "test" && level === 0)) {
+    //       const _msg = logger[1].format(record);
+    //       // messages.push(_msg);
+    //       if (logger[0] === "console") {
+    //         messages.push(_msg);
+    //         console.log(_msg);
+    //       } else {
+    //         logger[1].handle(record);
+    //       }
+    //     }
+    //     //   logger[1].handle(record);
+    //     //   // (logger[1] as FileHandler).flush();
+    //     // }
+    //   },
+    //   {},
+    // );
     // console.log(messages);
     return messages.length === 1 ? messages[0] : messages;
   }
@@ -285,26 +289,17 @@ export default class Log {
     }
   }
   private _message(logRecord: LogRecord, handler: LogConfig): string {
+    const level = logRecord.levelName as LogLevel;
     let msg = `[${this.name}] ${logRecord.msg}`;
-    // let args: string | undefined = this._parseArgs(handler.format, logRecord.args);
-    // console.log('logrecord.Args: ' + logRecord.args);
-    // console.log('after' + args);
-    // console.log(consoleMsg);
     if (
       handler.format !== "function" && handler.color &&
-      logRecord.levelName !== "DEBUG"
+      level !== "DEBUG"
     ) {
-      const style = logStyles[logRecord.levelName as LogLevel];
-      const color = logColors[logRecord.levelName as LogLevel];
-      const colored = sS(logRecord.msg, style, color);
-      const name = sS(this.name, style, color);
-      // const colored = logFunctions[logColors[logRecord.levelName as LogLevel]](logRecord.msg);
-      // const name = logFunctions[logColors[logRecord.levelName as LogLevel]](this.name);
-      if (logRecord.levelName === "CRITICAL") {
-        msg = `[${sS(name, "bold")}] ${sS(colored, "bold")}`;
-      } else {
-        msg = `[${name}] ${colored}`;
-      }
+      const color = EnumLogColor[level];
+      const style = EnumLogStyle[level];
+      msg = `[${sS(this.name, color, style)}] ${
+        sS(logRecord.msg, color, style)
+      }`;
     }
     return msg;
   }
@@ -329,10 +324,3 @@ export default class Log {
     return msg;
   }
 }
-
-// class PagicMessage {}
-
-// "Log.ts - Init test logger with json format"
-// 'r' == 'e'
-// 'r' == 'e'
-// 'r' != 'e'

@@ -1,5 +1,5 @@
 import type { LogLevel } from "trailmix/log/mod.ts";
-import { stringifyBigInt } from "trailmix/log/mod.ts";
+import { stringifyBigInt } from "trailmix/common/mod.ts";
 
 export enum strings {
   ansi_reset = "\x1b[0m",

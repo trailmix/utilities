@@ -1,6 +1,10 @@
-import { importDefault, validPath } from "trailmix/common/file.ts";
-import type { FileExtension, ImportOptions } from "trailmix/common/file.d.ts";
-import { resetTable, testFunction } from "trailmix/common/table.ts";
+import {
+  importDefault,
+  resetTable,
+  testFunctionAsync,
+  validPath,
+} from "trailmix/common/mod.ts";
+import type { FileExtension, ImportOptions } from "trailmix/common/mod.ts";
 import { resolve } from "trailmix/deps.ts";
 
 let table = resetTable();
@@ -89,7 +93,7 @@ Deno.test({
   name: "File.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
-      await testFunction(
+      await testFunctionAsync(
         "validPath",
         table,
         async (
@@ -112,7 +116,7 @@ Deno.test({
   name: "File.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
-      await testFunction(
+      await testFunctionAsync(
         "importDefault - file",
         table,
         async (
@@ -135,7 +139,7 @@ Deno.test({
   name: "File.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
-      await testFunction(
+      await testFunctionAsync(
         "importDefault - cache",
         table,
         async (
@@ -157,7 +161,7 @@ Deno.test({
 Deno.test({
   name: "File.ts",
   fn: async () => {
-    await testFunction(
+    await testFunctionAsync(
       "importDefault - nofile",
       table,
       (

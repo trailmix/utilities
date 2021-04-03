@@ -1,6 +1,9 @@
-// import { Table, Row, Cell, assertStrictEquals, assertNotEquals } from 'testType/deps.ts';
-import { resetTable, testFunction } from "trailmix/common/table.ts";
-import { s_p, s_s } from "trailmix/common/enum.ts";
+import {
+  EnumANSIPrefix,
+  EnumANSISuffix,
+  resetTable,
+  testFunction,
+} from "trailmix/common/mod.ts";
 import {
   Color,
   messageByFn,
@@ -46,11 +49,11 @@ function getTarget(
 }
 function testString(
   str: string,
-  opts: (keyof typeof s_s | keyof typeof s_p)[] = [],
+  opts: (keyof typeof EnumANSISuffix | keyof typeof EnumANSIPrefix)[] = [],
 ) {
   let ret = str;
   for (const opt in opts) {
-    ret = s_p[opts[opt]] + ret + s_s[opts[opt]];
+    ret = EnumANSIPrefix[opts[opt]] + ret + EnumANSISuffix[opts[opt]];
   }
   return ret;
 }

@@ -33,7 +33,7 @@ export enum EnumLogStyle {
   ERROR = "clear",
   CRITICAL = "bold",
 }
-export enum EnumLogColors {
+export enum EnumLogColor {
   NOTSET = "white",
   DEBUG = "clear",
   INFO = "blue",

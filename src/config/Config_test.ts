@@ -6,8 +6,8 @@ import {
   ObjectConfig,
   StringConfig,
 } from "trailmix/config/mod.ts";
-import { resetTable, testFunction } from "trailmix/common/mod.ts";
-import type { LogConfigMap } from "trailmix/log/Log.d.ts";
+import { resetTable, testFunctionAsync } from "trailmix/common/mod.ts";
+import type { LogConfigMap } from "trailmix/log/mod.ts";
 import { assertEquals } from "trailmix/deps.ts";
 let table = resetTable();
 
@@ -56,20 +56,6 @@ const testVars = {
       level: "DEBUG",
     },
   },
-  log: {
-    console: {
-      level: "ERROR",
-      format: "string",
-      color: true,
-      date: true,
-    },
-    file: {
-      level: "ERROR",
-      format: "string",
-      path: ".",
-      date: false,
-    },
-  },
   config: {
     namespace: "TRAILMIX", // prefixed to all env vars
     vars: {
@@ -89,7 +75,59 @@ const testVars = {
   ),
 };
 
-const testObjs = {
+const defaultLog: Record<ConfigNames, LogConfigMap> = {
+  Config: {
+    console: {
+      level: "ERROR",
+      format: "string",
+      color: true,
+      date: true,
+    },
+    file: {
+      level: "ERROR",
+      format: "string",
+      path: ".",
+      date: false,
+    },
+  },
+  ObjectConfig: {
+    console: {
+      level: "ERROR",
+      format: "string",
+      color: true,
+      date: true,
+    },
+    file: {
+      level: "ERROR",
+      format: "string",
+      path: ".",
+      date: false,
+    },
+  },
+  EnvConfig: {
+    console: {
+      level: "ERROR",
+      format: "string",
+      color: true,
+      date: true,
+    },
+    file: {
+      level: "ERROR",
+      format: "string",
+      path: ".",
+      date: false,
+    },
+  },
+  StringConfig: {
+    console: {
+      level: "ERROR",
+      format: "string",
+      color: true,
+      date: true,
+    },
+  },
+};
+const testObjs: Record<ConfigNames, string> = {
   Config: "Config",
   ObjectConfig: "ObjectConfig",
   EnvConfig: "EnvConfig",
@@ -115,16 +153,16 @@ function objFactoryStatic(
   if (type === "StringConfig") return StringConfig;
   else return Config;
 }
-for (let obj of Object.keys(testObjs) as ConfigNames[]) {
-  // const o = testObjs[obj];
+for (const o in testObjs) {
+  const obj = o as ConfigNames;
   Deno.test({
     name: `Config.ts - ${obj} default namespace`,
     fn: () => {
-      const cfg = objFactory(obj);
+      const cfg = objFactory(obj as ConfigNames);
       assertEquals(
         cfg.namespace,
         testVars.namespace,
-        "Config.namespace is not the default namespace of " +
+        `${obj}.namespace is not the default namespace of ` +
           testVars.namespace,
       );
     },
@@ -137,7 +175,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
       assertEquals(
         cfg.namespace,
         namespace,
-        "Config.namespace is not the named namespace of " + namespace,
+        `${obj}.namespace is not the named namespace of ` + namespace,
       );
     },
   });
@@ -151,7 +189,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           ...cfg,
           ...{ prefix: testVars.prefix },
         },
-        "Config._definitionPrefix is not the default prefix of " +
+        `${obj}.prefix is not the default prefix of ` +
           testVars.prefix,
       );
     },
@@ -167,7 +205,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
           ...cfg,
           ...{ prefix: prefix },
         },
-        `Config.prefix:${
+        `${obj}.prefix:${
           JSON.stringify(cfg, null, 2)
         } is not the named prefix of ` +
           prefix,
@@ -217,7 +255,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
     name: "Config.ts",
     fn: async () => {
       const cfg = objFactory(obj, { namespace });
-      await testFunction(
+      await testFunctionAsync(
         `${obj} throw error for missing configuration`,
         table,
         (i = "nope.config") => {
@@ -235,9 +273,9 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
       const log: LogConfigMap = objFactoryStatic(obj).log;
       assertEquals(
         log,
-        testVars.log,
-        "Config.log is not the correct default of " +
-          testVars.log,
+        defaultLog[obj],
+        `${obj}.log is not the correct default of ` +
+          defaultLog[obj],
       );
     },
   });
@@ -248,11 +286,11 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
       const log: LogConfigMap = objFactoryStatic(obj).parseLog();
       assertEquals(
         log,
-        testVars.log,
-        `Config.parseLog(): ${
+        defaultLog[obj],
+        `${obj}.parseLog(): ${
           JSON.stringify(log, null, 2)
         } is not the correct default of ` +
-          JSON.stringify(testVars.log, null, 2),
+          JSON.stringify(defaultLog[obj], null, 2),
       );
     },
   });
@@ -302,7 +340,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
         assertEquals(
           env,
           testVars.env,
-          `Config.parseEnv(): ${
+          `${obj}.parseEnv(): ${
             JSON.stringify(env, null, 2)
           } is not the correct default of ` +
             JSON.stringify(testVars.env, null, 2),
@@ -322,7 +360,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
         assertEquals(
           env,
           testVars.strParse,
-          `Config.parseEnv(): ${
+          `${obj}.parseEnv(): ${
             JSON.stringify(env, null, 2)
           } is not the correct default of ` +
             JSON.stringify(testVars.strParse, null, 2),
@@ -334,14 +372,14 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
       fn: () => {
         Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG");
         const ex = {
-          ...testVars.log,
-          ...{ console: { ...testVars.log.console, ...{ level: "DEBUG" } } },
+          ...defaultLog[obj],
+          ...{ console: { ...defaultLog[obj].console, ...{ level: "DEBUG" } } },
         };
         const log: LogConfigMap = EnvConfig.parseLog();
         assertEquals(
           log,
           ex,
-          `Config.parseEnv(): ${
+          `${obj}.parseEnv(): ${
             JSON.stringify(log, null, 2)
           } is not the correct default of ` +
             JSON.stringify(ex, null, 2),
@@ -365,7 +403,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
         assertEquals(
           env,
           testVars.env,
-          `Config.parseEnv(): ${
+          `${obj}.parseEnv(): ${
             JSON.stringify(env, null, 2)
           } is not the correct default of ` +
             JSON.stringify(testVars.env, null, 2),
@@ -376,8 +414,8 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
       name: `Config.ts - ${obj}.parseLog() merges env log config`,
       fn: () => {
         const ex = {
-          ...testVars.log,
-          ...{ console: { ...testVars.log.console, ...{ level: "DEBUG" } } },
+          ...defaultLog[obj],
+          ...{ console: { ...defaultLog[obj].console, ...{ level: "DEBUG" } } },
         };
         const log: LogConfigMap = StringConfig.parseLog({
           consoleLevel: "DEBUG",
@@ -385,7 +423,7 @@ for (let obj of Object.keys(testObjs) as ConfigNames[]) {
         assertEquals(
           log,
           ex,
-          `Config.parseEnv(): ${
+          `${obj}.parseEnv(): ${
             JSON.stringify(log, null, 2)
           } is not the correct default of ` +
             JSON.stringify(ex, null, 2),

@@ -91,7 +91,7 @@ export default class Config {
         path: ".",
         date: false,
       },
-    };
+    } as LogConfigMap;
   }
   public parseLog(): LogConfigMap {
     this.log = Config.parseLog();

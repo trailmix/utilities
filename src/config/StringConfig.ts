@@ -1,6 +1,7 @@
 import { default as Config } from "trailmix/config/Config.ts";
 import type { default as EnvConfig } from "trailmix/config/EnvConfig.ts";
 import { ConfigOptions } from "trailmix/config/Config.d.ts";
+import { mergeDeep } from "trailmix/common/mod.ts";
 import type {
   ConsoleLogConfig,
   FileLogConfig,
@@ -24,7 +25,7 @@ export default class StringConfig extends Config {
   public static strParse(
     str: string,
     value: unknown,
-  ): Record<string, string | Record<string, unknown | string>> {
+  ): Record<string, unknown> {
     // init is the starting value for finding strings later
     let nextI = 0;
     // for each letter in string find first capital letter
@@ -41,33 +42,37 @@ export default class StringConfig extends Config {
       value,
     );
     const nextK = nextI === str.length ? str : str.slice(0, nextI);
-    return Object.fromEntries([[
-      nextK,
-      nextV as string,
-    ]]);
+    return { [nextK]: nextV } as Record<string, unknown>;
   }
   public static parseEnv(
     env: Record<string, unknown> = {},
   ): Record<string, unknown> {
-    return Object.fromEntries(
-      Object.keys(env).flatMap((key: string) => {
-        return Object.entries(
-          StringConfig.strParse(key, env[key]),
-        );
-      }),
-    );
+    let ret = {};
+    for (const r in env) {
+      ret = mergeDeep(ret, StringConfig.strParse(r, env[r]));
+    }
+    return ret;
   }
-  public static parseLog(env: Record<string, unknown> = {}): LogConfigMap {
-    return {
+  public static parseLog(
+    env: Record<string, unknown> = {},
+  ): LogConfigMap {
+    const _env = StringConfig.parseEnv(env);
+    let ret = {
       console: {
         ...Config.parseLog().console,
-        ...StringConfig.parseEnv(env).console as ConsoleLogConfig,
+        ..._env?.console as ConsoleLogConfig,
       },
-      file: {
-        ...Config.parseLog().file,
-        ...StringConfig.parseEnv(env).file as FileLogConfig,
-      },
-    } as LogConfigMap;
+    };
+    if (_env.file !== undefined) {
+      ret = {
+        ...ret,
+        file: {
+          ...Config.parseLog().file,
+          ..._env?.file as FileLogConfig,
+        },
+      } as LogConfigMap;
+    }
+    return ret as LogConfigMap;
   }
   public parseEnv(
     env: Record<string, unknown> = this.env,

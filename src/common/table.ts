@@ -1,4 +1,3 @@
-// import {} from '/config/mod.ts';
 import {
   assertEquals,
   Cell,
@@ -6,7 +5,12 @@ import {
   Table,
   unimplemented,
 } from "trailmix/deps.ts";
-import { s_p, s_s, t_e } from "trailmix/common/enum.ts";
+import { stringifyAny } from "trailmix/common/string.ts";
+import {
+  EnumANSIPrefix,
+  EnumANSISuffix,
+  TestEmojiEnum,
+} from "trailmix/common/enum.ts";
 import type {
   FailureResult,
   Result,
@@ -42,8 +46,9 @@ function testTitle(type: TestType, testName: string) {
     : type === "failure"
     ? "br"
     : "by";
-  return t_e[e] + "\t" + s_p.B + s_p.U + s_p[e] + testName.trim() + s_s[e] +
-    s_s.U + s_s.B + " " + type;
+  return TestEmojiEnum[e] + "\t" + EnumANSIPrefix.B + EnumANSIPrefix.U +
+    EnumANSIPrefix[e] + testName.trim() + EnumANSISuffix[e] +
+    EnumANSISuffix.U + EnumANSISuffix.B + " " + type;
 }
 function testUnimplemented({ table, testName }: UnimplementedResult) {
   table.push(...buildTestResult("unimplemented", { testName: testName }));
@@ -78,7 +83,7 @@ function buildTestResult(
   if (type === "unimplemented") return ret;
   if (type === "failure" && e !== undefined) ret.push(row([cell(e, 5)], false));
   ret.push(
-    row([cell(JSON.stringify(actual)), eqCell, cell(JSON.stringify(expected))]),
+    row([cell(stringifyAny(actual)), eqCell, cell(stringifyAny(expected))]),
   );
   // console.log(actual.split(""));
   // console.log(actual);
@@ -96,15 +101,46 @@ function p(s: string) {
   return JSON.parse(JSON.stringify(s));
 }
 
-// eslint-disable-next-line max-params
-export async function testFunction(
+export function testFunction(
   testName: string,
   table: Table,
   actual: TestActualFunction,
   expected: TestExpectedFunction,
   implemented = true,
 ) {
-  let result: Result = {
+  const result: Result = {
+    table: table,
+    testName: testName,
+  };
+  if (!implemented) {
+    unimplemented(`Function type ${testName} not implemented`);
+  }
+  try {
+    if (typeof actual === "function") result.actual = actual();
+    else result.actual = actual;
+  } catch (e) {
+    if (typeof e === "object") {
+      result.e = String(e.stack);
+      defaultErrorTestCase(result as FailureResult);
+    }
+  } finally {
+    if (typeof expected === "function") {
+      result.expected = expected(result.actual);
+    } else result.expected = expected;
+    defaultTestCase(result);
+  }
+  testSuccess(result as SuccessResult);
+}
+
+// eslint-disable-next-line max-params
+export async function testFunctionAsync(
+  testName: string,
+  table: Table,
+  actual: TestActualFunction,
+  expected: TestExpectedFunction,
+  implemented = true,
+) {
+  const result: Result = {
     table: table,
     testName: testName,
   };
@@ -117,32 +153,38 @@ export async function testFunction(
   } catch (e) {
     if (typeof e === "object") {
       result.e = String(e.stack);
-      if (result.e.includes("not implemented")) {
-        testUnimplemented(result as UnimplementedResult);
-      } else if (result.e.split(":")[0].includes("AssertionError")) {
-        testFailure(result as FailureResult);
-        resetTable({ table, maxColWidth: 300, minColWidth: 50 }).render();
-        throw e;
-      } else if (result.e.split(":")[0].includes("Error")) {
-        result.actual = result.e.split(":")[0];
-      } else testFailure(result as FailureResult);
+      defaultErrorTestCase(result as FailureResult);
     }
   } finally {
     if (typeof expected === "function") {
       result.expected = await expected(result.actual);
-    } else {
-      result.expected = expected;
-    }
+    } else result.expected = expected;
     defaultTestCase(result);
   }
   testSuccess(result as SuccessResult);
 }
+function defaultErrorTestCase(
+  result: FailureResult,
+) {
+  if (result.e.includes("not implemented")) {
+    testUnimplemented(result as UnimplementedResult);
+  } else if (result.e.split(":")[0].includes("AssertionError")) {
+    testFailure(result as FailureResult);
+    resetTable({ table: result.table, maxColWidth: 300, minColWidth: 50 })
+      .render();
+    throw result.e;
+  } else if (result.e.split(":")[0].includes("Error")) {
+    result.actual = result.e.split(":")[0];
+  } else testFailure(result as FailureResult);
+}
 // function defaultErrorTestCase
 function defaultTestCase({ actual, expected, testName }: Result) {
   assertEquals(
-    JSON.stringify(actual),
-    JSON.stringify(expected),
-    `${testName} failure: (actual !== expected)`,
+    stringifyAny(actual),
+    stringifyAny(expected),
+    `${testName} failure: (actual !== expected)\n${stringifyAny(actual)}\n${
+      stringifyAny(expected)
+    }`,
   );
   if (
     typeof actual === "string" && actual !== p(actual) &&
@@ -151,7 +193,9 @@ function defaultTestCase({ actual, expected, testName }: Result) {
     assertEquals(
       p(actual),
       p(expected),
-      `${testName} JSON.parse() messages failure: (actual !== expected)`,
+      `${testName} JSON.parse() messages failure: (actual !== expected)\n${
+        p(actual)
+      }\n${p(expected)}`,
     );
   }
 }

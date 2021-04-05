@@ -1,5 +1,5 @@
 import type { ITableOptions, Table } from "trailmix/deps.ts";
-
+export { Table };
 export interface Result {
   testName: string;
   table: Table;
@@ -8,7 +8,9 @@ export interface Result {
   e?: string;
 }
 // export type Test = Result & Record<"implemented", boolean>;
-export type TableConfig = ITableOptions & Record<"table", Table>;
+export type TableConfig = Partial<
+  ITableOptions & Record<"table", Table>
+>;
 
 export type TestType = "unimplemented" | "success" | "failure";
 export type FailureResult = Required<Result>;

@@ -91,7 +91,7 @@ const importTests: Record<
     o: TypeError.name,
   },
 };
-console.log(resolve(Deno.cwd(), "Error.ts"));
+
 async function writeFile() {
   return await Deno.writeFile(
     Deno.cwd() + "/testConfig.ts",
@@ -99,7 +99,7 @@ async function writeFile() {
   );
 }
 Deno.test({
-  name: "File.ts",
+  name: "file.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
       await testFunctionAsync(
@@ -122,7 +122,7 @@ Deno.test({
   },
 });
 Deno.test({
-  name: "File.ts",
+  name: "file.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
       await testFunctionAsync(
@@ -145,7 +145,7 @@ Deno.test({
   },
 });
 Deno.test({
-  name: "File.ts",
+  name: "file.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
       await testFunctionAsync(
@@ -168,7 +168,7 @@ Deno.test({
   },
 });
 Deno.test({
-  name: "File.ts",
+  name: "file.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
       await testFunctionAsync(
@@ -191,7 +191,7 @@ Deno.test({
   },
 });
 Deno.test({
-  name: "File.ts",
+  name: "file.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
       await testFunctionAsync(
@@ -214,7 +214,7 @@ Deno.test({
   },
 });
 Deno.test({
-  name: "File.ts",
+  name: "file.ts",
   fn: async () => {
     await writeFile().then(async (v) => {
       await testFunctionAsync(
@@ -237,7 +237,7 @@ Deno.test({
   },
 });
 Deno.test({
-  name: "File.ts",
+  name: "file.ts",
   fn: async () => {
     await testFunctionAsync(
       "importDefault - nofile",

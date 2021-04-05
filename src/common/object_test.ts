@@ -76,7 +76,7 @@ const tests: Record<
     },
   },
 };
-console.log(tests);
+
 for (const test in tests) {
   for (const messageType in messages) {
     for (const message in messages[messageType]) {

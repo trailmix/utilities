@@ -29,3 +29,36 @@ export enum TestEmojiEnum {
   by = "⚠️ ⚠️ ⚠️ ⚠️",
   bg = "🧪🧪🧪🧪",
 }
+export enum EnumCSSColors {
+  error = "color:red",
+  key = "color:yellow",
+  string = "color:seagreen",
+  number = "color:gold",
+  bigint = "color:darkorange",
+  boolean = "color:deepskyblue",
+  null = "color:magenta",
+  undefined = "color:darkmagenta",
+  symbol = "color:darkred",
+}
+export enum EnumANSIColors {
+  error = "\x1b[38;2;255;0;0m",
+  key = "\x1b[38;2;255;255;0m",
+  string = "\x1b[38;2;46;139;87m",
+  number = "\x1b[38;2;255;215;0m",
+  bigint = "\x1b[38;2;255;140;0m",
+  boolean = "\x1b[38;2;0;191;255m",
+  null = "\x1b[38;2;255;0;255m",
+  undefined = "\x1b[38;2;139;0;139m",
+  symbol = "\x1b[38;2;139;0;0m",
+}
+export enum EnumANSIColorsSuffix {
+  error = "\x1b[39m",
+  key = "\x1b[39m",
+  string = "\x1b[39m",
+  number = "\x1b[39m",
+  bigint = "\x1b[39m",
+  boolean = "\x1b[39m",
+  null = "\x1b[39m",
+  undefined = "\x1b[39m",
+  symbol = "\x1b[39m",
+}

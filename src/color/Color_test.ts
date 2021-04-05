@@ -227,15 +227,11 @@ for (const style of Object.keys(stylesMap) as StyleType[]) {
           table,
           (i = style) => fn(i),
           stylesMap[style][testfn](style),
+          true,
+          false,
         );
-        if (
-          Object.keys(stylesMap).length - 1 ===
-            Object.keys(stylesMap).indexOf(style) &&
-          Object.keys(stylesMap[style]).length - 1 ===
-            Object.keys(stylesMap[style]).indexOf(testfn)
-        ) {
-          table.render();
-        }
+        table.render();
+        table = resetTable();
       },
     });
   }
@@ -278,19 +274,11 @@ for (const testFn of Object.keys(randomTests)) {
                   return _actual;
                 }
               },
+              true,
+              false,
             );
-            if (
-              Object.keys(randomTests).length - 1 ===
-                Object.keys(randomTests).indexOf(testFn) &&
-              Object.keys(randomTests[testFn]).length - 1 ===
-                Object.keys(randomTests[testFn]).indexOf(testType) &&
-              Object.keys(randomTests[testFn][testType]).length - 1 ===
-                Object.keys(randomTests[testFn][testType]).indexOf(testArg) &&
-              !c
-            ) {
-              table.render();
-              table = resetTable();
-            }
+            table.render();
+            table = resetTable();
           },
         });
       }
@@ -319,19 +307,11 @@ for (const testfn of Object.keys(newTests)) {
                 } else return _fn(_testType, _args);
               },
               e,
+              true,
+              false,
             );
-            if (
-              Object.keys(newTests).length - 1 ===
-                Object.keys(newTests).indexOf(testfn) &&
-              // @ts-ignore
-              Object.keys(newTests[testfn]).length - 1 ===
-                Object.keys(newTests[testfn]).indexOf(testType) &&
-              !c &&
-              !s
-            ) {
-              table.render();
-              table = resetTable();
-            }
+            table.render();
+            table = resetTable();
           },
         });
       }

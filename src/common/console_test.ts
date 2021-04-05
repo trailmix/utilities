@@ -118,6 +118,8 @@ Deno.test({
         table,
         consoleColor(consoleColorTests[primitive].i, mockConsole),
         consoleColorTests[primitive].o,
+        true,
+        false,
       );
       table.render();
       table = resetTable();
@@ -129,10 +131,12 @@ Deno.test({
   fn: () => {
     for (const primitive in ansiColorTests) {
       testFunction(
-        "consoleColor " + primitive,
+        "ansiColor " + primitive,
         table,
         ansiColor(ansiColorTests[primitive].i),
         ansiColorTests[primitive].o,
+        true,
+        false,
       );
       table.render();
       table = resetTable();

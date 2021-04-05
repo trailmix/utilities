@@ -141,7 +141,7 @@ export default class Color {
   private static _get_style_map(s: Record<string, string | number>): StyleMap {
     return Object.fromEntries(
       Object.entries(colors)
-        .concat([["clear", (str: string) => str]])
+        .concat([["clear", colors.stripColor]])
         .flatMap(([style, fn]) => {
           return [
             ...(s !== undefined &&

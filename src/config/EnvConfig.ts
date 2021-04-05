@@ -62,7 +62,7 @@ export default class EnvConfig extends Config {
         return Object.entries(
           EnvConfig.strParse(key, Deno.env.toObject()[key], namespace),
         );
-      }),
+      }).sort(),
     );
   }
   public static parseLog(namespace = this.namespace): LogConfigMap {

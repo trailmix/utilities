@@ -83,7 +83,7 @@ export default class Config {
         level: "ERROR",
         format: "string",
         color: true,
-        date: true,
+        date: false,
       },
       file: {
         level: "ERROR",

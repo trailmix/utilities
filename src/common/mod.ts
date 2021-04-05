@@ -14,14 +14,22 @@ export { importDefault, validPath } from "trailmix/common/file.ts";
 // @deno-types="./file.d.ts"
 export type { FileExtension, ImportOptions } from "trailmix/common/file.d.ts";
 
-export {
-  renderTable,
-  resetTable,
-  testFunction,
-  testFunctionAsync,
-} from "trailmix/common/table.ts";
+export { testFunction, testFunctionAsync } from "trailmix/common/test.ts";
+
+export type {
+  FailureResult,
+  Result,
+  SuccessResult,
+  TestActualFunction,
+  TestExpectedFunction,
+  TestType,
+  UnimplementedResult,
+} from "trailmix/common/test.d.ts";
+
+export { cell, renderTable, resetTable, row } from "trailmix/common/table.ts";
+
 // @deno-types="./table.d.ts"
-export { Table } from "trailmix/common/table.d.ts";
+export type { Table, TableConfig } from "trailmix/common/table.d.ts";
 
 export { stringifyAny, stringifyBigInt } from "trailmix/common/string.ts";
 

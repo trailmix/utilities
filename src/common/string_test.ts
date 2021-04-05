@@ -1,5 +1,4 @@
 import {
-  consoleColor,
   resetTable,
   stringifyAny,
   stringifyBigInt,
@@ -65,7 +64,7 @@ const stringifyAnyTests: Record<
   },
   error: {
     i: new Error("test"),
-    o: "Error: test\n    at file:///Users/bkillian/trailmix/utilities/src/common/string_test.ts:67:8",
+    o: "Error: test\n    at file:///Users/bkillian/trailmix/utilities/src/common/string_test.ts:66:8",
   },
   object: {
     i: { test: "test" },

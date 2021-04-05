@@ -2,8 +2,8 @@ import {
   EnumANSIColors,
   EnumANSIColorsSuffix,
   EnumCSSColors,
-} from "trailmix/common/enum.ts";
-import { stringifyAny } from "trailmix/common/string.ts";
+  stringifyAny,
+} from "trailmix/common/mod.ts";
 
 const reg = {
   global: new RegExp(

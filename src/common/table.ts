@@ -94,46 +94,22 @@ function testTitle(type: TestType, testName?: string) {
     EnumANSISuffix.U + EnumANSISuffix.B + " " + type;
   return ret;
 }
-/**
- * add a record to table for unimplemented test
-* @param param0 result with unimplemented interface
- */
-function testUnimplemented({ table, testName }: UnimplementedResult) {
-  table.push(...buildTestResult("unimplemented", { testName: testName }));
-}
-/**
- * add a record to table for succesful test
- * @param param0 result with success interface
- */
-function testSuccess({ table, testName, actual, expected }: SuccessResult) {
-  table.push(
-    ...buildTestResult("success", {
-      testName: testName,
-      actual: actual,
-      expected: expected,
-    }),
-  );
-}
-/**
- * add a record to table for failed test
- * @param param0 result with failure interface
- */
-function testFailure(result: Result) {
-  result.table.push(
-    ...buildTestResult("failure", result),
-  );
-}
 function buildTestResult(
   type: TestType,
   { testName, actual, expected, e }: Omit<Result, "table">,
+  color = true,
 ): Table {
   const eq = type === "failure" ? "!==" : "===";
   const eqCell = cell(eq, 3);
-  const ret = [row([cell(testTitle(type, testName), 5)], false)] as Table;
+  const ret = [
+    row([cell("\n" + testTitle(type, testName), 5)], false),
+  ] as Table;
   if (type === "unimplemented") return ret;
   if (type === "failure" && e !== undefined) ret.push(row([cell(e, 5)], false));
+  const a = color ? ansiColor(actual) : stringifyAny(actual);
+  const ex = color ? ansiColor(expected) : stringifyAny(expected);
   ret.push(
-    row([cell(ansiColor(actual)), eqCell, cell(ansiColor(expected))]),
+    row([cell(a), eqCell, cell(ex)]),
   );
   if (
     typeof actual === "string" && typeof expected === "string" &&
@@ -141,7 +117,7 @@ function buildTestResult(
     expected.toString() !== p(expected).toString()
   ) {
     ret.push(
-      row([cell(p(ansiColor(actual))), eqCell, cell(p(ansiColor(expected)))]),
+      row([cell(p(a)), eqCell, cell(p(ex))]),
     );
   }
   return ret;
@@ -156,6 +132,7 @@ export function testFunction(
   actual: TestActualFunction,
   expected: TestExpectedFunction,
   implemented = true,
+  color = true,
 ) {
   const result: Result = {
     table: table,
@@ -184,7 +161,7 @@ export function testFunction(
     }
   }
   table.push(
-    ...buildTestResult("success", result as SuccessResult),
+    ...buildTestResult("success", result as SuccessResult, color),
   );
 }
 

@@ -172,8 +172,9 @@ function defaultTestCase({ actual, expected, testName }: Result) {
     }`,
   );
   if (
-    typeof actual === "string" && actual !== p(actual) &&
-    expected !== p(expected)
+    typeof actual === "string" && typeof expected === "string" &&
+    actual.toString() !== p(actual).toString() &&
+    expected.toString() !== p(expected).toString()
   ) {
     assertEquals(
       p(actual),

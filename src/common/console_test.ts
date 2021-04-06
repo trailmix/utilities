@@ -51,6 +51,14 @@ const consoleColorTests: Record<
     i: { test: "test" },
     o: '{\n  %c"test":%c %c"test"%c\n}',
   },
+  log: {
+    i: "[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m",
+    o: "[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m",
+  },
+  logArguments: {
+    i: '[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \nArguments:[\n  "test",\n  {\n    "test": "a"\n  }\n]',
+    o: '[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \nArguments:[\n  \u001b[38;2;46;139;87m"test"\u001b[39m,\n  {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"a"\u001b[39m\n  }\n]',
+  },
 };
 const ansiColorTests: Record<
   string,
@@ -91,13 +99,14 @@ const ansiColorTests: Record<
   },
   error: {
     i: new Error("test"),
-    o: "\u001b[38;2;255;0;0mError: test\u001b[39m\n    at file:///Users/bkillian/trailmix/utilities/src/common/console_test.ts:\u001b[38;2;255;215;0m93\u001b[39m:\u001b[38;2;255;215;0m8\u001b[39m",
+    o: "\u001b[38;2;255;0;0mError: test\u001b[39m\n    at file:///Users/bkillian/trailmix/utilities/src/common/console_test.ts:\u001b[38;2;255;215;0m101\u001b[39m:\u001b[38;2;255;215;0m8\u001b[39m",
   },
   object: {
     i: { test: "test" },
     o: '{\n  \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\n}',
   },
 };
+
 const ogConsole = console;
 Deno.test({
   name: "console.ts",
@@ -108,6 +117,7 @@ Deno.test({
         ...{
           log: (str: string): string => {
             // this demonstrates actual console usage
+            ogConsole.log("real usage:");
             consoleColor(consoleColorTests[primitive].i, ogConsole);
             return str;
           },

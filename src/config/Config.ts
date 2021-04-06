@@ -50,7 +50,7 @@ export default class Config {
     srcDir = ".",
   ) {
     try {
-      this.path = await validPath(file, ext, srcDir) ?? "";
+      this.path = await validPath(file, ext, srcDir);
       return this.path;
     } catch (e) {
       throw new Error(e);
@@ -87,7 +87,7 @@ export default class Config {
       },
       file: {
         level: "ERROR",
-        format: "string",
+        format: "json",
         path: ".",
         date: false,
       },

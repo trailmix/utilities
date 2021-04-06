@@ -89,7 +89,7 @@ const defaultLog: Record<ConfigNames, LogConfigMap> = {
     },
     file: {
       level: "ERROR",
-      format: "string",
+      format: "json",
       path: ".",
       date: false,
     },
@@ -103,7 +103,7 @@ const defaultLog: Record<ConfigNames, LogConfigMap> = {
     },
     file: {
       level: "ERROR",
-      format: "string",
+      format: "json",
       path: ".",
       date: false,
     },
@@ -117,7 +117,7 @@ const defaultLog: Record<ConfigNames, LogConfigMap> = {
     },
     file: {
       level: "ERROR",
-      format: "string",
+      format: "json",
       path: ".",
       date: false,
     },
@@ -152,18 +152,26 @@ function objFactoryStatic(
   if (type === "StringConfig") return StringConfig;
   else return Config;
 }
+async function writeFile(file = "trailmix.config.ts") {
+  return await Deno.writeFile(
+    Deno.cwd() + "/" + file,
+    new TextEncoder().encode('export default {consoleFormat: "json"};'),
+  );
+}
 Deno.test({
   name: `Config.ts functional tests`,
   fn: async () => {
     for (const o in testObjs) {
       const obj = o as ConfigNames;
-      let cfg = objFactory(obj as ConfigNames);
+      // this is a default object with no params
+      let cfg = objFactory(obj);
       testFunction(
         `${obj} - default namespace`,
         table,
         cfg.namespace,
         testVars.namespace,
       );
+      // config object with a named namespace - namespace
       const namespace = "TRAILMIX";
       cfg = objFactory(obj, { namespace });
       testFunction(
@@ -172,7 +180,7 @@ Deno.test({
         cfg.namespace,
         namespace,
       );
-      cfg = objFactory(obj, { namespace });
+      // config object with named namespace - default prefix
       testFunction(
         `${obj} - default prefix`,
         table,
@@ -182,7 +190,64 @@ Deno.test({
           ...{ prefix: testVars.prefix },
         },
       );
+      // init configurationPath and get configuration
+      await testFunctionAsync(
+        `${obj} - default init configuration`,
+        table,
+        await cfg.init(),
+        {
+          "env": {
+            "consoleFormat": "json",
+          },
+          "log": defaultLog[obj],
+          "namespace": namespace,
+          "path": Deno.cwd() + "/trailmix.config.ts",
+          "prefix": "trailmix.config",
+          "_importCache": {
+            ["file://" + Deno.cwd() + "/trailmix.config.ts"]: {
+              "default": {
+                "consoleFormat": "json",
+              },
+            },
+          },
+        },
+      );
+      // write a file and ensure we can resolve it
+      await writeFile().then(async (v) => {
+        await testFunctionAsync(
+          `${obj}.getConfigurationPath - default prefix`,
+          table,
+          await cfg.getConfigurationPath(),
+          Deno.cwd() + "/trailmix.config.ts",
+        );
+      });
+      // config object with named namespace - get false config path
+      await testFunctionAsync(
+        `${obj} throw error for missing configuration`,
+        table,
+        (i = "nope.config") => {
+          return cfg.getConfigurationPath(i);
+        },
+        Error.name,
+      );
+      // write a file and ensure we can read it
+      await writeFile().then(async (v) => {
+        await testFunctionAsync(
+          `${obj}.getConfiguration() - default`,
+          table,
+          await cfg.getConfiguration(),
+          '{\n  "consoleFormat": "json"\n}',
+        );
+      });
+      // dont write file and ensure we throw error
+      await testFunctionAsync(
+        `${obj}.getConfiguration() - throw error for now file`,
+        table,
+        () => cfg.getConfiguration(Deno.cwd() + "/nope.config.ts"),
+        Error.name,
+      );
       const prefix = "trilom.config";
+      // config object with named namespace - named prefix
       cfg = objFactory(obj, { namespace, prefix });
       testFunction(
         `${obj} - named prefix`,
@@ -193,15 +258,15 @@ Deno.test({
           ...{ prefix: prefix },
         },
       );
-      cfg = objFactory(obj, { namespace });
-      await testFunctionAsync(
-        `${obj} throw error for missing configuration`,
-        table,
-        (i = "nope.config") => {
-          return cfg.getConfigurationPath(i);
-        },
-        Error.name,
-      );
+      await writeFile("trilom.config.ts").then(async (v) => {
+        testFunctionAsync(
+          `${obj}.getConfigurationPath - named prefix`,
+          table,
+          await cfg.getConfigurationPath(prefix),
+          Deno.cwd() + "/trilom.config.ts",
+        );
+      });
+      // config static object - default log
       let log: LogConfigMap = objFactoryStatic(obj).log;
       testFunction(
         `${obj}.log - default`,
@@ -210,6 +275,7 @@ Deno.test({
         defaultLog[obj],
       );
       Deno.env.delete("DEFAULT_CONSOLE_LEVEL");
+      // config static object - parse new env without consoleLevel
       log = objFactoryStatic(obj).parseLog();
       testFunction(
         `${obj}.log - default`,
@@ -242,14 +308,28 @@ Deno.test({
           "DEFAULT_CONSOLE_LEVEL",
           "DEBUG",
         );
+        // set env to previously set variables and parse them with static obj
         let env: Record<string, unknown> = EnvConfig.parseEnv();
+        testFunction(
+          `STATIC ${obj}.parseEnv() - returns env`,
+          table,
+          env,
+          testVars.env,
+        );
+        Deno.env.set(
+          "DEFAULT_CONSOLE_LEVEL",
+          "DEBUG",
+        );
+        // default config with instanced obj
+        const cfg = new EnvConfig();
+        env = cfg.parseEnv();
         testFunction(
           `${obj}.parseEnv() - returns env`,
           table,
           env,
           testVars.env,
         );
-
+        // set env to some different cases
         env = EnvConfig.strParse(
           "DEFAULT_TEST_testWord_TestPhrase_A_B",
           "hello",
@@ -263,6 +343,7 @@ Deno.test({
           env,
           testVars.strParse,
         );
+        // change env variable and ensure it is changed
         Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG");
         const ex = {
           ...defaultLog[obj],
@@ -285,19 +366,34 @@ Deno.test({
           test4AB: "Hello",
           test5TestwordTestphraseAB: "hello",
         };
-        const env: Record<string, unknown> = StringConfig.parseEnv(test);
+        // default config with instanced obj
+        const cfg = new StringConfig({ env: test });
+        let env: Record<string, unknown> = cfg.parseEnv();
+        testFunction(
+          `${obj}.parseEnv() - returns env`,
+          table,
+          env,
+          testVars.env,
+        );
+        // set env object and parse to string config
+        env = StringConfig.parseEnv(test);
         testFunction(
           `${obj}.parseEnv() returns env`,
           table,
           env,
           testVars.env,
         );
+        // ensure log config works
         const ex = {
           ...defaultLog[obj],
-          ...{ console: { ...defaultLog[obj].console, ...{ level: "DEBUG" } } },
+          ...{
+            console: { ...defaultLog[obj].console, ...{ level: "DEBUG" } },
+            file: { ...defaultLog["Config"].file, ...{ level: "INFO" } },
+          },
         };
         const log: LogConfigMap = StringConfig.parseLog({
           consoleLevel: "DEBUG",
+          fileLevel: "INFO",
         });
         testFunction(
           `${obj}.parseLog() merges env log config`,
@@ -311,57 +407,3 @@ Deno.test({
     }
   },
 });
-
-// Deno.test({
-//   name: `Config.ts - ${obj} configuration path`,
-//   fn: async () => {
-//     const cfg = objFactory(obj, { namespace });
-//     const path = await cfg.getConfigurationPath();
-//     assertMatch(
-//       path,
-//       testVars._definitionPathRegexp,
-//       "default Config._definition_path is not resolvable, or doesn't exist at " +
-//         "./trailmix.config.ts",
-//     );
-//   },
-// });
-// const definitionPathRegexp = new RegExp(
-//   /\S*(\/|\\)+(trilom.config.(ts|tsx){1}){1}/,
-// );
-// Deno.test({
-//   name: `Config.ts - ${obj} configuration path`,
-//   fn: async () => {
-//     const cfg = objFactory(obj, { namespace });
-//     const path = await cfg.getConfigurationPath(prefix);
-//     assertMatch(
-//       path,
-//       definitionPathRegexp,
-//       "named Config._definition_path is not resolvable, or doesn't exist at ./" +
-//         prefix,
-//     );
-//   },
-// });
-// Deno.test({
-//   name: `Config.ts - ${obj} throw error for missing configuration`,
-//   fn: async () => {
-//     const cfg = objFactory(obj, { namespace });
-//     await assertThrows(
-//       () => cfg.getConfigurationPath("nope.config"),
-//       Error,
-//     );
-//   },
-// });
-// Deno.test({
-//   name: `Config.ts - ${obj}.getConfiguration() to ingest cmd config`,
-//   fn: async () => {
-//     const cfg = await objFactory(obj, { namespace }).getConfigurationPath();
-//     const config = await cfg.getConfiguration();
-//     console.log(config);
-//     assertEquals(
-//       config,
-//       testVars.config,
-//       "Config.getConfiguration() cannot ingest command config" +
-//         config,
-//     );
-//   },
-// });

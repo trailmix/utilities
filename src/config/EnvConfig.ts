@@ -56,11 +56,15 @@ export default class EnvConfig extends Config {
     env: Record<string, string> = Deno.env.toObject(),
   ): Record<string, unknown> {
     return Object.fromEntries(
-      Object.keys(env).filter((key: string) =>
-        (new RegExp(`^(${namespace}){1}`)).test(key)
-      ).flatMap((key: string) => {
+      Object.keys(env).filter((key: string) => {
+        return (new RegExp(`^(${namespace.toUpperCase()}){1}`)).test(key);
+      }).flatMap((key: string) => {
         return Object.entries(
-          EnvConfig.strParse(key, Deno.env.toObject()[key], namespace),
+          EnvConfig.strParse(
+            key,
+            Deno.env.toObject()[key],
+            namespace.toUpperCase(),
+          ),
         );
       }).sort(),
     );
@@ -79,7 +83,7 @@ export default class EnvConfig extends Config {
   }
   public parseEnv(
     namespace = this.namespace,
-    env: Record<string, string> = {},
+    env: Record<string, string> = Deno.env.toObject(),
   ): Record<string, unknown> {
     this.env = EnvConfig.parseEnv(namespace, env);
     return this.env;

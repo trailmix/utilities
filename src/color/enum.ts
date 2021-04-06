@@ -23,6 +23,7 @@ export enum EnumColor {
   brightCyan = 96,
   brightWhite = 97,
   clear = 0,
+  none = -1,
 }
 export enum EnumBgColor {
   bgBlack = 40,
@@ -41,6 +42,7 @@ export enum EnumBgColor {
   bgBrightMagenta = 105,
   bgBrightCyan = 106,
   bgBrightWhite = 107,
+  none = -1,
 }
 export enum EnumEmphasis {
   bold = 1,
@@ -51,6 +53,7 @@ export enum EnumEmphasis {
   hidden = 8,
   strikethrough = 9,
   clear = 0,
+  none = -1,
 }
 export enum EnumSuffix {
   bold = 22,
@@ -61,6 +64,7 @@ export enum EnumSuffix {
   hidden = 28,
   strikethrough = 29,
   clear = 0,
+  none = -1,
   color = 39,
   bgColor = 49,
 }

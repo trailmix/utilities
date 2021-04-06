@@ -1,4 +1,5 @@
 import { colors } from "trailmix/deps.ts";
+
 import {
   EnumBgColor,
   EnumColor,
@@ -141,7 +142,10 @@ export default class Color {
   private static _get_style_map(s: Record<string, string | number>): StyleMap {
     return Object.fromEntries(
       Object.entries(colors)
-        .concat([["clear", colors.stripColor]])
+        .concat([["clear", (str: string) => colors.stripColor(str)], [
+          "none",
+          (str: string) => str,
+        ]])
         .flatMap(([style, fn]) => {
           return [
             ...(s !== undefined &&

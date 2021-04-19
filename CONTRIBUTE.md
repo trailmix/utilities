@@ -20,9 +20,8 @@ deno test --allow-write --allow-read --allow-env --unstable --import-map=import_
 # run all tests
 deno test --allow-write --allow-read --allow-env --unstable --import-map=import_map.json --fail-fast --coverage=./coverage/output
 # generage lcov.info, must have exclude as the default doesn't have the _
-deno coverage --exclude="(c|C)onf(ig){0,1}\.(ts|js|tsx)" --exclude="_test\.(ts|js)" --unstable ./coverage --lcov > ./coverage/lcov.info
+deno coverage --exclude="(_|.)conf(ig){0,1}\.(ts|js|tsx)" --exclude="_test\.(ts|js)" --unstable ./coverage --lcov > ./coverage/lcov.info
 # at this point you would reload you coverage with SHIFT+CMD+7 or F1 + "Display Coverage" + enter
-
 # optionally, generate a coverage report to view in a browser
 genhtml -o coverage/html ./coverage/lcov.info
 ```

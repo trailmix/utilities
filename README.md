@@ -1,29 +1,4 @@
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  .markdown-body {
-    box-sizing: border-box;
-    min-width: 200px;
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 45px;
-  }
-  .responsive-small {
-    width: 100%;
-    max-width: 200px;
-    height: auto;
-  }
-  .responsive {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-  }
-  @media (max-width: 767px) {
-    .markdown-body {
-      padding: 15px;
-    }
-  }
-</style>
-<article class="markdown-body">
+
 <h1 align="center">trailmix/utilities</h1>
 
 <h3 align="center">Repository of utilities for deno written in typescript for trailmix🌤🦕🍣😼</h3>
@@ -63,10 +38,10 @@
 </p>
 <p align="center">
   <a href="https://app.codecov.io/gh/trailmix/utilities" align="left">
-    <img src="https://codecov.io/gh/trailmix/utilities/branch/master/graphs/tree.svg" alt="codecov master" class="responsive-small"/>
+    <img src="https://codecov.io/gh/trailmix/utilities/branch/master/graphs/tree.svg" alt="codecov master"/>
   </a>
   <a href="https://app.codecov.io/gh/trailmix/utilities/branch/next" align="right">
-    <img src="https://codecov.io/gh/trailmix/utilities/branch/next/graphs/tree.svg" alt="codecov next" class="responsive-small"/>
+    <img src="https://codecov.io/gh/trailmix/utilities/branch/next/graphs/tree.svg" alt="codecov next">
   </a>
 </p>
 
@@ -77,7 +52,7 @@
 <a href="https://deno.land/x/trailmix/src/color">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-color-BGc.png"
-    alt="goofus_colors goofus colors trailmix deno typescript" class="responsive" 
+    alt="goofus_colors goofus colors trailmix deno typescript" 
   />
 </a>
 
@@ -181,7 +156,7 @@ console.log(C.random("test some string", rConf)); // random function
 <a href="https://deno.land/x/trailmix/src/config">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-config.png"
-    alt="goofus_config goofus config trailmix deno typescript" class="responsive" 
+    alt="goofus_config goofus config trailmix deno typescript"  
   />
 </a>
 
@@ -241,7 +216,7 @@ console.log(cfg); // will give a log config with {console: { color: false, level
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-log.png"
     alt="goofus_log goofus log trailmix deno typescript"
-    class="responsive" 
+     
   />
 </a>
 
@@ -311,18 +286,20 @@ lNew.debug("debug");
 ```
 
 ### Watch
+<p align="right">
 <a href="https://deno.land/x/trailmix/src/watch">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-watch.png"
-    alt="goofus_watch goofus watch trailmix deno typescript" class="responsive"
+    alt="goofus_watch goofus watch trailmix deno typescript" 
   />
 </a>
+</p>
 
 ### common
 <a href="https://deno.land/x/trailmix/src/common">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/bidOOF.png"
-    alt="goofus_common goofOOF common trailmix deno typescript" class="responsive"
+    alt="goofus_common goofOOF common trailmix deno typescript" width=500
   />
 </a>
 
@@ -343,5 +320,3 @@ for (const a of alpha) {
 }
 resetTable({ table: tR as Table, maxColWidth: 100 }).render();
 ```
-
-</article>

@@ -7,7 +7,7 @@ import {
   validPath,
 } from "trailmix/common/mod.ts";
 import type { ImportOptions } from "trailmix/common/mod.ts";
-import { resolve } from "trailmix/deps.ts";
+import { join, resolve, toFileUrl } from "trailmix/deps.ts";
 
 let table = resetTable();
 
@@ -44,11 +44,11 @@ const validPathTests: Record<
 > = {
   relative: {
     i: "./input_config.ts",
-    o: resolve(Deno.cwd(), "input_config.ts"),
+    o: resolve(join(Deno.cwd(), "input_config.ts")),
   },
   absolute: {
     i: Deno.cwd() + "/input_config.ts",
-    o: resolve(Deno.cwd(), "input_config.ts"),
+    o: resolve(join(Deno.cwd(), "input_config.ts")),
   },
   nofile: {
     i: "/Error.ts",
@@ -71,7 +71,7 @@ const importTests: Record<
 > = {
   file: {
     i: {
-      importPath: resolve(Deno.cwd(), "input_config.ts"),
+      importPath: resolve(join(Deno.cwd(), "input_config.ts")),
       options: {},
       cache: {},
     },
@@ -79,7 +79,7 @@ const importTests: Record<
   },
   reload: {
     i: {
-      importPath: resolve(Deno.cwd(), "input_config.ts"),
+      importPath: resolve(join(Deno.cwd(), "input_config.ts")),
       options: { reload: true },
       cache: {},
     },
@@ -87,10 +87,10 @@ const importTests: Record<
   },
   cache: {
     i: {
-      importPath: resolve(Deno.cwd(), "input_config.ts"),
+      importPath: resolve(join(Deno.cwd(), "input_config.ts")),
       options: {},
       cache: {
-        ["file://" + resolve(Deno.cwd(), "input_config.ts")]: {
+        [toFileUrl(resolve(join(Deno.cwd(), "input_config.ts"))).href]: {
           "default": { "consoleFormat": "json" },
         },
       },
@@ -99,7 +99,7 @@ const importTests: Record<
   },
   colon: {
     i: {
-      importPath: "D:" + resolve(Deno.cwd(), "input_config.ts"),
+      importPath: "D:" + resolve(join(Deno.cwd(), "input_config.ts")),
       options: {},
       cache: {},
     },
@@ -108,7 +108,7 @@ const importTests: Record<
   },
   nofile: {
     i: {
-      importPath: resolve(Deno.cwd(), "Error.ts"),
+      importPath: resolve(join(Deno.cwd(), "Error.ts")),
       options: {},
       cache: {},
     },

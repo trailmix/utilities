@@ -1,4 +1,4 @@
-import { existsSync, extname, resolve } from "trailmix/deps.ts";
+import { existsSync, extname, resolve, toFileUrl } from "trailmix/deps.ts";
 
 import type { ImportOptions, ModuleExtension } from "trailmix/common/mod.ts";
 const modules: Record<ModuleExtension, string[]> = {
@@ -35,7 +35,7 @@ export async function import_<T = unknown>(
 ): Promise<T> {
   let finalImportPath = importPath;
   if (finalImportPath.startsWith("/") || finalImportPath.substr(1, 1) === ":") {
-    finalImportPath = `file://${finalImportPath}`;
+    finalImportPath = toFileUrl(finalImportPath).href;
   }
   if (!options.reload) {
     if (cache[finalImportPath]) {

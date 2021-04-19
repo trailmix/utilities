@@ -65,8 +65,8 @@ function testRegExp(prefix?: string, suffix?: string) {
   if (prefix !== undefined && suffix !== undefined) {
     ret = new RegExp(
       "\\S*(\\u001b\\[" + prefix +
-        "m){1}\\S*(color|emphasis|bgColor){1}\\S*(\\u001b\\[" + suffix +
-        "m){1}\\S*",
+        "m){0,1}\\S*(color|emphasis|bgColor){1}\\S*(\\u001b\\[" + suffix +
+        "m){0,1}\\S*",
     );
   }
   return ret;

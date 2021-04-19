@@ -42,45 +42,6 @@ export default class EnvConfig extends Config {
     }
     return ret;
   }
-  parseEnv(
-    env = Deno.env.toObject(),
-    namespace: string = this.namespace,
-  ): CommandOptions {
-    return EnvConfig.parseEnv(env, namespace);
-  }
-  /**
-   * merge a CommandOptions into a LogConfigMap
-   * @param {CommandOptions} config {console: {level: "DEBUG", enabled: true} }
-   * @example
-   * const log: LogConfigMap = EnvConfig.parseLog({console: {level: "DEBUG"} });
-   * // returns full log object
-   * { 
-   *  console: {
-   *   level: "DEBUG",
-   *   format: "string",
-   *   color: true,
-   *   date: false,
-   *   enabled: true,
-   * },
-   *  file: {
-   *   level: "ERROR",
-   *   format: "json",
-   *   path: ".",
-   *   date: false,
-   *   enabled: false,
-   * }}
-   */
-  // static parseLog(
-  //   log: LogConfigMap = this.parseEnv(Deno.env.toObject()).log as LogConfigMap,
-  // ): LogConfigMap {
-  //   return mergeDeep(
-  //     Config.config.log,
-  //     {
-  //       console: log.console ?? {},
-  //       file: log.file ?? {},
-  //     } as LogConfigMap,
-  //   );
-  // }
   /**
    * turn a string{str}(TEST_ABC_A_B_C) into an object excluding a string{ex}(TEST)
    * while carrying a final string{value}(hello) with a string deliminator{delim}(_)
@@ -116,12 +77,18 @@ export default class EnvConfig extends Config {
     const nextK = nextI === -1 ? strReplace : strReplace.slice(0, nextI);
     return { [lower ? nextK.toLowerCase() : nextK]: nextV };
   }
-  public constructor(opts?: ConfigOptions | Config | FlagConfig | FileConfig) {
+  constructor(opts?: ConfigOptions | Config | FlagConfig | FileConfig) {
     super({ ...{ namespace: EnvConfig.namespace }, ...opts });
     this.config = mergeDeep(
       opts?.config ?? {},
       this.parseEnv(Deno.env.toObject()),
     );
     this.log = Config.parseLog(this.config.log as LogConfigMap);
+  }
+  parseEnv(
+    env = Deno.env.toObject(),
+    namespace: string = this.namespace,
+  ): CommandOptions {
+    return EnvConfig.parseEnv(env, namespace);
   }
 }

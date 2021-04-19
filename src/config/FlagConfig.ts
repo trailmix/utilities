@@ -35,39 +35,6 @@ export default class FlagConfig extends Config {
     return ret;
   }
   /**
-   * merge a CommandOptions into a LogConfigMap
-   * @param {CommandOptions} config {console: {level: "DEBUG", enabled: true} }
-   * @example
-   * const log: LogConfigMap = FlagConfig.parseLog({console: {level: "DEBUG"} });
-   * // returns full log object
-   * { 
-   *  console: {
-   *   level: "DEBUG",
-   *   format: "string",
-   *   color: true,
-   *   date: false,
-   *   enabled: true,
-   * },
-   *  file: {
-   *   level: "ERROR",
-   *   format: "json",
-   *   path: ".",
-   *   date: false,
-   *   enabled: false,
-   * }}
-   */
-  // static parseLog(
-  //   config: LogConfigMap = Config.config,
-  // ): LogConfigMap {
-  //   return mergeDeep(
-  //     Config.config.log,
-  //     {
-  //       console: config.console ?? {},
-  //       file: config.file ?? {},
-  //     } as LogConfigMap,
-  //   );
-  // }
-  /**
    * turn a string{str}(test5TestwordTestphraseTestnameTest) into an object based on capital letters
    * while carrying a final string{value}(hello) with a string deliminator{delim}(_)
    * @param {string} str parse
@@ -98,7 +65,7 @@ export default class FlagConfig extends Config {
     const nextK = nextI === str.length ? str : str.slice(0, nextI);
     return { [nextK]: nextV };
   }
-  public constructor(
+  constructor(
     opts?: ConfigOptions | EnvConfig | FileConfig | Config,
     flags?: CommandOptions,
   ) {

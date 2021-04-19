@@ -3,10 +3,10 @@
 <h3 align="center">Repository of utilities for deno written in typescript for trailmix🌤🦕🍣😼</h3>
 <p align="center">
   <a href="https://deno.land">
-    <img src="https://img.shields.io/badge/Deno-1.8.1-brightgreen.svg?logo=deno" alt="deno" />
+    <img src="https://img.shields.io/badge/Deno-1.9.0-brightgreen.svg?logo=deno" alt="deno" />
   </a>
-  <a href="https://github.com/trailmix/utilities">
-    <img src="https://img.shields.io/badge/utilities-vNEXT-green.svg" alt="trailmix utilities" />
+  <a href="https://deno.land/x/trailmix">
+    <img src="https://img.shields.io/badge/utilities-v1.0.5-green.svg" alt="trailmix utilities" />
   </a>
   <a href="http://djkittyplayz.art/">
     <img src="https://img.shields.io/badge/art-djkittyplayz-yellow" alt="art djkittyplayz" />

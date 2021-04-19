@@ -19,9 +19,9 @@ jobs:
           fetch-depth: 0
 
       - name: Setup deno
-        uses: denolib/setup-deno@v2
+        uses: denoland/setup-deno@main
         with:
-          deno-version: v1.8.1
+          deno-version: v1.9.0
 
       - name: Run tests (linux/win)
         if: matrix.os != 'macos-latest'

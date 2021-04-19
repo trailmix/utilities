@@ -6,7 +6,7 @@ COPY src src
 COPY mod.ts .
 COPY import_map.json .
 
-FROM hayd/alpine-deno:1.8.1 AS runner
+FROM hayd/alpine-deno:1.9.0 AS runner
 COPY --from=organizer /out /
 
 # Install 

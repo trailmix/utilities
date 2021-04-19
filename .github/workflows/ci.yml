@@ -23,15 +23,15 @@ jobs:
         with:
           deno-version: v1.8.1
 
-      - name: Run tests (linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json --coverage=./coverage/output
+      - name: Run tests (linux/win)
+        if: matrix.os != 'macos-latest'
+        run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json --coverage=coverage/output
 
-      - name: Run tests (win/darwin)
+      - name: Run tests (darwin)
         if: matrix.os != 'ubuntu-latest'
         run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json
 
-      - name: Generate codecov report
+      - name: Generate codecov report (linux/win)
         if: matrix.os != 'macos-latest'
         run: deno coverage --exclude="(_|.)conf(ig){0,1}\.(ts|js|tsx)" --exclude="_test\.(ts|js)" --unstable ./coverage --lcov > ./coverage/lcov.info
 

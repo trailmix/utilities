@@ -13,7 +13,7 @@ import {
   testFunctionAsync,
 } from "trailmix/common/mod.ts";
 import type { CommandOptions, LogConfigMap } from "trailmix/config/mod.ts";
-import { resolve } from "trailmix/deps.ts";
+import { join, resolve } from "trailmix/deps.ts";
 
 let table = resetTable();
 const defaultConfig = Object.assign({}, new Config().config);
@@ -88,7 +88,7 @@ const FileConfigTests: Record<
       namespace: "DEFAULT",
       config: {},
       log: defaultConfig.log,
-      path: resolve(Deno.cwd(), "trailmix.config.ts"),
+      path: resolve(join(Deno.cwd(), "trailmix.config.ts")),
     } as ConfigOptions,
   },
   log: {
@@ -119,13 +119,13 @@ const FileConfigTests: Record<
   nsObject: {
     i: {
       namespace: "TRILOM",
-      path: Deno.cwd() + "/trilom.config.ts",
+      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
     } as ConfigOptions,
     o: {
       namespace: "TRILOM",
       config: {},
       log: defaultConfig.log,
-      path: Deno.cwd() + "/trilom.config.ts",
+      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
     } as ConfigOptions,
   },
   nsObjectNoPath: {
@@ -136,7 +136,7 @@ const FileConfigTests: Record<
       namespace: "TRILOM",
       config: {},
       log: defaultConfig.log,
-      path: Deno.cwd() + "/trilom.config.ts",
+      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
     } as ConfigOptions,
   },
   nsObjectParsed: {
@@ -163,93 +163,10 @@ const FileConfigTests: Record<
           "enabled": false,
         },
       },
-      path: Deno.cwd() + "/trilom.config.ts",
+      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
     } as ConfigOptions,
   },
 };
-const EnvConfigTests: Record<
-  string,
-  & Record<"i", string | CommandOptions | ConfigOptions>
-  & Record<
-    "o",
-    ConfigOptions | LogConfigMap | FileConfig | CommandOptions | string
-  >
-> = {
-  object: {
-    i: "default",
-    o: {
-      namespace: "DEFAULT",
-      config: defaultConfig,
-      log: defaultConfig.log,
-      path: Deno.cwd() + "/trailmix.config.ts",
-    } as ConfigOptions,
-  },
-  log: {
-    i: {
-      log: { console: { format: "json" } },
-    },
-    o: {
-      "console": {
-        "level": "ERROR",
-        "format": "json",
-        "color": true,
-        "date": false,
-        "enabled": true,
-      },
-      "file": {
-        "level": "ERROR",
-        "format": "json",
-        "path": ".",
-        "date": false,
-        "enabled": false,
-      },
-    },
-  },
-  config: {
-    i: "default",
-    o: defaultConfig,
-  },
-  nsObject: {
-    i: {
-      namespace: "TRILOM",
-      path: Deno.cwd() + "/trilom.config.ts",
-    } as ConfigOptions,
-    o: {
-      namespace: "TRILOM",
-      config: defaultConfig,
-      log: defaultConfig.log,
-      path: Deno.cwd() + "/trilom.config.ts",
-    } as ConfigOptions,
-  },
-  nsObjectParsed: {
-    i: "",
-    o: {
-      namespace: "TRILOM",
-      config: {
-        log: { console: { level: "DEBUG" } },
-        test: { test1: "hello" },
-      },
-      log: {
-        "console": {
-          "level": "DEBUG",
-          "format": "string",
-          "color": true,
-          "date": false,
-          "enabled": true,
-        },
-        "file": {
-          "level": "ERROR",
-          "format": "json",
-          "path": ".",
-          "date": false,
-          "enabled": false,
-        },
-      },
-      path: Deno.cwd() + "/trilom.config.ts",
-    } as ConfigOptions,
-  },
-};
-
 async function writeFile(
   file = "trailmix.config.ts",
   cwd = true,
@@ -379,7 +296,6 @@ Deno.test({
         table = renderTable(table, false);
       }
       if (obj === "EnvConfig") {
-        const t = EnvConfigTests;
         const cfgS = objFactoryStatic(obj) as typeof EnvConfig;
         Deno.env.delete("DEFAULT_LOG_CONSOLE_LEVEL");
         Deno.env.delete("DEFAULT_TEST1");

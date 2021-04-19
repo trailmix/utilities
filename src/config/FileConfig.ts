@@ -4,7 +4,7 @@ import { default as EnvConfig } from "trailmix/config/EnvConfig.ts";
 import { CommandOptions, ConfigOptions } from "trailmix/config/Config.d.ts";
 import { mergeDeep } from "trailmix/common/mod.ts";
 import { importDefault, validPath } from "trailmix/common/mod.ts";
-import { resolve } from "trailmix/deps.ts";
+import { join, resolve } from "trailmix/deps.ts";
 import type { LogConfigMap } from "trailmix/log/mod.ts";
 
 /** Construct a FileConfig
@@ -26,7 +26,7 @@ import type { LogConfigMap } from "trailmix/log/mod.ts";
  * console.log(await cfg.parseEnv())
  */
 export default class FileConfig extends Config {
-  static path = resolve(Deno.cwd(), "trailmix.config.ts");
+  static path = resolve(join(Deno.cwd(), "trailmix.config.ts"));
   static config: CommandOptions = {
     log: mergeDeep(Config.config.log, { file: { enabled: true } }),
   };
@@ -37,14 +37,14 @@ export default class FileConfig extends Config {
     super({ ...{ namespace: FileConfig.namespace }, ...opts });
     this.config = opts?.config ?? {};
     this.path = (opts as ConfigOptions)?.path ??
-      resolve(
+      resolve(join(
         Deno.cwd(),
         `${
           this.namespace === "DEFAULT"
             ? "trailmix"
             : this.namespace.toLowerCase()
         }.config.ts`,
-      );
+      ));
   }
   // set valid path in private var
   async parseFile(

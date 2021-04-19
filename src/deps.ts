@@ -1,7 +1,7 @@
 // watcher deps
 // export { bytesToUuid } from "uuid/_common.ts";
 export { v4 } from "uuid/mod.ts";
-export { extname, relative, resolve } from "path/mod.ts";
+export { extname, join, relative, resolve, toFileUrl } from "path/mod.ts";
 export { exists, existsSync } from "fs/mod.ts";
 
 // color deps

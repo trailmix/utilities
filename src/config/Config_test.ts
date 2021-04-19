@@ -13,6 +13,7 @@ import {
   testFunctionAsync,
 } from "trailmix/common/mod.ts";
 import type { CommandOptions, LogConfigMap } from "trailmix/config/mod.ts";
+import { resolve } from "trailmix/deps.ts";
 
 let table = resetTable();
 const defaultConfig = Object.assign({}, new Config().config);
@@ -87,7 +88,7 @@ const FileConfigTests: Record<
       namespace: "DEFAULT",
       config: {},
       log: defaultConfig.log,
-      path: Deno.cwd() + "/trailmix.config.ts",
+      path: resolve(Deno.cwd(), "trailmix.config.ts"),
     } as ConfigOptions,
   },
   log: {

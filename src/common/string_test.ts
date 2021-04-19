@@ -66,7 +66,7 @@ const stringifyAnyTests: Record<
   error: {
     i: new Error("test"),
     o: `Error: test\n    at file://${
-      resolve(Deno.cwd() + "/src/common/string_test.ts")
+      resolve(Deno.cwd(), "/src/common/string_test.ts")
     }:67:8`,
   },
   object: {

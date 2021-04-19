@@ -43,4 +43,4 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           choco install codecov
-          codecov.exe -F config -f coverage/lcov.info
+          codecov.exe --flag config -f coverage/lcov.info

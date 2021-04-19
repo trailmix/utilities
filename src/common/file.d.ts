@@ -2,8 +2,8 @@ export interface ImportOptions {
   reload?: boolean;
 }
 
-export type FileExtension =
+export type ModuleExtension =
   | "ts"
-  | "yaml"
-  | "json"
-  | "js";
+  | "tsx"
+  | "js"
+  | "jsx";

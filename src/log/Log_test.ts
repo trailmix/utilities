@@ -289,7 +289,6 @@ Deno.test({
       // set level to WARNING
       new FlagConfig({ flags: { logConsoleLevel: "WARNING" } }).log,
     );
-    console.log(l);
     testFunction("Init default logger with level configuration", table, [
       l.success("success"),
       l.error("error"),

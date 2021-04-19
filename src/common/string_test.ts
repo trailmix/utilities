@@ -4,6 +4,7 @@ import {
   stringifyBigInt,
   testFunction,
 } from "trailmix/common/mod.ts";
+import { resolve } from "trailmix/deps.ts";
 
 let table = resetTable();
 
@@ -64,7 +65,9 @@ const stringifyAnyTests: Record<
   },
   error: {
     i: new Error("test"),
-    o: "Error: test\n    at file:///Users/bkillian/trailmix/utilities/src/common/string_test.ts:66:8",
+    o: `Error: test\n    at file://${
+      resolve(Deno.cwd() + "/src/common/string_test.ts")
+    }:67:8`,
   },
   object: {
     i: { test: "test" },

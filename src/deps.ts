@@ -19,6 +19,7 @@ export type { BaseHandler, FileHandler } from "log/handlers.ts";
 export type { LogConfig as stdLogConfig } from "log/mod.ts";
 export { getLevelByName, LogLevels } from "log/levels.ts";
 export { LogRecord } from "log/logger.ts";
+export { format } from "datetime/mod.ts";
 
 // test deps
 export {

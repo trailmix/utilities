@@ -1,32 +1,22 @@
-import { exists, extname, resolve } from "trailmix/deps.ts";
+import { existsSync, extname, resolve } from "trailmix/deps.ts";
 
-import type { FileExtension, ImportOptions } from "trailmix/common/mod.ts";
-
-const files: Record<FileExtension, string[]> = {
+import type { ImportOptions, ModuleExtension } from "trailmix/common/mod.ts";
+const modules: Record<ModuleExtension, string[]> = {
   ts: ["ts", "tsx"],
-  yaml: ["yaml", "yml"],
-  json: ["json"],
+  tsx: ["ts", "tsx"],
   js: ["js", "jsx"],
+  jsx: ["js", "jsx"],
 };
+export function isModule(file: string): boolean {
+  return Object.keys(modules).includes(extname(file).slice(1));
+}
 
-export async function validPath(
+export function validPath(
   file: string,
-  ext: FileExtension,
-  dir = ".",
-) {
-  let found = false;
-  let path = "";
-  for (const _ext of files[ext]) {
-    path = resolve(dir, `${file}.${_ext}`);
-    if ((await exists(path))) {
-      found = true;
-      break;
-    }
-  }
-  if (found) return path;
-  else {
-    throw new Error(`${file}.${files[ext].join("/")} does not exist`);
-  }
+): string | false {
+  const path = resolve(file);
+  const found = existsSync(path);
+  return found ? path : found;
 }
 /** Replacement of dynamic import default */
 export async function importDefault<T = unknown>(

@@ -41,4 +41,6 @@ jobs:
       
       - name: Push codecov report (win)
         if: matrix.os == 'windows-latest'
-        run: choco install codecov -F config
+        run: |
+          choco install codecov
+          codecov.exe -F config -f coverage/lcov.info

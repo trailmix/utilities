@@ -3,8 +3,7 @@ import { default as FlagConfig } from "trailmix/config/FlagConfig.ts";
 import { default as EnvConfig } from "trailmix/config/EnvConfig.ts";
 import { CommandOptions, ConfigOptions } from "trailmix/config/Config.d.ts";
 import { mergeDeep } from "trailmix/common/mod.ts";
-import { importDefault, validPath } from "trailmix/common/mod.ts";
-import { join, resolve } from "trailmix/deps.ts";
+import { importDefault, toFileUrlDeep } from "trailmix/common/mod.ts";
 import type { LogConfigMap } from "trailmix/log/mod.ts";
 
 /** Construct a FileConfig
@@ -26,42 +25,40 @@ import type { LogConfigMap } from "trailmix/log/mod.ts";
  * console.log(await cfg.parseEnv())
  */
 export default class FileConfig extends Config {
-  static path = resolve(join(Deno.cwd(), "trailmix.config.ts"));
+  static path = toFileUrlDeep([Deno.cwd(), FileConfig.parseConfigName()]);
   static config: CommandOptions = {
     log: mergeDeep(Config.config.log, { file: { enabled: true } }),
   };
   path = FileConfig.path;
   #importCache: Record<string, string> = {};
-
+  private static parseConfigName(namespace = this.namespace) {
+    return (namespace === "DEFAULT" ? "trailmix" : namespace.toLowerCase()) +
+      ".config.ts";
+  }
   constructor(opts?: ConfigOptions | Config | FlagConfig | EnvConfig) {
     super({ ...{ namespace: FileConfig.namespace }, ...opts });
     this.config = opts?.config ?? {};
-    this.path = (opts as ConfigOptions)?.path ??
-      resolve(join(
-        Deno.cwd(),
-        `${
-          this.namespace === "DEFAULT"
-            ? "trailmix"
-            : this.namespace.toLowerCase()
-        }.config.ts`,
-      ));
+    this.path = toFileUrlDeep(
+      (opts as ConfigOptions)?.path ??
+        [
+          Deno.cwd(),
+          FileConfig.parseConfigName(this.namespace),
+        ],
+    );
   }
   // set valid path in private var
   async parseFile(
     path = this.path,
   ): Promise<FileConfig> {
-    const valid = validPath(path);
     try {
-      if (valid !== false) {
-        this.path = valid;
-        this.config = mergeDeep(
-          this.config,
-          Config.parse(
-            await this.getConfiguration(this.path),
-          ),
-        );
-        this.log = Config.parseLog(this.config.log as LogConfigMap);
-      } else throw new Error(`path:${path} is not valid`);
+      this.path = toFileUrlDeep(path);
+      this.config = mergeDeep(
+        this.config,
+        Config.parse(
+          await this.getConfiguration(this.path),
+        ),
+      );
+      this.log = Config.parseLog(this.config.log as LogConfigMap);
     } catch (e) {
       throw e;
     }

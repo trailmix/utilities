@@ -9,7 +9,12 @@ export {
 
 export { unique } from "trailmix/common/array.ts";
 
-export { importDefault, isModule, validPath } from "trailmix/common/file.ts";
+export {
+  importDefault,
+  isModule,
+  toFileUrlDeep,
+  validPath,
+} from "trailmix/common/file.ts";
 
 // @deno-types="./file.d.ts"
 export type { ImportOptions, ModuleExtension } from "trailmix/common/file.d.ts";

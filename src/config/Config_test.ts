@@ -13,7 +13,7 @@ import {
   testFunctionAsync,
 } from "trailmix/common/mod.ts";
 import type { CommandOptions, LogConfigMap } from "trailmix/config/mod.ts";
-import { join, resolve } from "trailmix/deps.ts";
+import { join, resolve, toFileUrl } from "trailmix/deps.ts";
 
 let table = resetTable();
 const defaultConfig = Object.assign({}, new Config().config);
@@ -88,7 +88,7 @@ const FileConfigTests: Record<
       namespace: "DEFAULT",
       config: {},
       log: defaultConfig.log,
-      path: resolve(join(Deno.cwd(), "trailmix.config.ts")),
+      path: toFileUrl(resolve(join(Deno.cwd(), "trailmix.config.ts"))).href,
     } as ConfigOptions,
   },
   log: {
@@ -119,13 +119,13 @@ const FileConfigTests: Record<
   nsObject: {
     i: {
       namespace: "TRILOM",
-      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
     } as ConfigOptions,
     o: {
       namespace: "TRILOM",
       config: {},
       log: defaultConfig.log,
-      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
     } as ConfigOptions,
   },
   nsObjectNoPath: {
@@ -136,7 +136,7 @@ const FileConfigTests: Record<
       namespace: "TRILOM",
       config: {},
       log: defaultConfig.log,
-      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
     } as ConfigOptions,
   },
   nsObjectParsed: {
@@ -163,7 +163,7 @@ const FileConfigTests: Record<
           "enabled": false,
         },
       },
-      path: resolve(join(Deno.cwd(), "trilom.config.ts")),
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
     } as ConfigOptions,
   },
 };

@@ -4,12 +4,32 @@ import {
   resetTable,
   testFunction,
   testFunctionAsync,
+  toFileUrlDeep,
   validPath,
 } from "trailmix/common/mod.ts";
 import type { ImportOptions } from "trailmix/common/mod.ts";
 import { join, resolve, toFileUrl } from "trailmix/deps.ts";
 
 let table = resetTable();
+
+const toFileUrlDeepTests: Record<
+  string,
+  & Record<"i", string[] | string>
+  & Record<"o", string>
+> = {
+  posix: {
+    i: [Deno.cwd(), "input_config.ts"],
+    o: toFileUrl(join(Deno.cwd(), "input_config.ts")).href,
+  },
+  url: {
+    i: ["file://", "src", "input_config.ts"],
+    o: join("file://", "src", "input_config.ts"),
+  },
+  urlString: {
+    i: join("file://", "src", "input_config.ts"),
+    o: join("file://", "src", "input_config.ts"),
+  },
+};
 
 const isModuleTests: Record<
   string,
@@ -50,6 +70,14 @@ const validPathTests: Record<
     i: Deno.cwd() + "/input_config.ts",
     o: resolve(join(Deno.cwd(), "input_config.ts")),
   },
+  file: {
+    i: "file://" + Deno.cwd() + "/input_config.ts",
+    o: resolve(join(Deno.cwd(), "input_config.ts")),
+  },
+  // list: {
+  //   i: [Deno.cwd(), "input_config.ts"],
+  //   o: resolve(join(Deno.cwd(), "input_config.ts")),
+  // },
   nofile: {
     i: "/Error.ts",
     o: false,
@@ -97,22 +125,13 @@ const importTests: Record<
     },
     o: { consoleFormat: "json" },
   },
-  colon: {
-    i: {
-      importPath: "D:" + resolve(join(Deno.cwd(), "input_config.ts")),
-      options: {},
-      cache: {},
-    },
-    // this test might work unexpectedly on winders, /shrug
-    o: TypeError.name,
-  },
   nofile: {
     i: {
       importPath: resolve(join(Deno.cwd(), "Error.ts")),
       options: {},
       cache: {},
     },
-    o: TypeError.name,
+    o: Error.name,
   },
 };
 
@@ -128,6 +147,18 @@ async function writeFile(
 }
 const f = testFunction;
 const fa = testFunctionAsync;
+Deno.test({
+  name: "file.ts " + toFileUrlDeep.name,
+  fn: () => {
+    const t = toFileUrlDeepTests;
+    const fn = toFileUrlDeep;
+    f(fn.name + " posix", table, fn(t.posix.i), t.posix.o);
+    f(fn.name + " url", table, fn(t.url.i), t.url.o);
+    f(fn.name + " urlString", table, fn(t.urlString.i), t.urlString.o);
+    table.render();
+    table = resetTable();
+  },
+});
 Deno.test({
   name: "file.ts " + isModule.name,
   fn: () => {
@@ -150,6 +181,7 @@ Deno.test({
       const fn = validPath;
       f(fn.name + " " + t.relative.i, table, fn(t.relative.i), t.relative.o);
       f(fn.name + " " + t.absolute.i, table, fn(t.absolute.i), t.absolute.o);
+      f(fn.name + " " + t.file.i, table, fn(t.file.i), t.file.o);
       f(fn.name + " " + t.nofile.i, table, fn(t.nofile.i), t.nofile.o);
       table.render();
       table = resetTable();
@@ -182,13 +214,6 @@ Deno.test({
         async () =>
           await fn(t.cache.i.importPath, t.cache.i.options, t.cache.i.cache),
         t.cache.o,
-      );
-      await fa(
-        fn.name + " colon",
-        table,
-        async () =>
-          await fn(t.colon.i.importPath, t.colon.i.options, t.colon.i.cache),
-        t.colon.o,
       );
       await fa(
         fn.name + " nofile",

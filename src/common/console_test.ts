@@ -47,7 +47,7 @@ const consoleColorTests: Record<
   error: {
     i: new Error("test"),
     o: `%cError: test%c\n    at file://${
-      resolve(Deno.cwd(), "/src/common/console_test.ts")
+      resolve(Deno.cwd(), "src", "common", "console_test.ts")
     }:%c48%c:%c8%c`,
   },
   object: {
@@ -103,7 +103,7 @@ const ansiColorTests: Record<
   error: {
     i: new Error("test"),
     o: `\u001b[38;2;255;0;0mError: test\u001b[39m\n    at file://${
-      resolve(Deno.cwd(), "/src/common/console_test.ts")
+      resolve(Deno.cwd(), "src", "common", "console_test.ts")
     }:\u001b[38;2;255;215;0m104\u001b[39m:\u001b[38;2;255;215;0m8\u001b[39m`,
   },
   object: {

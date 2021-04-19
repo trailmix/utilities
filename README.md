@@ -1,4 +1,3 @@
-
 <h1 align="center">trailmix/utilities</h1>
 
 <h3 align="center">Repository of utilities for deno written in typescript for trailmix🌤🦕🍣😼</h3>
@@ -46,13 +45,15 @@
 </p>
 
 ## [CONTRIBUTE - learn how to help 🧪👉💩🙏 💯👆](CONTRIBUTE.md)
+
 ## Usage
 
 ### Colors
+
 <a href="https://deno.land/x/trailmix/src/color">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-color-BGc.png"
-    alt="goofus_colors goofus colors trailmix deno typescript" 
+    alt="goofus_colors goofus colors trailmix deno typescript"
   />
 </a>
 
@@ -153,17 +154,21 @@ console.log(C.random("test some string", rConf)); // random function
 ```
 
 ### Config
+
 <a href="https://deno.land/x/trailmix/src/config">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-config.png"
-    alt="goofus_config goofus config trailmix deno typescript"  
+    alt="goofus_config goofus config trailmix deno typescript"
   />
 </a>
 
 **Simple**
 
 ```typescript
-import { EnvConfig, FlagConfig } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+import {
+  EnvConfig,
+  FlagConfig,
+} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 Deno.env.set("DEFAULT_TEST1", "val1"); // set example env var in DEFAULT namespace
 // slurp up env vars
@@ -185,7 +190,11 @@ console.log(FlagConfig.parseFlags({
 **Complex**
 
 ```typescript
-import { EnvConfig, FlagConfig, FileConfig } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+import {
+  EnvConfig,
+  FileConfig,
+  FlagConfig,
+} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 // set env first is if it was there before runtime
 Deno.env.set("TRILOM_LOG_CONSOLE_LEVEL", "DEBUG");
@@ -212,15 +221,17 @@ console.log(cfg); // will give a log config with {console: { color: false, level
 ```
 
 ### Log
+
 <a href="https://deno.land/x/trailmix/src/log">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-log.png"
     alt="goofus_log goofus log trailmix deno typescript"
-     
-  />
+
+/>
 </a>
 
 **Simple**
+
 ```typescript
 import { Log, random as r } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 Log.error("basic britches👖"); // in red "[default] basic britches👖"
@@ -244,25 +255,30 @@ Log.error("error", "trust me, its 👌"); //
 Log.success(
   "silly " + r("r") + r("a") + r("n") + r("d") + r("o") + r("m") + " strang",
 );
-
 ```
+
 **Complex**
+
 ```typescript
-import { Log, EnvConfig, FlagConfig } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+import {
+  EnvConfig,
+  FlagConfig,
+  Log,
+} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 // make a logger with flags
 const l = await new Log(
   "default",
   new FlagConfig({
-  flags: {
-    logConsoleLevel: "DEBUG",
-    logConsoleFormat: "json",
-    logFileEnabled: true,
-    logFilePath: ".",
-    logFileLevel: "DEBUG",
-    logFileFormat: "string",
-  },
-}).log,
+    flags: {
+      logConsoleLevel: "DEBUG",
+      logConsoleFormat: "json",
+      logFileEnabled: true,
+      logFilePath: ".",
+      logFileLevel: "DEBUG",
+      logFileFormat: "string",
+    },
+  }).log,
 ).init();
 // now log, 5 console json messages, and 5 string file messages
 l.success("success");
@@ -286,16 +302,18 @@ lNew.debug("debug");
 ```
 
 ### Watch
+
 <p align="right">
 <a href="https://deno.land/x/trailmix/src/watch">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-watch.png"
-    alt="goofus_watch goofus watch trailmix deno typescript" 
+    alt="goofus_watch goofus watch trailmix deno typescript"
   />
 </a>
 </p>
 
 ### common
+
 <a href="https://deno.land/x/trailmix/src/common">
   <img
     src="https://trailmix-images.s3.amazonaws.com/gooface/bidOOF.png"
@@ -303,10 +321,14 @@ lNew.debug("debug");
   />
 </a>
 
+Use color, and table to build a table of 26 rows with 26 random styled letter in
+each row.
 
-Use color, and table to build a table of 26 rows with 26 random styled letter in each row.
 ```typescript
-import { random as r, resetTable } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+import {
+  random as r,
+  resetTable,
+} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 import type { Table } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
 
 const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

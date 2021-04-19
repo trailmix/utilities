@@ -19,11 +19,11 @@ const reg = {
   argument: new RegExp(/\nArguments:(\[\n(\s|\S)*\n\])/),
   error: new RegExp(/^[A-Za-z]*Error: [a-zA-Z0-9]*/),
   bigint: new RegExp(
-    `^[0-9]{${Number.MAX_SAFE_INTEGER.toString().length - 1},}`,
+    `^\"{0,1}[0-9]{${Number.MAX_SAFE_INTEGER.toString().length - 1},}\"{0,1}`,
   ),
   string: new RegExp(/^"/),
   key: new RegExp(/:$/),
-  undefined: new RegExp(/undefined/),
+  undefined: new RegExp(/\"{0,1}undefined\"{0,1}/),
   null: new RegExp(/null/),
   boolean: new RegExp(/true|false/),
   symbol: new RegExp(/Symbol([a-zA-Z0-9]*)/),
@@ -62,21 +62,35 @@ export function consoleColor(json: any, c = console) {
 
 export function ansiColor(json: any) {
   if (typeof json !== "string") json = stringifyAny(json);
-  return json.replace(
-    reg.global,
-    (match: any) => {
-      let style: string;
-      if (reg.string.test(match)) {
-        style = reg.key.test(match) ? "key" : "string";
-      } else if (reg.undefined.test(match)) style = "undefined";
-      else if (reg.boolean.test(match)) style = "boolean";
-      else if (reg.null.test(match)) style = "null";
-      else if (reg.symbol.test(match)) style = "symbol";
-      else if (reg.error.test(match)) style = "error";
-      else if (reg.bigint.test(match)) style = "bigint";
-      else style = "number";
-      // @ts-ignore
-      return EnumANSIColors[style] + match + EnumANSIColorsSuffix[style];
-    },
-  );
+  function color(_json = json) {
+    return json.replace(
+      reg.global,
+      (match: any) => {
+        let style: string;
+        if (reg.bigint.test(match)) {
+          style = "bigint";
+          match = match.replace(/\"/g, "");
+        } else if (reg.error.test(match)) style = "error";
+        else if (reg.symbol.test(match)) style = "symbol";
+        else if (reg.string.test(match)) {
+          if (reg.key.test(match)) style = "key";
+          else {
+            if (reg.ansi.test(JSON.parse(match))) {
+              style = "none";
+              match = JSON.parse(match).replace(
+                reg.argument,
+                (match: any) => ansiColor(match),
+              );
+            } else style = "string";
+          }
+        } else if (reg.null.test(match)) style = "null";
+        else if (reg.undefined.test(match)) style = "undefined";
+        else if (reg.boolean.test(match)) style = "boolean";
+        else style = "number";
+        // @ts-ignore
+        return EnumANSIColors[style] + match + EnumANSIColorsSuffix[style];
+      },
+    );
+  }
+  return color(json);
 }

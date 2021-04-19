@@ -153,3 +153,32 @@ Deno.test({
     }
   },
 });
+Deno.test({
+  name: "console.ts",
+  fn: () => {
+    testFunction(
+      "ansiColor full test",
+      table,
+      ansiColor(
+        {
+          string: ansiColorTests.string.i,
+          number: ansiColorTests.number.i,
+          bigint: ansiColorTests.bigint.i,
+          boolean: ansiColorTests.boolean.i,
+          null: ansiColorTests.null.i,
+          undefined: ansiColorTests.undefined.i,
+          symbol: ansiColorTests.symbol.i,
+          error: ansiColorTests.error.i,
+          object: ansiColorTests.object.i,
+          log: consoleColorTests.log.i,
+          logArguments: consoleColorTests.logArguments.i,
+        },
+      ),
+      '{\n  \u001b[38;2;255;255;0m"string":\u001b[39m \u001b[38;2;46;139;87m"\\"test\\""\u001b[39m,\n  \u001b[38;2;255;255;0m"number":\u001b[39m \u001b[38;2;255;215;0m1234\u001b[39m,\n  \u001b[38;2;255;255;0m"bigint":\u001b[39m \u001b[38;2;255;140;0m9007199254740999007199254740990\u001b[39m,\n  \u001b[38;2;255;255;0m"boolean":\u001b[39m \u001b[38;2;0;191;255mtrue\u001b[39m,\n  \u001b[38;2;255;255;0m"null":\u001b[39m \u001b[38;2;255;0;255mnull\u001b[39m,\n  \u001b[38;2;255;255;0m"error":\u001b[39m {},\n  \u001b[38;2;255;255;0m"object":\u001b[39m {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\n  },\n  \u001b[38;2;255;255;0m"log":\u001b[39m [\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m,\n  \u001b[38;2;255;255;0m"logArguments":\u001b[39m [\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \nArguments:[\n  \u001b[38;2;46;139;87m"test"\u001b[39m,\n  {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"a"\u001b[39m\n  }\n]\n}',
+      true,
+      false,
+    );
+    table.render();
+    table = resetTable();
+  },
+});

@@ -23,14 +23,15 @@ function isURL(paths: string[] | string): boolean {
 }
 function isPosix(paths: string[] | string): boolean {
   const prefixes = ["/", "."];
-  return Array.isArray(paths)
+  return (Array.isArray(paths)
     ? prefixes.includes(paths[0].slice(0, 1))
-    : prefixes.includes(paths.slice(0, 1));
+    : prefixes.includes(paths.slice(0, 1))) &&
+    ["linux", "darwin"].includes(Deno.build.os);
 }
 function isWin32(paths: string[] | string): boolean {
-  return Array.isArray(paths)
+  return (Array.isArray(paths)
     ? paths[0].substr(1, 1) === ":"
-    : paths.substr(1, 1) === ":";
+    : paths.substr(1, 1) === ":") && Deno.build.os === "windows";
 }
 export function isModule(file: string): boolean {
   return Object.keys(modules).includes(extname(file).slice(1));
@@ -41,20 +42,14 @@ export function isModule(file: string): boolean {
  * @returns file:// normalized path
  */
 export function toFileUrlDeep(paths: string[] | string): string {
-  console.log(
-    "isAbsolute",
-    (Array.isArray(paths) ? isAbsolute(join(...paths)) : isAbsolute(paths)),
-  );
-  const isUrl =
-    !((isPosix(paths) && ["linux", "darwin"].includes(Deno.build.os)) ||
-      (isWin32(paths) && Deno.build.os === "windows") || !isURL(paths));
-  return ((Array.isArray(paths))
+  const isUrl = !((isPosix(paths) || isWin32(paths)) || !isURL(paths));
+  return (Array.isArray(paths))
     ? !isUrl && isAbsolute(join(...paths))
       ? toFileUrl(join(...paths)).href
       : join(...paths)
     : !isUrl && isAbsolute(paths)
     ? toFileUrl(paths).href
-    : paths) as string;
+    : paths;
 }
 
 export function validPath(

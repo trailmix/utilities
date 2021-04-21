@@ -51,6 +51,10 @@ const consoleColorTests: Record<
       toFileUrl(resolve(join(Deno.cwd(), "src", "common", "console_test.ts")))
     }%c%c:49%c%c:8%c`,
   },
+  errorWin32: {
+    i: "Error: test\n    at file:///D:/a/utilities/utilities/src/common/console_test.ts:49:8",
+    o: "%cError: test%c\n%c    at file:///D:/a/utilities/utilities/src/common/console_test.ts%c%c:49%c%c:8%c",
+  },
   object: {
     i: { "test": "test" },
     o: '{\n  %c"test":%c %c"test"%c\n}',
@@ -105,7 +109,11 @@ const ansiColorTests: Record<
     i: new Error("test"),
     o: `\u001b[38;2;255;0;0mError: test\u001b[39m\n\u001b[38;2;46;139;87m    at ${
       toFileUrl(resolve(join(Deno.cwd(), "src", "common", "console_test.ts")))
-    }\u001b[39m\u001b[38;2;255;215;0m:105\u001b[39m\u001b[38;2;255;0;0m:8\u001b[39m`,
+    }\u001b[39m\u001b[38;2;255;215;0m:109\u001b[39m\u001b[38;2;255;0;0m:8\u001b[39m`,
+  },
+  errorWin32: {
+    i: "Error: test\n    at file:///D:/a/utilities/utilities/src/common/console_test.ts:109:8",
+    o: "\u001b[38;2;255;0;0mError: test\u001b[39m\n\u001b[38;2;46;139;87m    at file:///D:/a/utilities/utilities/src/common/console_test.ts\u001b[39m\u001b[38;2;255;215;0m:109\u001b[39m\u001b[38;2;255;0;0m:8\u001b[39m",
   },
   object: {
     i: { test: "test" },
@@ -171,6 +179,22 @@ Deno.test({
 Deno.test({
   name: "console.ts",
   fn: () => {
+    // console.log(JSON.stringify(ansiColor(
+    //   {
+    //     string: ansiColorTests.string.i,
+    //     number: ansiColorTests.number.i,
+    //     bigint: ansiColorTests.bigint.i,
+    //     boolean: ansiColorTests.boolean.i,
+    //     null: ansiColorTests.null.i,
+    //     undefined: ansiColorTests.undefined.i,
+    //     symbol: ansiColorTests.symbol.i,
+    //     error: ansiColorTests.error.i,
+    //     errorWin32: ansiColorTests.errorWin32.i,
+    //     object: ansiColorTests.object.i,
+    //     log: ansiColorTests.log.i,
+    //     logArguments: ansiColorTests.logArguments.i,
+    //   },
+    // )));
     testFunction(
       "ansiColor full test",
       table,
@@ -184,14 +208,15 @@ Deno.test({
           undefined: ansiColorTests.undefined.i,
           symbol: ansiColorTests.symbol.i,
           error: ansiColorTests.error.i,
+          errorWin32: ansiColorTests.errorWin32.i,
           object: ansiColorTests.object.i,
           log: ansiColorTests.log.i,
           logArguments: ansiColorTests.logArguments.i,
         },
       ),
-      `{\n  \u001b[38;2;255;255;0m"string":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"number":\u001b[39m \u001b[38;2;255;215;0m1234,\u001b[39m\n  \u001b[38;2;255;255;0m"bigint":\u001b[39m \u001b[38;2;255;140;0m9007199254740999007199254740990\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"boolean":\u001b[39m \u001b[38;2;0;191;255mtrue\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"null":\u001b[39m \u001b[38;2;255;0;255mnull\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"undefined":\u001b[39m \u001b[38;2;139;0;139mundefined\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"symbol":\u001b[39m \u001b[38;2;139;0;0mSymbol(\u001b[39m\u001b[38;2;255;255;0mkey\u001b[39m\u001b[38;2;139;0;0m)\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"error":\u001b[39m \u001b[38;2;255;0;0m"Error: test\u001b[39m\n\u001b[38;2;46;139;87m    at ${
+      `{\n  \u001b[38;2;255;255;0m\"string\":\u001b[39m \u001b[38;2;46;139;87m\"test\"\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"number\":\u001b[39m \u001b[38;2;255;215;0m1234,\u001b[39m\n  \u001b[38;2;255;255;0m\"bigint\":\u001b[39m \u001b[38;2;255;140;0m9007199254740999007199254740990\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"boolean\":\u001b[39m \u001b[38;2;0;191;255mtrue\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"null\":\u001b[39m \u001b[38;2;255;0;255mnull\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"undefined\":\u001b[39m \u001b[38;2;139;0;139mundefined\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"symbol\":\u001b[39m \u001b[38;2;139;0;0mSymbol(\u001b[39m\u001b[38;2;255;255;0mkey\u001b[39m\u001b[38;2;139;0;0m)\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"error\":\u001b[39m \u001b[38;2;255;0;0mError: test\u001b[39m\n\u001b[38;2;46;139;87m    at ${
         toFileUrl(resolve(join(Deno.cwd(), "src", "common", "console_test.ts")))
-      }\u001b[39m\u001b[38;2;255;215;0m:105\u001b[39m\u001b[38;2;255;0;0m:8"\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"object":\u001b[39m {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\n  }\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"log":\u001b[39m \u001b[38;2;255;255;255m[\u001b[31mdefault\u001b[39m] \u001b[31mtest\u001b[39m\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"logArguments":\u001b[39m \u001b[38;2;255;255;255m[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32mtest\u001b[39m\u001b[22m \u001b[38;2;46;139;87m\u001b[39m\nArguments:[\n  {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\n  }\n]\u001b[39m\n}`,
+      }\u001b[39m\u001b[38;2;255;215;0m:109\u001b[39m\u001b[38;2;255;0;0m:8\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"errorWin32\":\u001b[39m \u001b[38;2;255;0;0mError: test\u001b[39m\n\u001b[38;2;46;139;87m    at file:///D:/a/utilities/utilities/src/common/console_test.ts\u001b[39m\u001b[38;2;255;215;0m:109\u001b[39m\u001b[38;2;255;0;0m:8\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"object\":\u001b[39m {\n    \u001b[38;2;255;255;0m\"test\":\u001b[39m \u001b[38;2;46;139;87m\"test\"\u001b[39m\n  }\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"log\":\u001b[39m \u001b[38;2;255;255;255m[\u001b[31mdefault\u001b[39m] \u001b[31mtest\u001b[39m\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m\"logArguments\":\u001b[39m \u001b[38;2;255;255;255m[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32mtest\u001b[39m\u001b[22m \u001b[38;2;46;139;87m\u001b[39m\nArguments:[\n  {\n    \u001b[38;2;255;255;0m\"test\":\u001b[39m \u001b[38;2;46;139;87m\"test\"\u001b[39m\n  }\n]\u001b[39m\n}`,
       true,
       false,
     );

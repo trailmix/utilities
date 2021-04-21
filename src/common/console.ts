@@ -12,7 +12,7 @@ const reg = {
   ansi: new RegExp(/"?\[\\u001b\[[0-9]{1,3}m.*"?\n?/),
   argument: new RegExp(/\nArguments:(\[\n(\s|\S)*\n\])/),
   error: new RegExp(
-    /([a-zA-Z]*Error: [a-zA-Z0-9]*)(?:\n|\\n)(\s+at file:\/{3}[\w*\/\.?]*)(:[0-9]*)(:[0-9]*)\n?/,
+    /([a-zA-Z]*Error: [a-zA-Z0-9]*)(?:\n|\\n)(\s+at file:\/{3}[\w\/\.:]*)(:[0-9]*)(:[0-9]*)\n?/,
   ),
   number: new RegExp(
     `^[0-9]{1,${Number.MAX_SAFE_INTEGER.toString().length - 1}}`,
@@ -67,7 +67,7 @@ export function consoleColor(json: any, c = console) {
             );
           }
         }
-        if (["undefined", "bigint", "symbol"].includes(style)) {
+        if (["undefined", "bigint", "symbol", "error"].includes(style)) {
           match = removeQuotes(match);
         }
         styles.push(EnumCSSColors[style as keyof typeof EnumCSSColors], "");
@@ -124,7 +124,7 @@ export function ansiColor(json: any) {
           }
         }
         if (
-          ["undefined", "bigint", "symbol"].includes(style)
+          ["undefined", "bigint", "symbol", "error"].includes(style)
         ) {
           match = removeQuotes(match);
         }

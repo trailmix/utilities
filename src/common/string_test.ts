@@ -45,9 +45,9 @@ const stringifyAnyTests: Record<
   symbol: { i: Symbol("key"), o: Symbol("key") },
   error: {
     i: new Error("test"),
-    o: `Error: test\n    at ${
+    o: `\"Error: test\\n    at ${
       toFileUrl(resolve(join(Deno.cwd(), "src", "common", "string_test.ts")))
-    }:47:8`,
+    }:47:8\"`,
   },
   object: { i: { test: "test" }, o: { test: "test" } },
 };

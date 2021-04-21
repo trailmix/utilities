@@ -16,8 +16,6 @@ export function stringifyBigInt(key: string, value: any): string {
 export function stringifyAny(value: unknown): string {
   if (typeof value === "string") {
     return value;
-  } else if (value instanceof Error) {
-    return value.stack!;
   } else {
     return JSON.stringify(value, stringifyBigInt, 2);
   }

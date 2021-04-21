@@ -2,6 +2,7 @@ import {
   ansiColor,
   consoleColor,
   resetTable,
+  stringifyAny,
   testFunction,
 } from "trailmix/common/mod.ts";
 import { join, resolve, toFileUrl } from "trailmix/deps.ts";
@@ -18,7 +19,7 @@ const consoleColorTests: Record<
 > = {
   string: {
     i: "test",
-    o: "test",
+    o: '%c"test"%c',
   },
   number: {
     i: 1234,
@@ -42,16 +43,16 @@ const consoleColorTests: Record<
   },
   symbol: {
     i: Symbol("key"),
-    o: "%cSymbol%c(key)",
+    o: "%cSymbol(%c%ckey%c%c)%c",
   },
   error: {
     i: new Error("test"),
-    o: `%cError: test%c\n    at ${
+    o: `%cError: test%c\n%c    at ${
       toFileUrl(resolve(join(Deno.cwd(), "src", "common", "console_test.ts")))
-    }:%c48%c:%c8%c`,
+    }%c%c:49%c%c:8%c`,
   },
   object: {
-    i: { test: "test" },
+    i: { "test": "test" },
     o: '{\n  %c"test":%c %c"test"%c\n}',
   },
   log: {
@@ -60,7 +61,7 @@ const consoleColorTests: Record<
   },
   logArguments: {
     i: '[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \nArguments:[\n  "test",\n  {\n    "test": "a"\n  }\n]',
-    o: '[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \nArguments:[\n  \u001b[38;2;46;139;87m"test"\u001b[39m,\n  {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"a"\u001b[39m\n  }\n]',
+    o: '[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \u001b[38;2;46;139;87m\u001b[39m\nArguments:[\n  \u001b[38;2;46;139;87m"test"\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"a"\u001b[39m\n  }\n]',
   },
 };
 const ansiColorTests: Record<
@@ -73,8 +74,8 @@ const ansiColorTests: Record<
   >
 > = {
   string: {
-    i: '"test"',
-    o: '\u001b[38;2;46;139;87m"test"\u001b[39m',
+    i: "test",
+    o: "\u001b[38;2;46;139;87mtest\u001b[39m",
   },
   number: {
     i: 1234,
@@ -98,13 +99,13 @@ const ansiColorTests: Record<
   },
   symbol: {
     i: Symbol("key"),
-    o: "\u001b[38;2;139;0;0mSymbol\u001b[39m(key)",
+    o: "\u001b[38;2;139;0;0mSymbol(\u001b[39m\u001b[38;2;255;255;0mkey\u001b[39m\u001b[38;2;139;0;0m)\u001b[39m",
   },
   error: {
     i: new Error("test"),
-    o: `\u001b[38;2;255;0;0mError: test\u001b[39m\n    at ${
+    o: `\u001b[38;2;255;0;0mError: test\u001b[39m\n\u001b[38;2;46;139;87m    at ${
       toFileUrl(resolve(join(Deno.cwd(), "src", "common", "console_test.ts")))
-    }:\u001b[38;2;255;215;0m104\u001b[39m:\u001b[38;2;255;215;0m8\u001b[39m`,
+    }\u001b[39m\u001b[38;2;255;215;0m:105\u001b[39m\u001b[38;2;255;0;0m:8\u001b[39m`,
   },
   object: {
     i: { test: "test" },
@@ -115,6 +116,7 @@ const ansiColorTests: Record<
 const ogConsole = console;
 Deno.test({
   name: "console.ts",
+  // only: true,
   fn: () => {
     for (const primitive in consoleColorTests) {
       const mockConsole = {
@@ -122,8 +124,8 @@ Deno.test({
         ...{
           log: (str: string): string => {
             // this demonstrates actual console usage
-            ogConsole.log("real usage:");
-            consoleColor(consoleColorTests[primitive].i, ogConsole);
+            // ogConsole.log("real usage:");
+            // consoleColor(consoleColorTests[primitive].i, ogConsole);
             return str;
           },
         },
@@ -143,6 +145,7 @@ Deno.test({
 });
 Deno.test({
   name: "console.ts",
+  // only: true,
   fn: () => {
     for (const primitive in ansiColorTests) {
       testFunction(
@@ -160,7 +163,23 @@ Deno.test({
 });
 Deno.test({
   name: "console.ts",
+  // only: true,
   fn: () => {
+    console.log(JSON.stringify(ansiColor(
+      {
+        string: ansiColorTests.string.i,
+        number: ansiColorTests.number.i,
+        bigint: ansiColorTests.bigint.i,
+        boolean: ansiColorTests.boolean.i,
+        null: ansiColorTests.null.i,
+        undefined: ansiColorTests.undefined.i,
+        symbol: ansiColorTests.symbol.i,
+        error: ansiColorTests.error.i,
+        object: ansiColorTests.object.i,
+        log: consoleColorTests.log.i,
+        logArguments: consoleColorTests.logArguments.i,
+      },
+    )));
     testFunction(
       "ansiColor full test",
       table,
@@ -179,7 +198,7 @@ Deno.test({
           logArguments: consoleColorTests.logArguments.i,
         },
       ),
-      '{\n  \u001b[38;2;255;255;0m"string":\u001b[39m \u001b[38;2;46;139;87m"\\"test\\""\u001b[39m,\n  \u001b[38;2;255;255;0m"number":\u001b[39m \u001b[38;2;255;215;0m1234\u001b[39m,\n  \u001b[38;2;255;255;0m"bigint":\u001b[39m \u001b[38;2;255;140;0m9007199254740999007199254740990\u001b[39m,\n  \u001b[38;2;255;255;0m"boolean":\u001b[39m \u001b[38;2;0;191;255mtrue\u001b[39m,\n  \u001b[38;2;255;255;0m"null":\u001b[39m \u001b[38;2;255;0;255mnull\u001b[39m,\n  \u001b[38;2;255;255;0m"error":\u001b[39m {},\n  \u001b[38;2;255;255;0m"object":\u001b[39m {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\n  },\n  \u001b[38;2;255;255;0m"log":\u001b[39m [\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m,\n  \u001b[38;2;255;255;0m"logArguments":\u001b[39m [\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \nArguments:[\n  \u001b[38;2;46;139;87m"test"\u001b[39m,\n  {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"a"\u001b[39m\n  }\n]\n}',
+      '{\n  \u001b[38;2;255;255;0m"string":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"number":\u001b[39m \u001b[38;2;255;215;0m1234,\u001b[39m\n  \u001b[38;2;255;255;0m"bigint":\u001b[39m \u001b[38;2;255;140;0m9007199254740999007199254740990\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"boolean":\u001b[39m \u001b[38;2;0;191;255mtrue\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"null":\u001b[39m \u001b[38;2;255;0;255mnull\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"undefined":\u001b[39m \u001b[38;2;139;0;139mundefined\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"symbol":\u001b[39m \u001b[38;2;139;0;0mSymbol(\u001b[39m\u001b[38;2;255;255;0mkey\u001b[39m\u001b[38;2;139;0;0m)\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"error":\u001b[39m \u001b[38;2;255;0;0m"Error: test\u001b[39m\n\u001b[38;2;46;139;87m    at file:///Users/bkillian/trailmix/utilities/src/common/console_test.ts\u001b[39m\u001b[38;2;255;215;0m:105\u001b[39m\u001b[38;2;255;0;0m:8"\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"object":\u001b[39m {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"test"\u001b[39m\n  }\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"log":\u001b[39m \u001b[38;2;255;255;255m[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  \u001b[38;2;255;255;0m"logArguments":\u001b[39m \u001b[38;2;255;255;255m[\u001b[1m\u001b[32mdefault\u001b[39m\u001b[22m] \u001b[1m\u001b[32msuccess\u001b[39m\u001b[22m \u001b[38;2;46;139;87m\u001b[39m\nArguments:[\n  \u001b[38;2;46;139;87m"test"\u001b[39m\u001b[38;2;46;139;87m,\u001b[39m\n  {\n    \u001b[38;2;255;255;0m"test":\u001b[39m \u001b[38;2;46;139;87m"a"\u001b[39m\n  }\n]\u001b[39m\n}',
       true,
       false,
     );

@@ -39,7 +39,7 @@ export enum EnumCSSColors {
   null = "color:magenta",
   undefined = "color:darkmagenta",
   symbol = "color:darkred",
-  none = "",
+  none = "color:white",
 }
 export enum EnumANSIColors {
   error = "\x1b[38;2;255;0;0m",
@@ -51,7 +51,7 @@ export enum EnumANSIColors {
   null = "\x1b[38;2;255;0;255m",
   undefined = "\x1b[38;2;139;0;139m",
   symbol = "\x1b[38;2;139;0;0m",
-  none = "",
+  none = "\x1b[38;2;255;255;255m",
 }
 export enum EnumANSIColorsSuffix {
   error = "\x1b[39m",
@@ -63,5 +63,5 @@ export enum EnumANSIColorsSuffix {
   null = "\x1b[39m",
   undefined = "\x1b[39m",
   symbol = "\x1b[39m",
-  none = "",
+  none = "\x1b[39m",
 }

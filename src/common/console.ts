@@ -7,7 +7,7 @@ import {
 
 const reg = {
   global: new RegExp(
-    /(["'])(?:(?=(\\?))\2.)*?\1:?|([a-zA-Z]*Error: [a-zA-Z0-9]*)(?:\n|\\n)(\s+at file:\/{3}[\w*\/\.?]*)(:[0-9]*)(:[0-9]*)\n?|("Symbol\()([a-zA-Z0-9]*)(\)")|\(([a-zA-Z0-9]*)\)"|true|false|null|undefined|^[\d|\s|\w]*$|[\d]*,$/gm,
+    /(["'])(?:(?=(\\?))\2.)*?\1:?|([a-zA-Z]*Error: [a-zA-Z0-9]*)(?:\n|\\n)(\s+at file:\/{3}[\w\/\.:]*)(:[0-9]*)(:[0-9]*)\n?|("Symbol\()([a-zA-Z0-9]*)(\)")|\(([a-zA-Z0-9]*)\)"|true|false|null|undefined|^[\d\s\w]*$|[\d]*,$/gm,
   ),
   ansi: new RegExp(/"?\[\\u001b\[[0-9]{1,3}m.*"?\n?/),
   argument: new RegExp(/\nArguments:(\[\n(\s|\S)*\n\])/),

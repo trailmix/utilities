@@ -4,7 +4,7 @@ import {
   resetTable,
   testFunction,
 } from "trailmix/common/mod.ts";
-
+import { join, resolve, toFileUrl } from "trailmix/deps.ts";
 let table = resetTable();
 const messages: Record<string, any> = {
   string: ["string", `${Deno.env.get("HOME")}`, Object.keys(Deno)[0]],
@@ -39,8 +39,11 @@ const tests: Record<
     string: {
       i: { message: new RangeError("Uh-oh!") },
       o: {
-        message:
-          "RangeError: Uh-oh!\n    at file:///Users/bkillian/trailmix/utilities/src/common/object_test.ts:40:21",
+        message: `RangeError: Uh-oh!\n    at ${
+          toFileUrl(
+            resolve(join(Deno.cwd(), "src", "common", "object_test.ts")),
+          )
+        }:40:21`,
       },
     },
     number: {

@@ -40,7 +40,7 @@ const tests: Record<
       i: { message: new RangeError("Uh-oh!") },
       o: {
         message:
-          "RangeError: Uh-oh!\n    at file:///Users/bkillian/trailmix/utilities/src/common/object_test.ts:59:21",
+          "RangeError: Uh-oh!\n    at file:///Users/bkillian/trailmix/utilities/src/common/object_test.ts:40:21",
       },
     },
     number: {

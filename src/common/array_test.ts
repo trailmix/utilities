@@ -50,7 +50,7 @@ const tests: Record<
 };
 for (const test of Object.keys(tests)) {
   Deno.test({
-    name: "Array.ts",
+    name: "array.ts",
     fn: () => {
       testFunction(
         test,

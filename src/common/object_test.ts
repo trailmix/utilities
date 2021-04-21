@@ -1,4 +1,9 @@
-import { mergeDeep, resetTable, testFunction } from "trailmix/common/mod.ts";
+import {
+  mergeDeep,
+  renderTable,
+  resetTable,
+  testFunction,
+} from "trailmix/common/mod.ts";
 
 let table = resetTable();
 const messages: Record<string, any> = {
@@ -12,7 +17,7 @@ const messages: Record<string, any> = {
   undefined: [undefined],
   null: [null],
   object: [
-    new RangeError("Uh-oh!"),
+    new RangeError("Uh-oh!").stack!,
     { test1: "test" },
     { test2: ["a", true, 3] },
     { test3: { testInner: "test" } },
@@ -30,29 +35,13 @@ const tests: Record<
     Record<string, any>
   > | any
 > = {
-  // ...(() => {
-  //   let ret = {};
-  //   for (const m in messages) {
-  //     ret = {
-  //       ...ret,
-  //       ...{
-  //         ["merge" + m]: {
-  //           i: {
-  //             ...{ message: messages[m], test: { message: messages[m] } },
-  //           },
-  //           o: {
-  //             ...{ message: messages[m], test: { message: messages[m] } },
-  //           },
-  //         },
-  //       },
-  //     };
-  //   }
-  //   return ret;
-  // })(),
   ...{
     string: {
-      i: { message: new RangeError("Uh-oh!").message },
-      o: { message: "Uh-oh!" },
+      i: { message: new RangeError("Uh-oh!") },
+      o: {
+        message:
+          "RangeError: Uh-oh!\n    at file:///Users/bkillian/trailmix/utilities/src/common/object_test.ts:59:21",
+      },
     },
     number: {
       i: { message: 1 },
@@ -77,12 +66,12 @@ const tests: Record<
   },
 };
 
-for (const test in tests) {
-  for (const messageType in messages) {
-    for (const message in messages[messageType]) {
-      Deno.test({
-        name: "Array.ts",
-        fn: () => {
+Deno.test({
+  name: "object.ts",
+  fn: () => {
+    for (const test in tests) {
+      for (const messageType in messages) {
+        for (const message in messages[messageType]) {
           testFunction(
             test + " " + messageType + " " + message,
             table,
@@ -94,12 +83,7 @@ for (const test in tests) {
               ...{ ...tests[test].o },
             },
           );
-        },
-      });
-      if (messageType === "object") {
-        Deno.test({
-          name: "Array.ts - recursive",
-          fn: () => {
+          if (messageType === "object") {
             testFunction(
               test + " " + messageType + " " + message,
               table,
@@ -117,15 +101,11 @@ for (const test in tests) {
                 },
               },
             );
-            if (
-              Object.keys(tests).length - 1 === Object.keys(tests).indexOf(test)
-            ) {
-              table.render();
-              table = resetTable();
-            }
-          },
-        });
+          }
+          table = renderTable(table, false);
+        }
       }
     }
-  }
-}
+    table = renderTable(table, true);
+  },
+});

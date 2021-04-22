@@ -1,7 +1,15 @@
 // watcher deps
 // export { bytesToUuid } from "uuid/_common.ts";
 export { v4 } from "uuid/mod.ts";
-export { extname, relative, resolve } from "path/mod.ts";
+export {
+  extname,
+  fromFileUrl,
+  isAbsolute,
+  join,
+  relative,
+  resolve,
+  toFileUrl,
+} from "path/mod.ts";
 export { exists, existsSync } from "fs/mod.ts";
 
 // color deps
@@ -19,6 +27,7 @@ export type { BaseHandler, FileHandler } from "log/handlers.ts";
 export type { LogConfig as stdLogConfig } from "log/mod.ts";
 export { getLevelByName, LogLevels } from "log/levels.ts";
 export { LogRecord } from "log/logger.ts";
+export { format } from "datetime/mod.ts";
 
 // test deps
 export {

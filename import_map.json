@@ -1,13 +1,13 @@
 {
   "imports": {
     "trailmix/": "./src/",
-    "test/": "./test/",
-    "uuid/": "https://deno.land/std@0.91.0/uuid/",
-    "fs/": "https://deno.land/std@0.91.0/fs/",
-    "path/": "https://deno.land/std@0.91.0/path/",
-    "testing/": "https://deno.land/std@0.91.0/testing/",
-    "fmt/": "https://deno.land/std@0.91.0/fmt/",
-    "log/": "https://deno.land/std@0.84.0/log/",
-    "cliffy/table": "https://deno.land/x/cliffy@v0.18.1/table/mod.ts"
+    "uuid/": "https://deno.land/std@0.94.0/uuid/",
+    "fs/": "https://deno.land/std@0.94.0/fs/",
+    "path/": "https://deno.land/std@0.94.0/path/",
+    "testing/": "https://deno.land/std@0.94.0/testing/",
+    "fmt/": "https://deno.land/std@0.94.0/fmt/",
+    "datetime/": "https://deno.land/std@0.94.0/datetime/",
+    "log/": "https://deno.land/std@0.94.0/log/",
+    "cliffy/table": "https://deno.land/x/cliffy@v0.18.2/table/mod.ts"
   }
 }

@@ -3,394 +3,690 @@ import {
   ConfigNames,
   ConfigOptions,
   EnvConfig,
-  ObjectConfig,
-  StringConfig,
+  FileConfig,
+  FlagConfig,
 } from "trailmix/config/mod.ts";
-import { resetTable, testFunction } from "trailmix/common/mod.ts";
-import type { LogConfigMap } from "trailmix/log/Log.d.ts";
-import { assertEquals } from "trailmix/deps.ts";
-let table = resetTable();
+import {
+  renderTable,
+  resetTable,
+  testFunction,
+  testFunctionAsync,
+} from "trailmix/common/mod.ts";
+import type { CommandOptions, LogConfigMap } from "trailmix/config/mod.ts";
+import { join, resolve, toFileUrl } from "trailmix/deps.ts";
 
-const testVars = {
-  strParse: {
-    TEST: {
-      testWord: {
-        TestPhrase: {
-          A: {
-            B: "hello",
-          },
-        },
-      },
-    },
-  },
-  stringConfig: {
-    env1: {
-      test1: "hello",
-    },
-    env2: {
-      test2: {
-        testword: { testphrase: { testname: { test: "hello" } } },
-      },
-    },
-    env3: { test3: { testword: { testphrase: { a: { b: "hello" } } } } },
-  },
-  env: {
-    test1: "val1",
-    test2: "true",
-    test3: JSON.stringify(["val1", "val2"]),
-    test4: {
-      a: {
-        b: "Hello",
-      },
-    },
-    test5: {
-      testword: {
-        testphrase: {
-          a: {
-            b: "hello",
-          },
-        },
-      },
-    },
-    console: {
-      level: "DEBUG",
-    },
+let table = resetTable();
+const defaultConfig = Object.assign({}, new Config().config);
+
+const ConfigTests: Record<
+  string,
+  & Record<"i", ConfigOptions | CommandOptions | string>
+  & Record<
+    "o",
+    ConfigOptions | string | LogConfigMap | CommandOptions | undefined
+  >
+> = {
+  object: {
+    i: "default",
+    o: {
+      namespace: "DEFAULT",
+      config: defaultConfig,
+      log: defaultConfig.log,
+    } as ConfigOptions,
   },
   log: {
-    console: {
-      level: "ERROR",
-      format: "string",
-      color: true,
-      date: true,
+    i: {
+      console: { format: "json" },
     },
-    file: {
-      level: "ERROR",
-      format: "string",
-      path: ".",
-      date: false,
+    o: {
+      "console": {
+        "level": "ERROR",
+        "format": "json",
+        "color": true,
+        "date": false,
+        "enabled": true,
+      },
+      "file": {
+        "level": "ERROR",
+        "format": "json",
+        "path": ".",
+        "date": false,
+        "enabled": false,
+      },
     },
   },
   config: {
-    namespace: "TRAILMIX", // prefixed to all env vars
-    vars: {
-      consoleLevel: {
-        command: "base",
-        global: true,
-        description: "Explicitly set console log level",
-        // object will be created as log.console.level
-        env: "LOG_CONSOLE_LEVEL", // namespace+ENV == TRAILMIX_LOG_CONSOLE_LEVEL
+    i: "default",
+    o: defaultConfig,
+  },
+  nsObject: {
+    i: {
+      namespace: "TRILOM",
+      config: { test: { test1: "hello" } },
+    },
+    o: {
+      namespace: "TRILOM",
+      config: {
+        // ...defaultConfig,
+        test: { test1: "hello" },
+      },
+      log: defaultConfig.log,
+    } as ConfigOptions,
+  },
+};
+const FileConfigTests: Record<
+  string,
+  & Record<"i", string | CommandOptions | ConfigOptions>
+  & Record<
+    "o",
+    ConfigOptions | LogConfigMap | FileConfig | CommandOptions | string
+  >
+> = {
+  object: {
+    i: "default",
+    o: {
+      namespace: "DEFAULT",
+      config: {},
+      log: defaultConfig.log,
+      path: toFileUrl(resolve(join(Deno.cwd(), "trailmix.config.ts"))).href,
+    } as ConfigOptions,
+  },
+  log: {
+    i: {
+      console: { format: "json" },
+    },
+    o: {
+      "console": {
+        "level": "ERROR",
+        "format": "json",
+        "color": true,
+        "date": false,
+        "enabled": true,
+      },
+      "file": {
+        "level": "ERROR",
+        "format": "json",
+        "path": ".",
+        "date": false,
+        "enabled": false,
       },
     },
   },
-  namespace: "DEFAULT",
-  prefix: "trailmix.config",
-  _definitionPathRegexp: new RegExp(
-    /\S*(\/|\\)+(trailmix.config.(ts|tsx){1}){1}/,
-  ),
+  config: {
+    i: "default",
+    o: {},
+  },
+  nsObject: {
+    i: {
+      namespace: "TRILOM",
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
+    } as ConfigOptions,
+    o: {
+      namespace: "TRILOM",
+      config: {},
+      log: defaultConfig.log,
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
+    } as ConfigOptions,
+  },
+  nsObjectNoPath: {
+    i: {
+      namespace: "TRILOM",
+    } as ConfigOptions,
+    o: {
+      namespace: "TRILOM",
+      config: {},
+      log: defaultConfig.log,
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
+    } as ConfigOptions,
+  },
+  nsObjectParsed: {
+    i: "",
+    o: {
+      namespace: "TRILOM",
+      config: {
+        log: { console: { level: "DEBUG" } },
+        test: { test1: "hello" },
+      },
+      log: {
+        "console": {
+          "level": "DEBUG",
+          "format": "string",
+          "color": true,
+          "date": false,
+          "enabled": true,
+        },
+        "file": {
+          "level": "ERROR",
+          "format": "json",
+          "path": ".",
+          "date": false,
+          "enabled": false,
+        },
+      },
+      path: toFileUrl(resolve(join(Deno.cwd(), "trilom.config.ts"))).href,
+    } as ConfigOptions,
+  },
 };
-
-const testObjs = {
+async function writeFile(
+  file = "trailmix.config.ts",
+  cwd = true,
+  content = 'export default {log: {console: {format: "json"}}};',
+) {
+  return await Deno.writeFile(
+    (cwd ? (Deno.cwd() + "/") : "") + file,
+    new TextEncoder().encode(content),
+  );
+}
+const testObjs: Record<ConfigNames, string> = {
   Config: "Config",
-  ObjectConfig: "ObjectConfig",
+  FileConfig: "FileConfig",
   EnvConfig: "EnvConfig",
-  StringConfig: "StringConfig",
+  FlagConfig: "FlagConfig",
 };
-// const testObjs: Record<string, ConfigNames> = {
-//   Config: Config,
-//   ObjectConfig: ObjectConfig,
-//   EnvConfig: EnvConfig,
-//   StringConfig: StringConfig,
-// };
-function objFactory(type: ConfigNames = "Config", opts: ConfigOptions = {}) {
-  if (type === "ObjectConfig") return new ObjectConfig(opts);
+function objFactory(type: ConfigNames = "Config", opts?: ConfigOptions) {
+  if (type === "FileConfig") return new FileConfig(opts);
   if (type === "EnvConfig") return new EnvConfig(opts);
-  if (type === "StringConfig") return new StringConfig(opts);
+  if (type === "FlagConfig") return new FlagConfig(opts);
   else return new Config(opts);
 }
 function objFactoryStatic(
   type: ConfigNames = "Config",
 ) {
-  if (type === "ObjectConfig") return ObjectConfig;
+  if (type === "FileConfig") return FileConfig;
   if (type === "EnvConfig") return EnvConfig;
-  if (type === "StringConfig") return StringConfig;
+  if (type === "FlagConfig") return FlagConfig;
   else return Config;
 }
-for (let obj of Object.keys(testObjs) as ConfigNames[]) {
-  // const o = testObjs[obj];
-  Deno.test({
-    name: `Config.ts - ${obj} default namespace`,
-    fn: () => {
-      const cfg = objFactory(obj);
-      assertEquals(
-        cfg.namespace,
-        testVars.namespace,
-        "Config.namespace is not the default namespace of " +
-          testVars.namespace,
-      );
-    },
-  });
-  const namespace = "TRAILMIX";
-  Deno.test({
-    name: `Config.ts - ${obj} named namespace`,
-    fn: () => {
-      const cfg = objFactory(obj, { namespace });
-      assertEquals(
-        cfg.namespace,
-        namespace,
-        "Config.namespace is not the named namespace of " + namespace,
-      );
-    },
-  });
-  Deno.test({
-    name: `Config.ts - ${obj} default prefix`,
-    fn: () => {
-      const cfg = objFactory(obj, { namespace });
-      assertEquals(
-        cfg,
-        {
-          ...cfg,
-          ...{ prefix: testVars.prefix },
-        },
-        "Config._definitionPrefix is not the default prefix of " +
-          testVars.prefix,
-      );
-    },
-  });
-  const prefix = "trilom.config";
-  Deno.test({
-    name: `Config.ts - ${obj} named prefix`,
-    fn: () => {
-      const cfg = objFactory(obj, { namespace, prefix });
-      assertEquals(
-        cfg,
-        {
-          ...cfg,
-          ...{ prefix: prefix },
-        },
-        `Config.prefix:${
-          JSON.stringify(cfg, null, 2)
-        } is not the named prefix of ` +
-          prefix,
-      );
-    },
-  });
-  // Deno.test({
-  //   name: `Config.ts - ${obj} configuration path`,
-  //   fn: async () => {
-  //     const cfg = objFactory(obj, { namespace });
-  //     const path = await cfg.getConfigurationPath();
-  //     assertMatch(
-  //       path,
-  //       testVars._definitionPathRegexp,
-  //       "default Config._definition_path is not resolvable, or doesn't exist at " +
-  //         "./trailmix.config.ts",
-  //     );
-  //   },
-  // });
-  // const definitionPathRegexp = new RegExp(
-  //   /\S*(\/|\\)+(trilom.config.(ts|tsx){1}){1}/,
-  // );
-  // Deno.test({
-  //   name: `Config.ts - ${obj} configuration path`,
-  //   fn: async () => {
-  //     const cfg = objFactory(obj, { namespace });
-  //     const path = await cfg.getConfigurationPath(prefix);
-  //     assertMatch(
-  //       path,
-  //       definitionPathRegexp,
-  //       "named Config._definition_path is not resolvable, or doesn't exist at ./" +
-  //         prefix,
-  //     );
-  //   },
-  // });
-  // Deno.test({
-  //   name: `Config.ts - ${obj} throw error for missing configuration`,
-  //   fn: async () => {
-  //     const cfg = objFactory(obj, { namespace });
-  //     await assertThrows(
-  //       () => cfg.getConfigurationPath("nope.config"),
-  //       Error,
-  //     );
-  //   },
-  // });
-  Deno.test({
-    name: "Config.ts",
-    fn: async () => {
-      const cfg = objFactory(obj, { namespace });
-      await testFunction(
-        `${obj} throw error for missing configuration`,
-        table,
-        (i = "nope.config") => {
-          return cfg.getConfigurationPath(i);
-        },
-        Error.name,
-      );
-      table.render();
-      table = resetTable();
-    },
-  });
-  Deno.test({
-    name: `Config.ts - ${obj}.log is the correct default`,
-    fn: () => {
-      const log: LogConfigMap = objFactoryStatic(obj).log;
-      assertEquals(
-        log,
-        testVars.log,
-        "Config.log is not the correct default of " +
-          testVars.log,
-      );
-    },
-  });
-  Deno.test({
-    name: `Config.ts - ${obj}.parseLog() returns default log`,
-    fn: () => {
-      Deno.env.delete("DEFAULT_CONSOLE_LEVEL");
-      const log: LogConfigMap = objFactoryStatic(obj).parseLog();
-      assertEquals(
-        log,
-        testVars.log,
-        `Config.parseLog(): ${
-          JSON.stringify(log, null, 2)
-        } is not the correct default of ` +
-          JSON.stringify(testVars.log, null, 2),
-      );
-    },
-  });
-  // Deno.test({
-  //   name: `Config.ts - ${obj}.getConfiguration() to ingest cmd config`,
-  //   fn: async () => {
-  //     const cfg = await objFactory(obj, { namespace }).getConfigurationPath();
-  //     const config = await cfg.getConfiguration();
-  //     console.log(config);
-  //     assertEquals(
-  //       config,
-  //       testVars.config,
-  //       "Config.getConfiguration() cannot ingest command config" +
-  //         config,
-  //     );
-  //   },
-  // });
-  if (obj === "EnvConfig") {
-    Deno.test({
-      name: `Config.ts - ${obj}.parseEnv() returns env`,
-      fn: () => {
+const f = testFunction;
+const fa = testFunctionAsync;
+Deno.test({
+  name: `Config.ts`,
+  fn: async () => {
+    for (const o in testObjs) {
+      const obj = o as ConfigNames;
+      if (obj === "Config") {
+        const t = ConfigTests;
+        let cfg = objFactory(obj);
+        f(`${obj}.ts - simple - default` + " object", table, cfg, t.object.o);
+        f(
+          `${obj}.ts - simple - default` + " config",
+          table,
+          cfg.config,
+          t.config.o,
+        );
+        f(
+          `${obj}.ts - simple - default` + " parseLog()",
+          table,
+          objFactoryStatic(obj).parseLog(t.log.i as LogConfigMap),
+          t.log.o,
+        );
+        cfg = objFactory(obj, t.nsObject.i as ConfigOptions);
+        f(
+          `${obj}.ts - simple - named NS` + " object",
+          table,
+          cfg,
+          t.nsObject.o,
+        );
+      }
+      if (obj === "FileConfig") {
+        const t = FileConfigTests;
+        // default
+        await writeFile().then(async (file) => {
+          const cfg = objFactory(obj) as FileConfig;
+          f(`${obj}.ts - simple - default` + " object", table, cfg, t.object.o);
+          f(
+            `${obj}.ts - simple - default` + " config",
+            table,
+            cfg.config,
+            t.config.o,
+          );
+          fa(
+            `${obj}.ts - simple - default` + " parseFile().log",
+            table,
+            (await cfg.parseFile()).log,
+            t.log.o,
+          );
+          fa(
+            `${obj}.ts - simple - default` + " parseFile().log failure",
+            table,
+            () => cfg.parseFile("./nope.ts"),
+            Error.name,
+          );
+          await Deno.remove("trailmix.config.ts");
+        });
+        await writeFile(
+          "trilom.config.ts",
+          true,
+          'export default {log: {console: {level: "DEBUG"}}, test:{test1: "hello"}};',
+        ).then(async (file) => {
+          const cfgNoPath = objFactory(
+            obj,
+            t.nsObjectNoPath.i as ConfigOptions,
+          ) as FileConfig;
+          f(
+            `${obj}.ts - simple - named NS` + " object",
+            table,
+            cfgNoPath,
+            t.nsObjectNoPath.o,
+          );
+          const cfg = objFactory(
+            obj,
+            t.nsObject.i as ConfigOptions,
+          ) as FileConfig;
+          f(
+            `${obj}.ts - simple - named NS w/ path` + " object",
+            table,
+            cfg,
+            t.nsObject.o,
+          );
+          fa(
+            `${obj}.ts - simple - named NS` + " parseFile()",
+            table,
+            await cfg.parseFile(),
+            t.nsObjectParsed.o,
+          );
+          fa(
+            `${obj}.ts - simple - named NS` + " parseFile() failure",
+            table,
+            () => cfg.parseFile("./nope.ts"),
+            Error.name,
+          );
+          await Deno.remove("trilom.config.ts");
+        });
+        table = renderTable(table, false);
+      }
+      if (obj === "EnvConfig") {
+        const cfgS = objFactoryStatic(obj) as typeof EnvConfig;
+        Deno.env.delete("DEFAULT_LOG_CONSOLE_LEVEL");
+        Deno.env.delete("DEFAULT_TEST1");
+        f(`${obj}.parseEnv() - empty`, table, cfgS.parseEnv(), {});
+        f(`${obj}.parseLog() - empty`, table, cfgS.parseLog(), {
+          "console": {
+            "level": "ERROR",
+            "format": "string",
+            "color": true,
+            "date": false,
+            "enabled": true,
+          },
+          "file": {
+            "level": "ERROR",
+            "format": "json",
+            "path": ".",
+            "date": false,
+            "enabled": false,
+          },
+        });
+        testFunction(
+          `${obj}.strParse() doesn't change key case`,
+          table,
+          EnvConfig.strParse(
+            "DEFAULT_TEST_testWord_TestPhrase_A_B",
+            "hello",
+            "DEFAULT",
+            "_",
+            false,
+          ),
+          {
+            "TEST": {
+              "testWord": {
+                "TestPhrase": {
+                  "A": {
+                    "B": "hello",
+                  },
+                },
+              },
+            },
+          },
+        );
+        // set config to some different cases
         // pass string
         Deno.env.set("DEFAULT_TEST1", "val1");
         // pass boolean true
-        Deno.env.set(
-          "DEFAULT_TEST2",
-          (String(true) === "true" ? "true" : "false"),
-        );
+        Deno.env.set("DEFAULT_TEST2", "true");
         // pass list
-        Deno.env.set(
-          "DEFAULT_TEST3",
-          JSON.stringify(["val1", "val2"]),
+        Deno.env.set("DEFAULT_TEST3", JSON.stringify(["val1", "val2"]));
+        Deno.env.set("DEFAULT_TEST4_A_B", "false");
+        Deno.env.set("DEFAULT_TEST5_testWord_TestPhrase_A_B", "hello");
+        Deno.env.set("DEFAULT_LOG_CONSOLE_LEVEL", "DEBUG");
+        // set config to previously set variables and parse them with static obj
+        testFunction(
+          `${obj}.parseEnv() - not empty`,
+          table,
+          cfgS.parseEnv(),
+          {
+            "log": {
+              "console": {
+                "level": "DEBUG",
+              },
+            },
+            "test1": "val1",
+            "test2": true,
+            "test3": [
+              "val1",
+              "val2",
+            ],
+            "test4": {
+              "a": {
+                "b": false,
+              },
+            },
+            "test5": {
+              "testword": {
+                "testphrase": {
+                  "a": {
+                    "b": "hello",
+                  },
+                },
+              },
+            },
+          },
         );
-        Deno.env.set(
-          "DEFAULT_TEST4_A_B",
-          "Hello",
+        // change config variable and ensure it is changed
+        Deno.env.set("DEFAULT_LOG_CONSOLE_ENABLED", "false");
+        Deno.env.set("DEFAULT_LOG_FILE_LEVEL", "DEBUG");
+        Deno.env.set("DEFAULT_LOG_FILE_ENABLED", "true");
+        testFunction(
+          `${obj}.parseLog() merges log config`,
+          table,
+          cfgS.parseLog(cfgS.parseEnv().log as LogConfigMap),
+          {
+            "console": {
+              "level": "DEBUG",
+              "format": "string",
+              "color": true,
+              "date": false,
+              "enabled": false,
+            },
+            "file": {
+              "level": "DEBUG",
+              "format": "json",
+              "path": ".",
+              "date": false,
+              "enabled": true,
+            },
+          },
         );
-        Deno.env.set(
-          "DEFAULT_TEST5_testWord_TestPhrase_A_B",
-          "hello",
+        let cfg = objFactory(
+          obj,
+        ) as EnvConfig;
+        f(
+          `${obj}.ts - simple - default` + " object",
+          table,
+          cfg,
+          {
+            "namespace": "DEFAULT",
+            "config": {
+              "log": {
+                "console": {
+                  "enabled": false,
+                  "level": "DEBUG",
+                },
+                "file": {
+                  "enabled": true,
+                  "level": "DEBUG",
+                },
+              },
+              "test1": "val1",
+              "test2": true,
+              "test3": [
+                "val1",
+                "val2",
+              ],
+              "test4": {
+                "a": {
+                  "b": false,
+                },
+              },
+              "test5": {
+                "testword": {
+                  "testphrase": {
+                    "a": {
+                      "b": "hello",
+                    },
+                  },
+                },
+              },
+            },
+            "log": {
+              "console": {
+                "level": "DEBUG",
+                "format": "string",
+                "color": true,
+                "date": false,
+                "enabled": false,
+              },
+              "file": {
+                "level": "DEBUG",
+                "format": "json",
+                "path": ".",
+                "date": false,
+                "enabled": true,
+              },
+            },
+          },
         );
-        Deno.env.set(
-          "DEFAULT_CONSOLE_LEVEL",
-          "DEBUG",
+        cfg = objFactory(
+          obj,
+          { "config": { "test6": "hello" } },
+        ) as EnvConfig;
+        f(
+          `${obj}.ts - simple - default` + " object",
+          table,
+          cfg,
+          {
+            "namespace": "DEFAULT",
+            "config": {
+              "test6": "hello",
+              "log": {
+                "console": {
+                  "enabled": false,
+                  "level": "DEBUG",
+                },
+                "file": {
+                  "enabled": true,
+                  "level": "DEBUG",
+                },
+              },
+              "test1": "val1",
+              "test2": true,
+              "test3": [
+                "val1",
+                "val2",
+              ],
+              "test4": {
+                "a": {
+                  "b": false,
+                },
+              },
+              "test5": {
+                "testword": {
+                  "testphrase": {
+                    "a": {
+                      "b": "hello",
+                    },
+                  },
+                },
+              },
+            },
+            "log": {
+              "console": {
+                "level": "DEBUG",
+                "format": "string",
+                "color": true,
+                "date": false,
+                "enabled": false,
+              },
+              "file": {
+                "level": "DEBUG",
+                "format": "json",
+                "path": ".",
+                "date": false,
+                "enabled": true,
+              },
+            },
+          },
         );
-        const env: Record<string, unknown> = EnvConfig.parseEnv();
-        assertEquals(
-          env,
-          testVars.env,
-          `Config.parseEnv(): ${
-            JSON.stringify(env, null, 2)
-          } is not the correct default of ` +
-            JSON.stringify(testVars.env, null, 2),
-        );
-      },
-    });
-    Deno.test({
-      name: `Config.ts - ${obj}.strParse() doesn't change key case`,
-      fn: () => {
-        const env: Record<string, unknown> = EnvConfig.strParse(
-          "DEFAULT_TEST_testWord_TestPhrase_A_B",
-          "hello",
-          "DEFAULT",
-          "_",
-          false,
-        );
-        assertEquals(
-          env,
-          testVars.strParse,
-          `Config.parseEnv(): ${
-            JSON.stringify(env, null, 2)
-          } is not the correct default of ` +
-            JSON.stringify(testVars.strParse, null, 2),
-        );
-      },
-    });
-    Deno.test({
-      name: `Config.ts - ${obj}.parseLog() merges env log config`,
-      fn: () => {
-        Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG");
-        const ex = {
-          ...testVars.log,
-          ...{ console: { ...testVars.log.console, ...{ level: "DEBUG" } } },
+      }
+      if (obj === "FlagConfig") {
+        // set config to some different cases
+        let env: Record<string, unknown> = {
+          ...FlagConfig.strParse(
+            "consoleLevel",
+            "DEBUG",
+          ),
+          ...FlagConfig.strParse(
+            "test1",
+            "val1",
+          ),
+          ...FlagConfig.strParse(
+            "test2",
+            "true",
+          ),
+          ...FlagConfig.strParse(
+            "test3",
+            ["val1", "val2"],
+          ),
+          ...FlagConfig.strParse(
+            "test4AB",
+            "false",
+          ),
+          ...FlagConfig.strParse(
+            "test5TestwordTestphraseAB",
+            "hello",
+          ),
         };
-        const log: LogConfigMap = EnvConfig.parseLog();
-        assertEquals(
-          log,
-          ex,
-          `Config.parseEnv(): ${
-            JSON.stringify(log, null, 2)
-          } is not the correct default of ` +
-            JSON.stringify(ex, null, 2),
+        testFunction(
+          `${obj}.strParse() doesn't change key case`,
+          table,
+          env,
+          {
+            "console": {
+              "level": "DEBUG",
+            },
+            "test1": "val1",
+            "test2": true,
+            "test3": [
+              "val1",
+              "val2",
+            ],
+            "test4": {
+              "a": {
+                "b": false,
+              },
+            },
+            "test5": {
+              "testword": {
+                "testphrase": {
+                  "a": {
+                    "b": "hello",
+                  },
+                },
+              },
+            },
+          },
         );
-      },
-    });
-  }
-  if (obj === "StringConfig") {
-    Deno.test({
-      name: `Config.ts - ${obj}.parseEnv() returns env`,
-      fn: () => {
         const test = {
+          consoleLevel: "DEBUG",
           test1: "val1",
-          test2: (String(true) === "true" ? "true" : "false"),
-          test3: JSON.stringify(["val1", "val2"]),
-          test4AB: "Hello",
+          test2: "true",
+          test3: ["val1", "val2"],
+          test4AB: "false",
           test5TestwordTestphraseAB: "hello",
-          consoleLevel: "DEBUG",
         };
-        const env: Record<string, unknown> = StringConfig.parseEnv(test);
-        assertEquals(
+        // set config object and parse to string config
+        env = FlagConfig.parseFlags(test);
+        testFunction(
+          `${obj}.parseFlags() returns config`,
+          table,
           env,
-          testVars.env,
-          `Config.parseEnv(): ${
-            JSON.stringify(env, null, 2)
-          } is not the correct default of ` +
-            JSON.stringify(testVars.env, null, 2),
+          {
+            "console": {
+              "level": "DEBUG",
+            },
+            "test1": "val1",
+            "test2": true,
+            "test3": [
+              "val1",
+              "val2",
+            ],
+            "test4": {
+              "a": {
+                "b": false,
+              },
+            },
+            "test5": {
+              "testword": {
+                "testphrase": {
+                  "a": {
+                    "b": "hello",
+                  },
+                },
+              },
+            },
+          },
         );
-      },
-    });
-    Deno.test({
-      name: `Config.ts - ${obj}.parseLog() merges env log config`,
-      fn: () => {
-        const ex = {
-          ...testVars.log,
-          ...{ console: { ...testVars.log.console, ...{ level: "DEBUG" } } },
-        };
-        const log: LogConfigMap = StringConfig.parseLog({
-          consoleLevel: "DEBUG",
-        });
-        assertEquals(
+        let log: LogConfigMap = FlagConfig.parseLog(
+          FlagConfig.parseFlags({
+            logConsoleEnabled: false,
+            logFileLevel: "INFO",
+            logFileEnabled: true,
+          }).log as LogConfigMap,
+        );
+        testFunction(
+          `${obj}.parseLog() merges file config log config`,
+          table,
           log,
-          ex,
-          `Config.parseEnv(): ${
-            JSON.stringify(log, null, 2)
-          } is not the correct default of ` +
-            JSON.stringify(ex, null, 2),
+          {
+            "console": {
+              "level": "ERROR",
+              "format": "string",
+              "color": true,
+              "date": false,
+              "enabled": false,
+            },
+            "file": {
+              "level": "INFO",
+              "format": "json",
+              "path": ".",
+              "date": false,
+              "enabled": true,
+            },
+          },
         );
-      },
-    });
-  }
-}
+        let cfg = objFactory(
+          obj,
+        ) as FlagConfig;
+        f(
+          `${obj}.ts - simple - default` + " object",
+          table,
+          cfg,
+          {
+            "namespace": "DEFAULT",
+            "config": {},
+            "log": {
+              "console": {
+                "level": "ERROR",
+                "format": "string",
+                "color": true,
+                "date": false,
+                "enabled": true,
+              },
+              "file": {
+                "level": "ERROR",
+                "format": "json",
+                "path": ".",
+                "date": false,
+                "enabled": false,
+              },
+            },
+          },
+        );
+        cfg = objFactory(
+          obj,
+          { namespace: "TRILOM", flags: test },
+        ) as FlagConfig;
+      }
+    }
+    renderTable(table, true);
+  },
+});

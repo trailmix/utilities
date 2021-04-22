@@ -1,6 +1,10 @@
-// import { Table, Row, Cell, assertStrictEquals, assertNotEquals } from 'testType/deps.ts';
-import { resetTable, testFunction } from "trailmix/common/table.ts";
-import { s_p, s_s } from "trailmix/common/enum.ts";
+import {
+  EnumANSIPrefix,
+  EnumANSISuffix,
+  renderTable,
+  resetTable,
+  testFunction,
+} from "trailmix/common/mod.ts";
 import {
   Color,
   messageByFn,
@@ -46,11 +50,11 @@ function getTarget(
 }
 function testString(
   str: string,
-  opts: (keyof typeof s_s | keyof typeof s_p)[] = [],
+  opts: (keyof typeof EnumANSISuffix | keyof typeof EnumANSIPrefix)[] = [],
 ) {
   let ret = str;
   for (const opt in opts) {
-    ret = s_p[opts[opt]] + ret + s_s[opts[opt]];
+    ret = EnumANSIPrefix[opts[opt]] + ret + EnumANSISuffix[opts[opt]];
   }
   return ret;
 }
@@ -62,8 +66,8 @@ function testRegExp(prefix?: string, suffix?: string) {
   if (prefix !== undefined && suffix !== undefined) {
     ret = new RegExp(
       "\\S*(\\u001b\\[" + prefix +
-        "m){1}\\S*(color|emphasis|bgColor){1}\\S*(\\u001b\\[" + suffix +
-        "m){1}\\S*",
+        "m){0,1}\\S*(color|emphasis|bgColor){1}\\S*(\\u001b\\[" + suffix +
+        "m){0,1}\\S*",
     );
   }
   return ret;
@@ -213,38 +217,34 @@ const newTests: Record<
     },
   },
 };
-for (const style of Object.keys(stylesMap) as StyleType[]) {
-  for (const testfn of Object.keys(stylesMap[style]) as Style[]) {
-    Deno.test({
-      name: `Color.ts - styleMap tests...`,
-      fn: () => {
+Deno.test({
+  name: `Color.ts - styleMap tests...`,
+  fn: () => {
+    for (const style of Object.keys(stylesMap) as StyleType[]) {
+      for (const testfn of Object.keys(stylesMap[style]) as Style[]) {
         let fn = stylesMap[style][testfn];
         testFunction(
           `style:${style}, testType:${testfn}`,
           table,
           (i = style) => fn(i),
           stylesMap[style][testfn](style),
+          true,
+          false,
         );
-        if (
-          Object.keys(stylesMap).length - 1 ===
-            Object.keys(stylesMap).indexOf(style) &&
-          Object.keys(stylesMap[style]).length - 1 ===
-            Object.keys(stylesMap[style]).indexOf(testfn)
-        ) {
-          table.render();
-        }
-      },
-    });
-  }
-}
-for (const testFn of Object.keys(randomTests)) {
-  for (const testType of Object.keys(randomTests[testFn])) {
-    for (const testArg of Object.keys(randomTests[testFn][testType])) {
-      for (const c of [true, false]) {
-        Deno.test({
-          name: "testType",
-          // only: true,
-          fn: () => {
+        table = renderTable(table, false);
+      }
+    }
+    table = renderTable(table, true);
+  },
+});
+Deno.test({
+  name: "Color.ts - random tests...",
+  // only: true,
+  fn: () => {
+    for (const testFn of Object.keys(randomTests)) {
+      for (const testType of Object.keys(randomTests[testFn])) {
+        for (const testArg of Object.keys(randomTests[testFn][testType])) {
+          for (const c of [true, false]) {
             const fn = getTarget(testFn, c); // get function to test
             const args = randomTests[testFn][testType][testArg].i; // get input argument
             testFunction(
@@ -275,34 +275,29 @@ for (const testFn of Object.keys(randomTests)) {
                   return _actual;
                 }
               },
+              true,
+              false,
             );
-            if (
-              Object.keys(randomTests).length - 1 ===
-                Object.keys(randomTests).indexOf(testFn) &&
-              Object.keys(randomTests[testFn]).length - 1 ===
-                Object.keys(randomTests[testFn]).indexOf(testType) &&
-              Object.keys(randomTests[testFn][testType]).length - 1 ===
-                Object.keys(randomTests[testFn][testType]).indexOf(testArg) &&
-              !c
-            ) {
-              table.render();
-              table = resetTable();
-            }
-          },
-        });
+            table = renderTable(table, false);
+          }
+        }
       }
     }
-  }
-}
-for (const testfn of Object.keys(newTests)) {
-  for (const testType of Object.keys(newTests[testfn])) {
-    for (const c of [true, false]) {
-      for (const s of [true, false]) {
-        if (["stringEmpty", "stringUndefined"].includes(testType) && s) break;
-        Deno.test({
-          // only: true,
-          name: `Color.ts - ${testfn} tests...`,
-          fn: () => {
+    table = renderTable(table, true);
+  },
+});
+Deno.test({
+  // only: true,
+  name: `Color.ts - message tests...`,
+  fn: () => {
+    for (const testfn of Object.keys(newTests)) {
+      for (const testType of Object.keys(newTests[testfn])) {
+        for (const c of [true, false]) {
+          for (const s of [true, false]) {
+            if (["stringEmpty", "stringUndefined"].includes(testType) && s) {
+              break;
+            }
+
             const fn = getTarget(testfn, c, s);
             const args = newTests[testfn][testType].i;
             const e = newTests[testfn][testType].o;
@@ -316,22 +311,14 @@ for (const testfn of Object.keys(newTests)) {
                 } else return _fn(_testType, _args);
               },
               e,
+              true,
+              false,
             );
-            if (
-              Object.keys(newTests).length - 1 ===
-                Object.keys(newTests).indexOf(testfn) &&
-              // @ts-ignore
-              Object.keys(newTests[testfn]).length - 1 ===
-                Object.keys(newTests[testfn]).indexOf(testType) &&
-              !c &&
-              !s
-            ) {
-              table.render();
-              table = resetTable();
-            }
-          },
-        });
+            table = renderTable(table, false);
+          }
+        }
       }
     }
-  }
-}
+    table = renderTable(table, true);
+  },
+});

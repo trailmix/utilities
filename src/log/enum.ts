@@ -1,13 +1,15 @@
-import { LogLevels as EnumLogLevel } from "trailmix/deps.ts";
-export { EnumLogLevel };
+// internal
 import type { LogColor, LogLevel, LogStyle } from "trailmix/log/Log.d.ts";
+//external
+import { LogLevels as EnumLogLevel } from "trailmix/deps.ts";
 
+// exports
+export { EnumLogLevel };
 export const logLevels = Object.values(EnumLogLevel).filter((key) =>
   typeof key === "string"
 ) as LogLevel[];
 export const loggerNames = ["default", "test"];
 
-// export type Styles = 'bold' | 'italic' | 'dim' | 'underline' | 'strikethrough' | 'hidden' | 'inverse' | 'clear';
 export const logColors: LogColor = {
   NOTSET: "white",
   DEBUG: "clear",
@@ -17,23 +19,23 @@ export const logColors: LogColor = {
   CRITICAL: "green",
 };
 export const logStyles: LogStyle = {
-  NOTSET: "clear",
-  DEBUG: "clear",
-  INFO: "clear",
-  WARNING: "clear",
-  ERROR: "clear",
+  NOTSET: "none",
+  DEBUG: "none",
+  INFO: "none",
+  WARNING: "none",
+  ERROR: "none",
   CRITICAL: "bold",
 };
 
 export enum EnumLogStyle {
-  NOTSET = "clear",
-  DEBUG = "clear",
-  INFO = "clear",
-  WARNING = "clear",
-  ERROR = "clear",
+  NOTSET = "none",
+  DEBUG = "none",
+  INFO = "none",
+  WARNING = "none",
+  ERROR = "none",
   CRITICAL = "bold",
 }
-export enum EnumLogColors {
+export enum EnumLogColor {
   NOTSET = "white",
   DEBUG = "clear",
   INFO = "blue",

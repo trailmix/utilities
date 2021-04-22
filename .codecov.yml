@@ -13,7 +13,7 @@ coverage:
           - color
           - config
           - log
-          - watch
+          # - watch
       common:
         target: 40%
         threshold: 10%
@@ -23,24 +23,6 @@ coverage:
   precision: 2
   round: down
   range: '70...100'
-# flag_management:
-#   # this section will govern all default rules of Flags
-#   default_rules:
-#     carryforward: true
-#     ignore:
-#       - "**/*_test.ts"
-#       - "**/*_test.tsx"
-#     paths:
-#       - "src/**"
-#     statuses: 
-#       - name_prefix: default_project
-#         type: project
-#         target: auto
-#         threshold: 1%
-#       - name_prefix: default_patch
-#         type: patch
-#         target: percent
-#         threshold: 80%
 ignore:
   - "**/*_test.ts"
   - "**/*_test.tsx"
@@ -57,12 +39,9 @@ flags:
   log:
     paths:
       - src/log/
-  watch:
-    paths:
-      - src/watch/
-  # test:
+  # watch:
   #   paths:
-  #     - test/
+  #     - src/watch/
 
 parsers:
   gcov:

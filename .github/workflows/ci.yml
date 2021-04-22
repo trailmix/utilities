@@ -19,22 +19,28 @@ jobs:
           fetch-depth: 0
 
       - name: Setup deno
-        uses: denolib/setup-deno@v2
+        uses: denoland/setup-deno@main
         with:
-          deno-version: v1.8.1
+          deno-version: v1.9.0
 
-      - name: Run tests (ubuntu)
-        if: matrix.os == 'ubuntu-latest'
-        run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json --coverage=./coverage/output
+      - name: Run tests (linux/win)
+        if: matrix.os != 'macos-latest'
+        run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json --coverage=coverage/output
 
-      - name: Run tests (win/mac)
+      - name: Run tests (darwin)
         if: matrix.os != 'ubuntu-latest'
         run: deno test --unstable --allow-write --allow-read --allow-env --import-map=import_map.json
 
-      - name: Generate codecov report
-        if: matrix.os == 'ubuntu-latest'
-        run: deno coverage --unstable ./coverage --lcov > ./coverage/lcov.info
+      - name: Generate codecov report (linux/win)
+        if: matrix.os != 'macos-latest'
+        run: deno coverage --exclude="(_|.)conf(ig){0,1}\.(ts|js|tsx)" --unstable ./coverage --lcov > ./coverage/lcov.info
 
-      - name: Push codecov report
+      - name: Push codecov report (linux)
         if: matrix.os == 'ubuntu-latest'
-        run: bash <(curl -s https://codecov.io/bash) -F color,common,config -c
+        run: bash <(curl -s https://codecov.io/bash) -F color,common,config,log -c
+      
+      - name: Push codecov report (win)
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install codecov
+          codecov.exe --flag common -f coverage/lcov.info

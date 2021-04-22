@@ -1,177 +1,230 @@
-import { importDefault, validPath } from "trailmix/common/file.ts";
-import type { FileExtension, ImportOptions } from "trailmix/common/file.d.ts";
-import { resetTable, testFunction } from "trailmix/common/table.ts";
-import { resolve } from "trailmix/deps.ts";
+import {
+  importDefault,
+  isModule,
+  resetTable,
+  testFunction,
+  testFunctionAsync,
+  toFileUrlDeep,
+  validPath,
+} from "trailmix/common/mod.ts";
+import type { ImportOptions } from "trailmix/common/mod.ts";
+import { join, resolve, toFileUrl } from "trailmix/deps.ts";
 
 let table = resetTable();
 
-const tests: Record<
+const toFileUrlDeepTests: Record<
   string,
-  Record<
-    "i" | "o",
-    | string
-    | unknown
-    | Record<string, string | FileExtension | unknown>
-  >
+  & Record<"i", string[] | string>
+  & Record<"o", string>
 > = {
-  validPath: {
-    i: {
-      file: "testConfig",
-      ext: "ts",
-      dir: ".",
-    },
-    o: resolve(Deno.cwd(), "testConfig.ts"),
+  posix: {
+    i: [Deno.cwd(), "input_config.ts"],
+    o: toFileUrl(join(Deno.cwd(), "input_config.ts")).href,
+  },
+  url: {
+    i: ["file://", "src", "input_config.ts"],
+    o: join("file://", "src", "input_config.ts"),
+  },
+  urlString: {
+    i: join("file://", "src", "input_config.ts"),
+    o: join("file://", "src", "input_config.ts"),
+  },
+};
+
+const isModuleTests: Record<
+  string,
+  & Record<"i", string>
+  & Record<"o", boolean>
+> = {
+  ts: {
+    i: "input_config.ts",
+    o: true,
+  },
+  tsx: {
+    i: "input_config.tsx",
+    o: true,
+  },
+  js: {
+    i: "input_config.js",
+    o: true,
+  },
+  jsx: {
+    i: "input_config.jsx",
+    o: true,
+  },
+  false: {
+    i: "input_config.no",
+    o: false,
+  },
+};
+
+const validPathTests: Record<
+  string,
+  Record<"i", string> & Record<"o", boolean | string>
+> = {
+  relative: {
+    i: "./input_config.ts",
+    o: resolve(join(Deno.cwd(), "input_config.ts")),
+  },
+  absolute: {
+    i: Deno.cwd() + "/input_config.ts",
+    o: resolve(join(Deno.cwd(), "input_config.ts")),
   },
   file: {
+    i: "file://" + Deno.cwd() + "/input_config.ts",
+    o: resolve(join(Deno.cwd(), "input_config.ts")),
+  },
+  // list: {
+  //   i: [Deno.cwd(), "input_config.ts"],
+  //   o: resolve(join(Deno.cwd(), "input_config.ts")),
+  // },
+  nofile: {
+    i: "/Error.ts",
+    o: false,
+  },
+};
+
+const importTests: Record<
+  string,
+  & Record<
+    "i",
+    & Record<"importPath", string>
+    & Record<"options", ImportOptions>
+    & Record<
+      "cache",
+      Record<string, Record<string, Record<string, string>>>
+    >
+  >
+  & Record<"o", Record<string, string> | string>
+> = {
+  file: {
     i: {
-      importPath: resolve(Deno.cwd(), "testConfig.ts"),
+      importPath: resolve(join(Deno.cwd(), "input_config.ts")),
       options: {},
+      cache: {},
+    },
+    o: { consoleFormat: "json" },
+  },
+  reload: {
+    i: {
+      importPath: resolve(join(Deno.cwd(), "input_config.ts")),
+      options: { reload: true },
       cache: {},
     },
     o: { consoleFormat: "json" },
   },
   cache: {
     i: {
-      importPath: resolve(Deno.cwd(), "testConfig.ts"),
-      options: { reload: false },
+      importPath: resolve(join(Deno.cwd(), "input_config.ts")),
+      options: {},
       cache: {
-        [resolve(Deno.cwd(), "testConfig.ts")]: resolve(
-          Deno.cwd(),
-          "testConfig.ts",
-        ),
+        [toFileUrl(resolve(join(Deno.cwd(), "input_config.ts"))).href]: {
+          "default": { "consoleFormat": "json" },
+        },
       },
     },
     o: { consoleFormat: "json" },
   },
   nofile: {
     i: {
-      importPath: resolve(Deno.cwd(), "Error.ts"),
+      importPath: resolve(join(Deno.cwd(), "Error.ts")),
       options: {},
       cache: {},
     },
-    o: TypeError.name,
+    o: Error.name,
   },
-  // number: {
-  //   i: [1, 1, 2],
-  //   o: [1, 2],
-  // },
-  // boolean: {
-  //   i: [true, true, false],
-  //   o: [true, false],
-  // },
-  // array: {
-  //   i: [
-  //     ["1", 1, true],
-  //     ["1", 1, true],
-  //     ["2", 2, false],
-  //   ],
-  //   o: [
-  //     ["1", 1, true],
-  //     ["2", 2, false],
-  //   ],
-  // },
-  // object: {
-  //   i: [{ test: "test1" }, { test: "test1" }, { test: "test2" }],
-  //   o: [{ test: "test1" }, { test: "test2" }],
-  // },
-  // undefined: {
-  //   i: [undefined, undefined, 1],
-  //   o: [undefined, 1],
-  // },
 };
-async function writeFile() {
+
+async function writeFile(
+  file = "input_config.ts",
+  cwd = true,
+  content = 'export default {consoleFormat: "json"};',
+) {
   return await Deno.writeFile(
-    Deno.cwd() + "/testConfig.ts",
-    new TextEncoder().encode('export default {consoleFormat: "json"};'),
+    (cwd ? (Deno.cwd() + "/") : "") + file,
+    new TextEncoder().encode(content),
   );
 }
+const f = testFunction;
+const fa = testFunctionAsync;
 Deno.test({
-  name: "File.ts",
-  fn: async () => {
-    await writeFile().then(async (v) => {
-      await testFunction(
-        "validPath",
-        table,
-        async (
-          i = tests.validPath.i as Record<string, unknown>,
-        ) => {
-          return await validPath(
-            i.file as string,
-            i.ext as FileExtension,
-            i.dir as string,
-          );
-        },
-        tests.validPath.o,
-      );
-      table.render();
-      table = resetTable();
-    });
-  },
-});
-Deno.test({
-  name: "File.ts",
-  fn: async () => {
-    await writeFile().then(async (v) => {
-      await testFunction(
-        "importDefault - file",
-        table,
-        async (
-          i = tests.file.i as Record<string, unknown>,
-        ) => {
-          return await importDefault(
-            i.importPath as string,
-            i.options as ImportOptions,
-            i.cache as Record<string, unknown>,
-          );
-        },
-        tests.file.o,
-      );
-      table.render();
-      table = resetTable();
-    });
-  },
-});
-Deno.test({
-  name: "File.ts",
-  fn: async () => {
-    await writeFile().then(async (v) => {
-      await testFunction(
-        "importDefault - cache",
-        table,
-        async (
-          i = tests.cache.i as Record<string, unknown>,
-        ) => {
-          return await importDefault(
-            i.importPath as string,
-            i.options as ImportOptions,
-            i.cache as Record<string, unknown>,
-          );
-        },
-        tests.cache.o,
-      );
-      table.render();
-      table = resetTable();
-    });
-  },
-});
-Deno.test({
-  name: "File.ts",
-  fn: async () => {
-    await testFunction(
-      "importDefault - nofile",
-      table,
-      (
-        i = tests.nofile.i as Record<string, unknown>,
-      ) => {
-        return importDefault(
-          i.importPath as string,
-          i.options as ImportOptions,
-          i.cache as Record<string, unknown>,
-        );
-      },
-      tests.nofile.o,
-    );
+  name: "file.ts " + toFileUrlDeep.name,
+  fn: () => {
+    const t = toFileUrlDeepTests;
+    const fn = toFileUrlDeep;
+    f(fn.name + " posix", table, fn(t.posix.i), t.posix.o);
+    f(fn.name + " url", table, fn(t.url.i), t.url.o);
+    f(fn.name + " urlString", table, fn(t.urlString.i), t.urlString.o);
     table.render();
     table = resetTable();
+  },
+});
+Deno.test({
+  name: "file.ts " + isModule.name,
+  fn: () => {
+    const t = isModuleTests;
+    const fn = isModule;
+    f(fn.name + " " + t.ts.i, table, fn(t.ts.i), t.ts.o);
+    f(fn.name + " " + t.tsx.i, table, fn(t.tsx.i), t.tsx.o);
+    f(fn.name + " " + t.js.i, table, fn(t.js.i), t.js.o);
+    f(fn.name + " " + t.jsx.i, table, fn(t.jsx.i), t.jsx.o);
+    f(fn.name + " " + t.false.i, table, fn(t.false.i), t.false.o);
+    table.render();
+    table = resetTable();
+  },
+});
+Deno.test({
+  name: "file.ts " + validPath.name,
+  fn: async () => {
+    await writeFile().then((v) => {
+      const t = validPathTests;
+      const fn = validPath;
+      f(fn.name + " " + t.relative.i, table, fn(t.relative.i), t.relative.o);
+      f(fn.name + " " + t.absolute.i, table, fn(t.absolute.i), t.absolute.o);
+      f(fn.name + " " + t.file.i, table, fn(t.file.i), t.file.o);
+      f(fn.name + " " + t.nofile.i, table, fn(t.nofile.i), t.nofile.o);
+      table.render();
+      table = resetTable();
+    });
+  },
+});
+Deno.test({
+  name: "file.ts " + importDefault.name,
+  fn: async () => {
+    await writeFile().then(async (v) => {
+      const t = importTests;
+      const fn = importDefault;
+      await fa(
+        fn.name + " file",
+        table,
+        async () =>
+          await fn(t.file.i.importPath, t.file.i.options, t.file.i.cache),
+        t.file.o,
+      );
+      await fa(
+        fn.name + " reload",
+        table,
+        async () =>
+          await fn(t.reload.i.importPath, t.reload.i.options, t.reload.i.cache),
+        t.reload.o,
+      );
+      await fa(
+        fn.name + " cache",
+        table,
+        async () =>
+          await fn(t.cache.i.importPath, t.cache.i.options, t.cache.i.cache),
+        t.cache.o,
+      );
+      await fa(
+        fn.name + " nofile",
+        table,
+        async () =>
+          await fn(t.nofile.i.importPath, t.nofile.i.options, t.nofile.i.cache),
+        t.nofile.o,
+      );
+      await Deno.remove(resolve(Deno.cwd(), "input_config.ts"));
+      table.render();
+      table = resetTable();
+    });
   },
 });

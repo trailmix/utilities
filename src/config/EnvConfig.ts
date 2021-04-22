@@ -1,18 +1,46 @@
 import { default as Config } from "trailmix/config/Config.ts";
-import type { default as StringConfig } from "trailmix/config/StringConfig.ts";
-import { ConfigOptions } from "trailmix/config/Config.d.ts";
-import type {
-  ConsoleLogConfig,
-  FileLogConfig,
-  LogConfigMap,
-} from "trailmix/log/mod.ts";
+import { default as FlagConfig } from "trailmix/config/FlagConfig.ts";
+import { default as FileConfig } from "trailmix/config/FileConfig.ts";
+import { CommandOptions, ConfigOptions } from "trailmix/config/Config.d.ts";
+import { mergeDeep } from "trailmix/common/mod.ts";
+import type { LogConfigMap } from "trailmix/log/mod.ts";
 
+/** Construct an EnvConfig
+ * @example
+ * // set env vars for default or named
+ * Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG");
+ * Deno.env.set("TRILOM_CONSOLE_LEVEL", "DEBUG");
+ * // returns default EnvConfig
+ * const cfg = new EnvConfig();
+ * // returns named EnvConfig
+ * const cfg = new EnvConfig({namespace: 'trilom'});
+ * // update config
+ * Deno.env.set("DEFAULT_FILE_LEVEL", "ERROR");
+ * cfg.config = cfg.parseEnv()
+ * // update log
+ * cfg.log = EnvConfig.parseLog();
+ */
 export default class EnvConfig extends Config {
-  public static log: LogConfigMap = EnvConfig.parseLog();
-  public static env: Record<string, unknown> = EnvConfig.parseEnv();
-  public constructor(opts?: ConfigOptions | Config | StringConfig) {
-    let _opts = opts ?? { namespace: Config.namespace, prefix: Config.prefix };
-    super(_opts);
+  /**
+   * pass in ENV config, return vars within object namespace as CommandOptions
+   * @param env environment config object
+   * @returns 
+   */
+  static parseEnv(
+    env: CommandOptions = Deno.env.toObject(),
+    namespace: string = this.namespace,
+  ): CommandOptions {
+    const envKeys = Object.keys(env).filter((key: string) => {
+      return (new RegExp(`^(${namespace.toUpperCase()}){1}`)).test(key);
+    }).sort();
+    let ret = {};
+    for (const r of envKeys) {
+      ret = mergeDeep(
+        ret,
+        EnvConfig.strParse(r, env[r] as string, namespace.toUpperCase()),
+      );
+    }
+    return ret;
   }
   /**
    * turn a string{str}(TEST_ABC_A_B_C) into an object excluding a string{ex}(TEST)
@@ -21,71 +49,46 @@ export default class EnvConfig extends Config {
    * @param value value of key
    * @param ex string to exclude
    * @param delim delimiter string
+   * @param lower force lowercase on key
    * @returns {Record<string,unknown>} Usually string=> string, can be string=> Record<string,unknown|string>
    */
-  public static strParse(
+  static strParse(
     str: string,
     value: string,
     ex: string,
     delim = "_",
     lower = true,
-  ): Record<string, string | Record<string, unknown | string>> {
+  ): CommandOptions {
     const strReplace = str.replace(ex + delim, "");
     const nextI = strReplace.indexOf(delim, 0);
-    const nextV = nextI === -1 ? value : EnvConfig.strParse(
-      strReplace,
-      value,
-      strReplace.slice(0, nextI),
-      delim,
-      lower,
-    );
+    const nextV = nextI === -1
+      ? (value === "true"
+        ? true
+        : value === "false"
+        ? false
+        : (/^\[{1}\s|\S*\]{1}$/.test(value) ? JSON.parse(value) : value))
+      : EnvConfig.strParse(
+        strReplace,
+        value,
+        strReplace.slice(0, nextI),
+        delim,
+        lower,
+      );
     const nextK = nextI === -1 ? strReplace : strReplace.slice(0, nextI);
-    return Object.fromEntries([[
-      lower ? nextK.toLowerCase() : nextK,
-      nextV,
-    ]]);
+    return { [lower ? nextK.toLowerCase() : nextK]: nextV };
   }
-  /**
-   * pass in env, return vars within object namespace
-   * @param env environment env object
-   * @param namespace namespace of env
-   * @returns 
-   */
-  public static parseEnv(
-    namespace = this.namespace,
-    env: Record<string, string> = Deno.env.toObject(),
-  ): Record<string, unknown> {
-    return Object.fromEntries(
-      Object.keys(env).filter((key: string) =>
-        (new RegExp(`^(${namespace}){1}`)).test(key)
-      ).flatMap((key: string) => {
-        return Object.entries(
-          EnvConfig.strParse(key, Deno.env.toObject()[key], namespace),
-        );
-      }),
+  constructor(opts?: ConfigOptions | Config | FlagConfig | FileConfig) {
+    super({ ...{ namespace: EnvConfig.namespace }, ...opts });
+    this.config = mergeDeep(
+      opts?.config ?? {},
+      this.parseEnv(Deno.env.toObject()),
     );
+    this.log = Config.parseLog(this.config.log as LogConfigMap);
   }
-  public static parseLog(namespace = this.namespace): LogConfigMap {
-    return {
-      console: {
-        ...Config.parseLog().console,
-        ...EnvConfig.parseEnv(namespace).console as ConsoleLogConfig,
-      },
-      file: {
-        ...Config.parseLog().file,
-        ...EnvConfig.parseEnv(namespace).file as FileLogConfig,
-      },
-    } as LogConfigMap;
-  }
-  public parseEnv(
-    namespace = this.namespace,
-    env: Record<string, string> = {},
-  ): Record<string, unknown> {
-    this.env = EnvConfig.parseEnv(namespace, env);
-    return this.env;
-  }
-  public parseLog(namespace = this.namespace): LogConfigMap {
-    this.log = EnvConfig.parseLog(namespace);
-    return this.log;
+  parseEnv(
+    env = Deno.env.toObject(),
+    namespace: string = this.namespace,
+  ): CommandOptions {
+    return EnvConfig.parseEnv(env, namespace);
   }
 }

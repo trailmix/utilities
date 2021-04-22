@@ -1,8 +1,7 @@
-import { unique } from "trailmix/common/array.ts";
-import { resetTable, testFunction } from "trailmix/common/table.ts";
+import { resetTable, testFunction, unique } from "trailmix/common/mod.ts";
 
 let table = resetTable();
-// let testCases: string[] = [];
+
 const tests: Record<
   string,
   Record<
@@ -51,26 +50,18 @@ const tests: Record<
 };
 for (const test of Object.keys(tests)) {
   Deno.test({
-    name: "Array.ts",
+    name: "array.ts",
     fn: () => {
-      let fn = unique;
-      try {
-        testFunction(
-          test,
-          table,
-          (i = tests[test].i) => fn(i),
-          tests[test].o,
-          ["string", "number", "boolean", "object", "undefined", "array"]
-            .includes(test),
-        );
-      } finally {
-        if (
-          Object.keys(tests).length - 1 === Object.keys(tests).indexOf(test)
-        ) {
-          table.render();
-          table = resetTable();
-        }
-      }
+      testFunction(
+        test,
+        table,
+        unique(tests[test].i),
+        tests[test].o,
+        ["string", "number", "boolean", "object", "undefined", "array"]
+          .includes(test),
+      );
+      table.render();
+      table = resetTable();
     },
   });
 }

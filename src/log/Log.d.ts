@@ -1,20 +1,13 @@
-import type { BaseHandler, FileHandler, LogLevels } from "trailmix/deps.ts";
+// internal
 import type {
   EnumBgColor,
   EnumColor,
   EnumEmphasis,
 } from "trailmix/color/mod.ts";
-export type Handler = BaseHandler | FileHandler;
-export type LogColor = Record<
-  LogLevel,
-  keyof typeof EnumColor | keyof typeof EnumBgColor
->;
-export type LogStyle = Record<LogLevel, keyof typeof EnumEmphasis>;
-export type LogLevel = keyof typeof LogLevels;
-// export type Loggers = 'default' | 'test' | string;
-export type LogFormat = "json" | "function" | "string";
-export type LogHandler = "console" | "file";
-// export type { LogConfigMap, LogConfig } from '/config/mod.ts';
+import type { EnumLogLevel } from "trailmix/log/enum.ts";
+// external
+import type { BaseHandler, FileHandler } from "trailmix/deps.ts";
+// external exports
 export type { Style } from "trailmix/color/mod.ts";
 export type {
   BaseHandler,
@@ -23,12 +16,27 @@ export type {
   stdLogger,
   stdLoggerConfig,
 } from "trailmix/deps.ts";
+// exports
+export type LogFormat = "json" | "function" | "string";
+export type LogHandler = "console" | "file";
+export type Handler = BaseHandler | FileHandler;
+export type LogLevel = keyof typeof EnumLogLevel;
+export type LogColor = {
+  [key in LogLevel]?: keyof typeof EnumColor | keyof typeof EnumBgColor;
+};
+export type LogStyle = {
+  [key in LogLevel]?: keyof typeof EnumEmphasis;
+};
+
+// export type Loggers = 'default' | 'test' | string;
+
 export interface LogConfig {
   level: LogLevel;
   format: LogFormat;
   path?: string;
   color?: boolean;
   date?: boolean;
+  enabled: boolean;
 }
 
 export type ConsoleLogConfig = Omit<LogConfig, "path">;

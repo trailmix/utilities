@@ -3,10 +3,10 @@
 <h3 align="center">Repository of utilities for deno written in typescript for trailmix🌤🦕🍣😼</h3>
 <p align="center">
   <a href="https://deno.land">
-    <img src="https://img.shields.io/badge/Deno-1.8.1-brightgreen.svg?logo=deno" alt="deno" />
+    <img src="https://img.shields.io/badge/Deno-1.9.0-brightgreen.svg?logo=deno" alt="deno" />
   </a>
-  <a href="https://github.com/trailmix/utilities">
-    <img src="https://img.shields.io/badge/utilities-vNEXT-green.svg" alt="trailmix utilities" />
+  <a href="https://deno.land/x/trailmix">
+    <img src="https://img.shields.io/badge/utilities-v1.0.5-green.svg" alt="trailmix utilities" />
   </a>
   <a href="http://djkittyplayz.art/">
     <img src="https://img.shields.io/badge/art-djkittyplayz-yellow" alt="art djkittyplayz" />
@@ -37,24 +37,22 @@
 </p>
 <p align="center">
   <a href="https://app.codecov.io/gh/trailmix/utilities" align="left">
-    <img src="https://codecov.io/gh/trailmix/utilities/branch/master/graphs/tree.svg" alt="codecov master" />
+    <img src="https://codecov.io/gh/trailmix/utilities/branch/master/graphs/tree.svg" alt="codecov master"/>
   </a>
   <a href="https://app.codecov.io/gh/trailmix/utilities/branch/next" align="right">
-    <img src="https://codecov.io/gh/trailmix/utilities/branch/next/graphs/tree.svg" alt="codecov next" />
+    <img src="https://codecov.io/gh/trailmix/utilities/branch/next/graphs/tree.svg" alt="codecov next">
   </a>
 </p>
 
+## [CONTRIBUTE - learn how to help 🧪👉💩🙏 💯👆](CONTRIBUTE.md)
+
 ## Usage
 
-### Colors
-<a href="https://deno.land/x/trailmix/color">
-  <img
-    src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-color-BGc.png"
-    alt="goofus_colors goofus colors trailmix deno typescript"
-  />
-</a>
+### [🌈 Colors](./src/color/README.md)
 
-**Simple**
+<h3 align="center">Color string output easily with ANSI.</h3>
+
+#### **Simple**
 
 ```typescript
 // import fns and style helpers
@@ -68,7 +66,7 @@ import {
   randomStyleFn,
   randomStyleString,
   styles as s,
-} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+} from "https://deno.land/x/trailmix@1.0.5/mod.ts";
 
 // random StyleFn Message Functions
 console.log(messageByFn("hello", [s.cyan, s.bgRed])); // cyan text, red BG
@@ -85,15 +83,22 @@ console.log(random("hello", { color: true })); // get random color on this strin
 console.log(random("hello", randomOpts({ color: true }))); // get random color 100%, (50% chance for others)
 ```
 
-**Complex**
+<a href="https://deno.land/x/trailmix/src/color">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/utilities/colorS.gif"
+    alt="goofus_colors goofus colors trailmix deno typescript"
+  />
+</a>
+
+#### **Complex**
 
 ```typescript
 // import the class and style helpers
 import {
   Color as C,
-  styles as s,
-} from "https://deno.land/x/trailmix@1.0.4/mod.ts";
-import type { Styles } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+  stylesMap as sM,
+} from "https://deno.land/x/trailmix@1.0.5/mod.ts";
+import type { Style } from "https://deno.land/x/trailmix@1.0.5/mod.ts";
 
 // you can use defined or anon functions
 function test(str: string) {
@@ -110,23 +115,23 @@ const byFnConfAlpha = [
 ];
 const rConf = { color: true, bgColor: true, emphasis: false };
 const byFnConfBeta = [
-  C.stylesMap.color.brightBlue, // stylesMap is ordered by color|bgColor|emphasis
+  sM.color.brightBlue, // stylesMap is ordered by color|bgColor|emphasis
   (str: string) => {
     return str + "anon function";
   },
-  C.stylesMap.color.yellow,
-  C.stylesMap.bgColor.bgBrightCyan,
+  sM.color.yellow,
+  sM.bgColor.bgBrightCyan,
   test,
-  C.stylesMap.emphasis.strikethrough,
-  C.styles.dim, // styles is all in a map
-  C.stylesMap.bgColor.bgBrightYellow,
+  sM.emphasis.strikethrough,
+  C.styleMap.dim, // styles is all in a map
+  sM.bgColor.bgBrightYellow,
   test,
   (str: string) => {
     return "anon function" + str;
   },
-  C.styles.bgBrightYellow,
+  C.styleMap.bgBrightYellow,
 ];
-const _sList: Styles[] = ["cyan", "bgMagenta", "underline"]; // list of Style strings
+const _sList: Style[] = ["cyan", "bgMagenta", "underline"]; // list of Style strings
 console.log(C.messageByFnSpread("test", ...byFnConfAlpha)); // spread StyleFns
 console.log(C.messageByFnSpread("test", ...byFnConfBeta));
 console.log(
@@ -150,51 +155,210 @@ console.log(
 console.log(C.random("test some string", rConf)); // random function
 ```
 
-### Config
-<a href="https://deno.land/x/trailmix/config">
+<a href="https://deno.land/x/trailmix/src/color">
   <img
-    src="https://trailmix-images.s3.amazonaws.com/gooface/gooface-config.png"
-    alt="goofus_config goofus config trailmix deno typescript"
+    src="https://trailmix-images.s3.amazonaws.com/utilities/colorC.gif"
+    alt="goofus_colors goofus colors trailmix deno typescript"
   />
 </a>
 
-**Simple**
+### [🔋 Config](./src/config/README.md)
+
+<h3 align="center">Ingest configuration from env variables, file, or flags.</h3>
+
+#### **Simple**
 
 ```typescript
-import { EnvConfig, StringConfig } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+import {
+  EnvConfig,
+  FlagConfig,
+} from "https://deno.land/x/trailmix@1.0.5/mod.ts";
 
 Deno.env.set("DEFAULT_TEST1", "val1"); // set example env var in DEFAULT namespace
 // slurp up env vars
 console.log(EnvConfig.parseEnv()); // should have { test1: "val1" }
 // something more complex
-Deno.env.set("DEFAULT_CONSOLE_LEVEL", "DEBUG"); // set log level in DEFAULT namespace
-console.log(EnvConfig.parseEnv()); // should have { test1: "val1", console: { level: "DEBUG" } }
-// this is good for cmd line arguments (--consoleLevel DEBUG)
-console.log(StringConfig.parseEnv({ test1: "val1", consoleLevel: "DEBUG" })); // should have same as above
+Deno.env.set("DEFAULT_LOG_CONSOLE_LEVEL", "DEBUG"); // set log level in DEFAULT namespace
+console.log(EnvConfig.parseEnv()); // should have { test1: "val1", log: { console: { level: "DEBUG" } } }
+// this is good for cmd line arguments (--logConsoleLevel DEBUG)
+console.log(FlagConfig.parseFlags({
+  logConsoleLevel: "DEBUG",
+  test1: "val1",
+  test2: "true",
+  test3: ["val1", "val2"],
+  test4AB: "false",
+  test5TestwordTestphraseAB: "hello",
+})); // should have same as above
 ```
 
-**Complex**
+<a href="https://deno.land/x/trailmix/src/config">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/utilities/configS.gif"
+    alt="goofus_config goofus config trailmix deno typescript"
+  />
+</a>
+
+#### **Complex**
 
 ```typescript
-import { Config, EnvConfig, StringConfig } from "https://deno.land/x/trailmix@1.0.4/mod.ts";
+import {
+  EnvConfig,
+  FileConfig,
+  FlagConfig,
+} from "https://deno.land/x/trailmix@1.0.5/mod.ts";
 
+// set env first is if it was there before runtime
+Deno.env.set("TRILOM_LOG_CONSOLE_LEVEL", "DEBUG");
 // lets use our own namespace with a config file
-const c = await new Config({
-  namespace: "TRAILMIX",
-  prefix: "trailmixString.config",
-}).init();
-// inside trailmixString.config.ts/tsx
-export default {
-  consoleFormat: "json",
-};
-console.log(new StringConfig(c).parseLog()); // will give a log config with {console: { format: "json" } }
-// now lets take into account env vars
-Deno.env.set("TRAILMIX_CONSOLE_FORMAT", "console");
-console.log(new EnvConfig(c).parseLog()); // will give a log config with {console: { format: "console" } }
+await Deno.writeFile(
+  Deno.cwd() + "/trilom.config.ts",
+  new TextEncoder().encode(
+    'export default {log: {console: {format: "json"}}};',
+  ),
+);
+// slurp flags
+const flagCfg = new FlagConfig({
+  namespace: "TRILOM",
+  flags: { logConsoleColor: "false" },
+});
+// scope env vars
+const envCfg = new EnvConfig(flagCfg);
+// suck in file
+const cfg = await new FileConfig(envCfg).parseFile();
+
+console.log(flagCfg); // will give a log config with {console: { color: false } }
+console.log(envCfg); // will give a log config with {console: { color: false, level: "DEBUG" } }
+console.log(cfg); // will give a log config with {console: { color: false, level: "DEBUG", format: "json" } }
 ```
 
-### Log
+<a href="https://deno.land/x/trailmix/src/config">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/utilities/configC.gif"
+    alt="goofus_config goofus config trailmix deno typescript"
+  />
+</a>
 
-### Watch
+### [🪵 Log](./src/log/README.md)
 
-## [CONTRIBUTE](CONTRIBUTE.md)
+<h3 align="center">make logging grape again with color</h3>
+
+#### **Simple**
+
+```typescript
+import { Log, random as r } from "https://deno.land/x/trailmix@1.0.5/mod.ts";
+Log.error("basic britches👖"); // in red "[default] basic britches👖"
+// pass any number of arguments
+Log.success(
+  "test",
+  { error: "really?" },
+  "s",
+  20,
+  90071992547409990071992547404545990n,
+  true,
+  null,
+  undefined,
+  Symbol("key"),
+  new Error("test"),
+  Log.success("noArgs"),
+  Log.error("args", "failure"),
+); // in green  "[default] success"
+Log.error("error", "trust me, its 👌"); //
+Log.success(
+  "silly " + r("r") + r("a") + r("n") + r("d") + r("o") + r("m") + " strang",
+);
+```
+
+<a href="https://deno.land/x/trailmix/src/log">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/utilities/logS.gif"
+    alt="goofus_log goofus log trailmix deno typescript"/>
+</a>
+
+#### **Complex**
+
+```typescript
+import {
+  EnvConfig,
+  FlagConfig,
+  Log,
+} from "https://deno.land/x/trailmix@1.0.5/mod.ts";
+
+// make a logger with flags
+const l = await new Log(
+  "default",
+  new FlagConfig({
+    flags: {
+      logConsoleLevel: "DEBUG",
+      logConsoleFormat: "json",
+      logFileEnabled: true,
+      logFilePath: ".",
+      logFileLevel: "DEBUG",
+      logFileFormat: "string",
+    },
+  }).log,
+).init();
+// now log, 5 console json messages, and 5 string file messages
+l.success("success");
+l.error("error");
+l.warn("warn");
+l.info("info");
+l.debug("debug");
+
+// make a test logger with env for deDEBUG
+Deno.env.set("DEFAULT_LOG_CONSOLE_LEVEL", "DEBUG");
+const lNew = await new Log(
+  "test",
+  new EnvConfig().log,
+).init();
+// now log, 6 console string messages
+lNew.success("success");
+lNew.error("error");
+lNew.warn("warn");
+lNew.info("info");
+lNew.debug("debug");
+```
+
+<a href="https://deno.land/x/trailmix/src/log">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/utilities/logC.gif"
+    alt="goofus_log goofus log trailmix deno typescript"/>
+</a>
+
+### [🕰 Watch](./src/watch/README.md)
+
+<h3 align="center">Watch and react to changes of files.</h3>
+
+### [🌐 common](./src/common/README.md)
+
+<h3 align="center">a collection of micro-utilities</h3>
+
+#### alphaBET
+
+Use color, and table to build a table of 26 rows with 26 random styled letter in
+each row.
+
+```typescript
+import {
+  random as r,
+  resetTable,
+} from "https://deno.land/x/trailmix@1.0.5/mod.ts";
+import type { Table } from "https://deno.land/x/trailmix@1.0.5/mod.ts";
+
+const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const tR: string[][] = [];
+for (const a of Array(10).keys()) {
+  let m = "";
+  for (const _a of alpha) {
+    m += r(_a);
+  }
+  tR.push([m + "\n"]);
+}
+resetTable({ table: tR as Table, maxColWidth: 100 }).render();
+```
+
+<a href="https://deno.land/x/trailmix/src/common">
+  <img
+    src="https://trailmix-images.s3.amazonaws.com/utilities/common.gif"
+    alt="goofus_common goofOOF common trailmix deno typescript"
+  />
+</a>

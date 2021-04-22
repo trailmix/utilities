@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate codecov report (linux/win)
         if: matrix.os != 'macos-latest'
-        run: deno coverage --exclude="(_|.)conf(ig){0,1}\.(ts|js|tsx)" --exclude="_test\.(ts|js)" --unstable ./coverage --lcov > ./coverage/lcov.info
+        run: deno coverage --exclude="(_|.)conf(ig){0,1}\.(ts|js|tsx)" --unstable ./coverage --lcov > ./coverage/lcov.info
 
       - name: Push codecov report (linux)
         if: matrix.os == 'ubuntu-latest'

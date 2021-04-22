@@ -7,8 +7,8 @@ import {
   resolve,
   toFileUrl,
 } from "trailmix/deps.ts";
+import type { ImportOptions, ModuleExtension } from "trailmix/common/file.d.ts";
 
-import type { ImportOptions, ModuleExtension } from "trailmix/common/mod.ts";
 const modules: Record<ModuleExtension, string[]> = {
   ts: ["ts", "tsx"],
   tsx: ["ts", "tsx"],

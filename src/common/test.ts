@@ -17,7 +17,8 @@ import type {
   TestExpectedFunction,
   TestType,
   UnimplementedResult,
-} from "trailmix/common/mod.ts";
+} from "trailmix/common/test.d.ts";
+
 /** 
  * 
  * @param type type of test

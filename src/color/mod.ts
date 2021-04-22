@@ -1,4 +1,11 @@
 export {
+  EnumBgColor,
+  EnumColor,
+  EnumEmphasis,
+  EnumSuffix,
+  styleEnum,
+} from "trailmix/color/enum.ts";
+export {
   default as Color,
   messageByFn,
   messageByFnSpread,
@@ -11,13 +18,6 @@ export {
   styles,
   stylesMap,
 } from "trailmix/color/Color.ts";
-export {
-  EnumBgColor,
-  EnumColor,
-  EnumEmphasis,
-  EnumSuffix,
-  styleEnum,
-} from "trailmix/color/enum.ts";
 // @deno-types="./Color.d.ts"
 export type {
   RandomStyleOptions,

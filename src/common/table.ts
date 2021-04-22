@@ -1,5 +1,5 @@
 import { Cell, Row, Table } from "trailmix/deps.ts";
-import type { TableConfig } from "trailmix/common/mod.ts";
+import type { TableConfig } from "trailmix/common/table.d.ts";
 /**
  * pass in string and options, get cell
  * @param s string for cell

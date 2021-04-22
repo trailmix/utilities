@@ -7,10 +7,10 @@ import {
 
 const reg = {
   global: new RegExp(
-    /(["'])(?:(?=(\\?))\2.)*?\1:?|([a-zA-Z]*Error: [a-zA-Z0-9]*)(?:\n|\\n)(\s+at file:\/{3}[\w\/\.:]*)(:[0-9]*)(:[0-9]*)\n?|("Symbol\()([a-zA-Z0-9]*)(\)")|\(([a-zA-Z0-9]*)\)"|true|false|null|undefined|^[\d\s\w]*$|[\d]*,$/gm,
+    /(["'])(?:(?=(\\?))\2.)*?\1:?|([a-zA-Z]*Error: [a-zA-Z0-9]*)(?:\n|\\n)(\s+at file:\/{3}[\w\/\.:]*)(:[0-9]*)(:[0-9]*)\n?|("Symbol\()([a-zA-Z0-9]*)(\)")|\(([a-zA-Z0-9]*)\)"|(?:"?true|false"?,?)|null|undefined|^[\d\s\w]*$|[\d]*,$/gm,
   ),
   ansi: new RegExp(/"?\[\\u001b\[[0-9]{1,3}m.*"?\n?/),
-  argument: new RegExp(/\nArguments:(\[\n(\s|\S)*\n\])/),
+  argument: new RegExp(/Arguments:(\[\n(\s|\S)*\n\])/),
   error: new RegExp(
     /([a-zA-Z]*Error: [a-zA-Z0-9]*)(?:\n|\\n)(\s+at file:\/{3}[\w\/\.:]*)(:[0-9]*)(:[0-9]*)\n?/,
   ),
@@ -22,9 +22,9 @@ const reg = {
   ),
   string: new RegExp(/^"/),
   key: new RegExp(/[a-zA-Z]*:$/),
-  undefined: new RegExp(/^"?undefined"?$/),
-  null: new RegExp(/^"?null"?$/),
-  boolean: new RegExp(/true|false/),
+  undefined: new RegExp(/^"?undefined"?,?/),
+  null: new RegExp(/^"?null"?,?/),
+  boolean: new RegExp(/^true|false,?/),
   symbol: new RegExp(/("Symbol\()([a-zA-Z0-9]*)(\)")/),
 };
 function removeQuotes(str: string) {
@@ -77,7 +77,7 @@ export function consoleColor(json: any, c = console) {
     return ret;
   }
   json = reg.ansi.test(JSON.stringify(json))
-    ? json.replace(reg.argument, (match: any) => ansiColor(match))
+    ? json.replace(reg.argument, (_match: any) => ansiColor(_match))
     : color(json);
   styles.unshift(json);
   return c.log.apply(c, styles);
@@ -118,7 +118,7 @@ export function ansiColor(json: any) {
               style = "none";
               match = JSON.parse(match).replace(
                 reg.argument,
-                (match: any) => ansiColor(match),
+                (_match: any) => ansiColor(_match),
               );
             } else style = "string";
           }

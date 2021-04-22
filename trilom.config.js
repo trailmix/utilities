@@ -1,1 +1,0 @@
-export default {log: {console: {level: "DEBUG"}}, test:{test1: "hello"}};
